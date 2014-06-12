@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js" lang="en" ng-app="conferenceAnalyzer">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conference Analyzer.</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <!--<script src="js/vendor/modernizr.js"></script>-->
+  </head>
+  <body>
+    
+    <div class="row">
+      <div class="large-12 columns">
+          <h1 class="text-center">Conference Analysis</h1>
+          <hr>
+          <h3>Our proposal</h3>
+          <p>
+            We have a lot of wonderful ideas that we are still materializing
+          </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+        <h3>Authors per conference</h3>
+        <p>Select a conference to get the graph representing all the authors (red nodes) and the papers (green nodes) of such conference</p>
+      </div>
+    </div>
+
+    <div class="row" ng-controller="ConferenceCtrl">
+        <div class="large-8 columns">
+            <form>
+                <div class="row collapse">
+                    <div class="large-10 columns">
+                      <input type="text" ng-model="conferenceSelected" placeholder="Conference name" typeahead="conference for conference in getConferences()" typeahead-wait-ms="1000" typeahead-class="form-control">
+                    </div>
+                    <div class="large-2 columns">
+                        <a id="search" class="button small postfix" ng-click="search()">Search</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="offset-large-2 large-2 columns text-right">
+            <a id="layout" class="button small">Start Layout</a>
+            <!--<a id="rescale" class="button small">Rescale Graph</a>-->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="small-12 medium-12 large-12 columns">
+            <div id="graphFrame">
+                <div id="graph"></div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="row">
+      <div class="large-12 columns">
+        <h3>Author location per conference</h3>
+        <p>Select a conference to get the graph representing all the author location (red nodes) of such conference</p>
+      </div>
+    </div>
+
+    <div class="row" ng-Controller="MapCtrl">
+        <div class="large-8 columns">
+            <form>
+                <div class="row collapse">
+                    <div class="large-10 columns">
+                      <input type="text" ng-model="conferenceSelected" placeholder="Conference name" typeahead="conference for conference in getConferences()" typeahead-wait-ms="1000" typeahead-class="form-control">
+                    </div>
+                    <div class="large-2 columns">
+                        <a id="search" class="button small postfix" ng-click="search()">Search</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="small-12 medium-12 large-12 columns">
+            <div id="mapFrame">
+                <div id="map">&nbsp;</div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="small-12 medium-12 large-12 columns">
+            <p>
+                <small>
+                This website and its source code is licensed under the <a href="../LICENSE.txt">GPL license</a>.
+                The library <a href="http://sigmajs.org/">Sigma.js</a> is used to draw the graphs.
+                </small>
+            </p>
+        </div>
+    </div>
+
+
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/angular.js"></script>
+    <script src="js/mm-foundation-tpls-0.2.2.js"></script>
+
+    <!--<script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="js/lodash.underscore.js"></script>
+    <script src="js/angular-google-maps.min.js"></script>-->
+
+    <script src="js/raphael-min.js"></script>
+    <script src="js/kartograph.js"></script>
+    <script src="js/chroma.js"></script>
+
+
+    <script src="js/sigma.js/sigma.min.js"></script>
+    <script src="js/sigma.js/sigma.parsers.gexf.min.js"></script>
+    <script src="js/sigma.js/sigma.layout.forceAtlas2.min.js"></script>
+    <script src="js/sigma.js/sigma.plugins.dragNodes.min.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
