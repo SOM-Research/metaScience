@@ -26,7 +26,24 @@ CONFIG = {
 }
 
 
-def add_authors_citations(hit, cnx):
+def get_dblp_author_id(cnx, title, author_name):
+    cursor = cnx.cursor()
+    query = "SELECT author_id " \
+            "FROM dblp.dblp_authorid_ref_new author " \
+            "JOIN dblp.dblp_pub_new pub " \
+            "ON author.id = pub.id " \
+            "WHERE title = %s AND author = %s"
+    arguments = [title, author_name]
+    cursor.execute(query, arguments)
+    id = cursor.fetchone()[0]
+    cursor.close()
+
+    if id is None:
+        return 0
+    return id
+
+
+def add_authors_citations(hit, cnx, title):
     authors = hit.find_element_by_class_name("gs_a").find_elements_by_tag_name("a")
     if authors:
         for author in authors:
@@ -46,15 +63,18 @@ def add_authors_citations(hit, cnx):
             except:
                 interests = None
 
+            dblp_author_id = get_dblp_author_id(cnx, title, author_name)
+
             cursor = cnx.cursor()
-            arguments = [author_name, all, all_y5, indexH, indexH_y5, i10, i10_y5, interests]
+            arguments = [author_name, all, all_y5, indexH, indexH_y5, i10, i10_y5, interests, dblp_author_id]
             query = "INSERT IGNORE INTO aux_scholar_authors " \
                     "SET name = %s, citations = %s, " \
                     "citations2009 = %s, " \
                     "indexH = %s, " \
                     "indexH2009 = %s, i10 = %s, " \
                     "i102009 = %s, " \
-                    "interests = %s"
+                    "interests = %s, " \
+                    "dblp_author_id = %s"
             cursor.execute(query, arguments)
             cnx.commit()
             cursor.close()
@@ -89,8 +109,8 @@ def add_scholar_citations(cnx, title, key):
         try:
             title_hit = info_hit.find_element_by_tag_name("a").text
             if re.sub(r'\s+', '', title_hit) in re.sub(r'\s+', '', title):
-                add_paper_citation(hit, cnx, key)
-                add_authors_citations(hit, cnx)
+                #add_paper_citation(hit, cnx, key)
+                add_authors_citations(hit, cnx, title)
                 break
         except NoSuchElementException:
             continue
