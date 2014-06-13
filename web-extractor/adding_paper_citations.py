@@ -109,7 +109,7 @@ def add_scholar_citations(cnx, title, key):
         try:
             title_hit = info_hit.find_element_by_tag_name("a").text
             if re.sub(r'\s+', '', title_hit) in re.sub(r'\s+', '', title):
-                #add_paper_citation(hit, cnx, key)
+                add_paper_citation(hit, cnx, key)
                 add_authors_citations(hit, cnx, title)
                 break
         except NoSuchElementException:
