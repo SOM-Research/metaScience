@@ -28,32 +28,47 @@ CONFIG = {
 }
 
 
-def get_proceedings_web_link(acronym, year, city):
+def get_proceedings_web_link(acronym, year, month, proceedings_type, city):
     driver.get(GOOGLE)
     input_element = driver.find_element_by_name("q")
-    input_element.send_keys(acronym + " " + str(year) + " " + city + " " + "deadline" + Keys.RETURN)
+    input_element.send_keys(acronym + " " + str(year) + " " + month + " " + city + " " + proceedings_type + Keys.RETURN)
     #wait
-    WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "rso")))
+    WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.ID, "rso")))
 
     google_hits = driver.find_elements_by_xpath(".//*[@id='rso']//div//h3/a")
 
     flag = 0
     for hit in google_hits:
         link = hit.get_attribute("href")
-        if (acronym in link or acronym.lower() in link) and ('dblp' not in link):
+        if (acronym in link
+            or acronym.lower() in link) \
+                and ('dblp' not in link
+                and 'informatik.uni-trier.de' not in link
+                and '.pdf' not in link
+                and 'books' not in link
+                and 'worldcat' not in link
+                and 'amazon' not in link
+                and 'researchgate' not in link):
             flag = 1
-            hit.click()
-            link = driver.current_url
+            #driver.get(link + Keys.ESCAPE)
+            #link = driver.current_url
             break
 
     if flag == 1:
-        return link
+        return link.replace("%EE%80%8C", "")
     else:
         return None
 
 
-def get_dblp_proceedings(url):
-    driver.get(DBLP + "/" + url)
+def get_dblp_proceedings(url, dblp_key):
+    link = ''
+    if url is not None:
+        link = url
+    else:
+        conf_info = dblp_key.split("/")
+        link = "db/" + conf_info[0] + "/" + conf_info[1] + "/" + conf_info[1] + conf_info[2] + ".html"
+
+    driver.get(DBLP + "/" + link)
     time.sleep(1)
     return driver
 
@@ -170,22 +185,35 @@ def get_acronym(dblp_key, dblp_acronym):
     return acronym
 
 
-def add_proceedings_info(cnx):
+def add_proceedings_info(cnx, id):
     conf_cursor = cnx.cursor()
-    query = "SELECT id, dblp_key, url, source, year " \
+    query = "SELECT id, dblp_key, url, source, year, month " \
             "FROM aux_dblp_proceedings " \
-            "WHERE dblp_key IS NOT NULL AND" \
-            " web_link IS NULL AND" \
-            " url IS NOT NULL"
-    conf_cursor.execute(query)
+            "WHERE dblp_key IS NOT NULL AND " \
+            "web_link IS NULL AND " \
+            "id > %s " \
+            "AND year >= 2003 " \
+            "AND source IN " \
+            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE')"
+    arguments = [id]
+    conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
     while row is not None:
         id = row[0]
         dblp_key = row[1]
         proceedings = row[2]
         acronym = get_acronym(dblp_key, row[3])
-        year = row[4]
-        proceedings_page = get_dblp_proceedings(proceedings)
+
+        if row[4] is None:
+            year = ''
+        else:
+            year = row[4]
+        if row[5] is None:
+            month = ''
+        else:
+            month = row[5]
+
+        proceedings_page = get_dblp_proceedings(proceedings, dblp_key)
         try:
             headline = proceedings_page.find_element_by_id("headline").text
             proceedings_type = update_proceedings(cnx, dblp_key)
@@ -197,9 +225,9 @@ def add_proceedings_info(cnx):
                 logging.warning("unable to extract location from " + headline)
             if proceedings_type in ('conference', 'symposium'):
                 if len(location) == 0:
-                    url = get_proceedings_web_link(acronym, year, '')
+                    url = get_proceedings_web_link(acronym, year, month, proceedings_type, '')
                 else:
-                    url = get_proceedings_web_link(acronym, year, location.split(',')[0])
+                    url = get_proceedings_web_link(acronym, year, month, proceedings_type, location.split(',')[0])
 
                 if url is not None:
                     update_web_link_proceedings(cnx, id, url)
@@ -211,12 +239,32 @@ def add_proceedings_info(cnx):
     logging.warning("last conf analysed " + str(proceedings))
 
 
+def get_id_to_start(cnx):
+    conf_cursor = cnx.cursor()
+    query = "SELECT MAX(id) " \
+            "FROM aux_dblp_proceedings " \
+            "WHERE dblp_key IS NOT NULL AND " \
+            "web_link IS NOT NULL"
+    conf_cursor.execute(query)
+    row = conf_cursor.fetchone()
+    return row[0]
+
+
 def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**CONFIG)
-    add_proceedings_info(cnx)
+    #set the row id (from the table 'aux_dblp_proceedings') to start extracting the conference websites
+
+    #get last id to start
+    # id = get_id_to_start(cnx)
+    # if id is None:
+    #     id_to_start = 0
+    # else:
+    #     id_to_start = int(id)
+
+    add_proceedings_info(cnx, 0)
     driver.close()
 
 if __name__ == "__main__":

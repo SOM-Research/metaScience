@@ -44,10 +44,20 @@ def collect_topics(topic, h_level, topics):
             return collect_topics(previous_topic, h_level, topics)
 
 
-def get_paper_for_conf(cnx, conf):
+def get_paper_for_conf_from_url(cnx, conf):
     cursor = cnx.cursor()
     query = "SELECT dblp_key FROM aux_dblp_inproceedings_tracks WHERE url LIKE %s"
     arguments = [conf + '%']
+    cursor.execute(query, arguments)
+    data = cursor.fetchall()
+    cursor.close()
+    return data
+
+
+def get_paper_for_conf_from_crossref(cnx, crossref):
+    cursor = cnx.cursor()
+    query = "SELECT dblp_key FROM aux_dblp_inproceedings_tracks WHERE crossref = %s"
+    arguments = [crossref]
     cursor.execute(query, arguments)
     data = cursor.fetchall()
     cursor.close()
@@ -100,11 +110,11 @@ def insert_topics(cnx, paper, topics):
         cursor.close()
 
 
-def add_track_info(cnx):
+def add_track_info_from_url(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT DISTINCT SUBSTRING_INDEX(url, '#', 1) " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE crossref IS NOT NULL AND track IS NULL and url IS NOT NULL AND track IS NULL"
+            "WHERE track IS NULL and url IS NOT NULL"
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
 
@@ -112,7 +122,7 @@ def add_track_info(cnx):
         conference_url = row[0].split('#')[0]
         try:
             conf_page = get_page_conference_dblp(conference_url)
-            papers = get_paper_for_conf(cnx, conference_url)
+            papers = get_paper_for_conf_from_url(cnx, conference_url)
             for paper in papers:
                 try:
                     topic = conf_page.find_element_by_id(paper[0]).find_element_by_xpath("../preceding-sibling::header[1]")
@@ -122,8 +132,41 @@ def add_track_info(cnx):
                 insert_topics(cnx, paper[0], topics)
             row = conf_cursor.fetchone()
         except:
-            logging.warning(str(conference_url))
-    logging.warning("last conf analysed " + str(conference_url))
+            if conference_url is not None:
+                logging.warning(str(conference_url))
+            else:
+                logging.warning("no rows from db")
+    conf_cursor.close()
+
+
+def add_track_info_from_crossref(cnx):
+    conf_cursor = cnx.cursor()
+    query = "SELECT DISTINCT crossref " \
+            "FROM dblp.aux_dblp_inproceedings_tracks " \
+            "WHERE crossref IS NOT NULL AND track is NULL"
+    conf_cursor.execute(query)
+    row = conf_cursor.fetchone()
+
+    while row is not None:
+        crossref = row[0]
+        conf_info = crossref.split("/")
+        conference_url = "db/" + conf_info[0] + "/" + conf_info[1] + "/" + conf_info[1] + conf_info[2] + ".html"
+        try:
+            conf_page = get_page_conference_dblp(conference_url)
+            papers = get_paper_for_conf_from_crossref(cnx, crossref)
+            for paper in papers:
+                try:
+                    topic = conf_page.find_element_by_id(paper[0]).find_element_by_xpath("../preceding-sibling::header[1]")
+                    topics = collect_topics(topic, find_header(topic), [topic.text])
+                except NoSuchElementException:
+                    topics = []
+                insert_topics(cnx, paper[0], topics)
+            row = conf_cursor.fetchone()
+        except:
+            if conference_url is not None:
+                logging.warning(str(conference_url))
+            else:
+                logging.warning("no rows from db")
     conf_cursor.close()
 
 
@@ -132,7 +175,8 @@ def main():
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**CONFIG)
-    add_track_info(cnx)
+    add_track_info_from_url(cnx)
+    add_track_info_from_crossref(cnx)
     driver.close()
 
 if __name__ == "__main__":
