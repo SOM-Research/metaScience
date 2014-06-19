@@ -12,13 +12,15 @@ GOOGLE = 'http://www.google.com'
 def main():
     display = Display(visible=0, size=(800, 600))
     display.start()
-
-    browser = webdriver.Chrome()
-    browser.get(GOOGLE)
-    print browser.title
-    browser.quit()
-
-    display.stop()
+    try:
+        browser = webdriver.Chrome()
+        browser.get(GOOGLE)
+        print browser.title
+        browser.quit()
+    except Exception as e:
+        print(str(e))
+    finally:
+        display.stop()
 
 if __name__ == "__main__":
     main()
