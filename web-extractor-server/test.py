@@ -13,7 +13,7 @@ def main():
     display = Display(visible=0, size=(800, 600))
     display.start()
 
-    browser = webdriver.Chrome()
+    browser = webdriver.Chrome('/home/analyzer/chromedriver')
     browser.get(GOOGLE)
     print browser.title
     browser.quit()
