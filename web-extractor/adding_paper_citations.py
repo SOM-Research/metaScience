@@ -27,6 +27,16 @@ CONFIG = {
     'buffered': True
 }
 
+# CONFIG = {
+#     'user': 'root',
+#     'password': 'coitointerrotto',
+#     'host': '127.0.0.1',
+#     'port': '3307',
+#     'database': 'dblp',
+#     'raise_on_warnings': False,
+#     'buffered': True
+# }
+
 
 def get_dblp_author_id_from_title(cnx, title, author_name):
     cursor = cnx.cursor()
@@ -119,6 +129,7 @@ def add_authors_citations(hit, cnx, title, paper_id):
                 driver.get(link)
                 #wait
                 WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "stats")))
+                time.sleep(2)
 
                 author_name = driver.title.split('-')[0]
                 stats = driver.find_element_by_id("stats")
@@ -212,10 +223,11 @@ def add_citation_info(cnx):
             "WHERE dblp_key IS NOT NULL AND title IS NOT NULL " \
             "AND type NOT IN ('www', 'phdthesis', 'masterthesis')" \
             "AND dblp_key NOT LIKE %s " \
-            "AND id NOT IN (SELECT DISTINCT paper_id FROM aux_scholar_authors) " \
             "AND year >= 2003 " \
             "AND source IN " \
-            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE')"
+            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
+            #"AND id NOT IN (SELECT DISTINCT paper_id FROM aux_scholar_authors) " \
     arguments = ['dblpnote%']
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
