@@ -219,15 +219,15 @@ def update_paper_citations_info(cnx, key, citations):
 def add_citation_info(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT id, dblp_key, title " \
-            "FROM dblp_pub_new " \
+            "FROM dblp_pub_new pub " \
             "WHERE dblp_key IS NOT NULL AND title IS NOT NULL " \
             "AND type NOT IN ('www', 'phdthesis', 'masterthesis')" \
             "AND dblp_key NOT LIKE %s " \
             "AND year >= 2003 " \
+            "AND NOT EXISTS (SELECT DISTINCT paper_id FROM aux_scholar_authors WHERE paper_id = pub.id) " \
             "AND source IN " \
             "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
             "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
-            #"AND id NOT IN (SELECT DISTINCT paper_id FROM aux_scholar_authors) " \
     arguments = ['dblpnote%']
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
