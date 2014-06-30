@@ -149,7 +149,7 @@ def add_authors_citations(hit, cnx, title, paper_id):
                 dblp_author_id = get_dblp_author_id(cnx, title, author_name, author_pos)
 
                 cursor = cnx.cursor()
-                arguments = [author_name, all, all_y5, indexH, indexH_y5, i10, i10_y5, interests, dblp_author_id, paper_id, author_link]
+                arguments = [author_name.strip(), all, all_y5, indexH, indexH_y5, i10, i10_y5, interests, dblp_author_id, paper_id, author_link]
                 query = "INSERT IGNORE INTO aux_scholar_authors " \
                         "SET name = %s, citations = %s, " \
                         "citations2009 = %s, " \
