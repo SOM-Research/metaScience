@@ -33,7 +33,7 @@ CONFIG = {
 JSON_FILE = "./program_committee_info.json"
 JSON_ENTRY_ATTRIBUTES_FOR_HTML = 16
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 7
-JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 11
+JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 13
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 GOOGLE = "http://www.google.com"
 DBLP = "www.informatik.uni-trier.de"
@@ -186,10 +186,10 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
 
         if mixed == 'yes':
             if ROLE == 'chair':
-                if 'chair' in text:
+                if 'chair' in text.lower():
                     name = re.sub(replacement, '', text)
             else:
-                if 'chair' not in text:
+                if 'chair' not in text.lower():
                     name = re.sub(replacement, '', text)
         else:
             name = re.sub(replacement, '', text)
@@ -238,7 +238,7 @@ def extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_
     return members
 
 
-def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
+def extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mixed, inverted_name,
                                       member_separator, member_name_separator):
     driver.get(url)
     members = set()
@@ -249,9 +249,14 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
     content = re.sub(stop_text + '.*$', '', content, flags=re.DOTALL)
     member_entries = content.split(member_separator)
     for me in member_entries:
-        name = re.sub(member_name_separator + '.*', '', me)
-        if name != '':
+        if me != '':
+            name = extract_member_name(mixed, member_name_separator, inverted_name, me)
             members.add(name.strip())
+
+        # name = re.sub(member_name_separator + '.*', '', me)
+        # if name != '':
+        #     members.add(name.strip())
+
     return members
 
 
@@ -285,14 +290,15 @@ def extract_program_committee_info_from_text(cnx, text, entry_separator):
     insert_members_in_db(cnx, members)
 
 
-def extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
-                                                 member_separator, member_name_separator):
-    members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
+def extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text, mixed, inverted_name,
+                                                     member_separator, member_name_separator):
+    members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mixed, inverted_name,
                                                 member_separator, member_name_separator)
     ##debug
     # for m in members:
     #     print m
     insert_members_in_db(cnx, members)
+
 
 def get_separator(separator):
     s = separator
@@ -350,6 +356,8 @@ def check_input(json_entry, parser):
         elif parser == "text_in_html":
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML and
                       check_type(json_entry.get('year'), 'year') and
+                      check_value('mixed_roles',json_entry.get("mixed_roles"), ['yes', 'no']) and
+                      check_value('inverted_member_name', json_entry.get("inverted_member_name"), ['yes', 'no']) and
                       check_value('extract_role', json_entry.get("extract_role"), ['member', 'chair']))
     else:
         logging.warning("parser " + parser + " unknown!"
@@ -362,88 +370,98 @@ def main():
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**CONFIG)
+    line_counter = 1
     #Each JSON data per line
     json_file = open(JSON_FILE)
     json_lines = json_file.read()
     for line in json_lines.split('\n'):
-        line_unicoded = unicode(line, errors='ignore')
-        json_entry = json.loads(line_unicoded)
-        try:
-            global ROLE, CONFERENCE, YEAR
-            parser = json_entry.get("parser").lower()
-            ROLE = json_entry.get("extract_role").lower() #The role to extract: MEMBER or CHAIR
-            CONFERENCE = json_entry.get("conference") #The acronym of the conference to analyse
-            YEAR = json_entry.get("year") #The year of the conference to analyse
-            if check_input(json_entry, parser):
-                action = json_entry.get("action").lower()
-                #action can be "PROC" or "SKIP". The former tells the program to process a JSON line,
-                #while the latter is used to skip that line
-                if action == "proc":
-                    #HTML parser. It is used to collect text in one or more HTML tags
-                    if parser == 'html':
-                        #URL. The url of the program committee or organizers
-                        url = json_entry.get("url")
-                        #START_TEXT. The starting point to parse the page
-                        start_text = json_entry.get("start_text")
-                        #TAG_START_TEXT. The tag that contains the START TEXT
-                        tag_start_text = json_entry.get("tag_start_text")
-                        #TAG_SELECTOR. It used to select only tags with a given id or class attributes
-                        #that follow the TAG_START_TEXT.
-                        tag_selector = json_entry.get("id_or_class_selector")
-                        #STOP_TEXT. The end point to parse the page
-                        stop_text = json_entry.get("stop_text")
-                        #TAG_STOP_TEXT. The tag that contains the STOP_TEXT
-                        tag_stop_text = json_entry.get("tag_stop_text")
-                        #MEMBERS_TAG. The tag that contains the members
-                        members_tag = json_entry.get("members_tag")
-                        #CONTAINMENT. SINGLE or ALL.
-                        #It tells the program whether the MEMBERS_TAG contains one member or all
-                        single_or_all = json_entry.get("containment").lower()
-                        #MIXED_ROLES. YES or NO.
-                        #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
-                        mixed = json_entry.get("mixed_roles").lower()
-                        #INVERTED_MEMBER_NAME. YES or NO
-                        #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
-                        inverted_name = json_entry.get("inverted_member_name").lower()
-                        #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
-                        #It tells the program how for each member, its name is separated from the remaining information
-                        #ex.: Bill Gates, Microsoft  --> COMMA
-                        #     Bill Gates (Microsoft) --> LEFT_PAR
-                        #     Bill Gates - Microsoft --> -
-                        member_name_separator = get_separator(json_entry.get("member_name_separator")).lower()
+        if line != '':
+            line_unicoded = unicode(line, errors='ignore')
+            json_entry = json.loads(line_unicoded)
+            try:
+                global ROLE, CONFERENCE, YEAR
+                parser = json_entry.get("parser").lower()
+                ROLE = json_entry.get("extract_role").lower() #The role to extract: MEMBER or CHAIR
+                CONFERENCE = json_entry.get("conference") #The acronym of the conference to analyse
+                YEAR = json_entry.get("year") #The year of the conference to analyse
+                if check_input(json_entry, parser):
+                    action = json_entry.get("action").lower()
+                    #action can be "PROC" or "SKIP". The former tells the program to process a JSON line,
+                    #while the latter is used to skip that line
+                    if action == "proc":
+                        #HTML parser. It is used to collect text in one or more HTML tags
+                        if parser == 'html':
+                            #URL. The url of the program committee or organizers
+                            url = json_entry.get("url")
+                            #START_TEXT. The starting point to parse the page
+                            start_text = json_entry.get("start_text")
+                            #TAG_START_TEXT. The tag that contains the START TEXT
+                            tag_start_text = json_entry.get("tag_start_text")
+                            #TAG_SELECTOR. It used to select only tags with a given id or class attributes
+                            #that follow the TAG_START_TEXT.
+                            tag_selector = json_entry.get("id_or_class_selector")
+                            #STOP_TEXT. The end point to parse the page
+                            stop_text = json_entry.get("stop_text")
+                            #TAG_STOP_TEXT. The tag that contains the STOP_TEXT
+                            tag_stop_text = json_entry.get("tag_stop_text")
+                            #MEMBERS_TAG. The tag that contains the members
+                            members_tag = json_entry.get("members_tag")
+                            #CONTAINMENT. SINGLE or ALL.
+                            #It tells the program whether the MEMBERS_TAG contains one member or all
+                            single_or_all = json_entry.get("containment").lower()
+                            #MIXED_ROLES. YES or NO.
+                            #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
+                            mixed = json_entry.get("mixed_roles").lower()
+                            #INVERTED_MEMBER_NAME. YES or NO
+                            #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            inverted_name = json_entry.get("inverted_member_name").lower()
+                            #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
+                            #It tells the program how for each member, its name is separated from the remaining information
+                            #ex.: Bill Gates, Microsoft  --> COMMA
+                            #     Bill Gates (Microsoft) --> LEFT_PAR
+                            #     Bill Gates - Microsoft --> -
+                            member_name_separator = get_separator(json_entry.get("member_name_separator")).lower()
 
-                        extract_program_committee_info_from_html(cnx, url,
-                                                       start_text, tag_start_text, tag_selector, stop_text, tag_stop_text,
-                                                       members_tag, single_or_all, inverted_name,
-                                                       member_name_separator, mixed)
-                    #TEXT_IN_HTML. It is used when all the information are contained in only one HTML tag.
-                    elif parser == "text_in_html":
-                        #URL. The url of the program committee or organizers
-                        url = json_entry.get("url")
-                        #TARGET_TAG. The tag to analyse
-                        target_tag = json_entry.get("target_tag")
-                        #START_TEXT. Remove everything that is before the START_TEXT (included)
-                        start_text = json_entry.get("start_text")
-                        #STOP_TEXT. Remove everything that is after the STOP_TEXT (included)
-                        stop_text = json_entry.get("stop_text")
-                        #MEMBER_SEPARATOR.
-                        #It defines how members are separated between each other (generally is NEW_LINE)
-                        member_separator = get_separator(json_entry.get("member_separator")).lower()
-                        #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
-                        #It tells the program how for each member, its name is separated from the remaining information
-                        member_name_separator = get_separator(json_entry.get("member_name_separator")).lower()
-                        extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
-                                                                     member_separator, member_name_separator)
-                    #TEXT. It is used when the preceding parsers can't do the job.
-                    #It expects a text with a list of members
-                    elif parser == 'text':
-                        #TEXT. It contains a list of members
-                        text = json_entry.get("text")
-                        #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
-                        entry_separator = get_separator(json_entry.get("entry_separator")).lower()
-                        extract_program_committee_info_from_text(cnx, text, entry_separator)
-        except:
-            logging.warning("json line " + str(json_lines.indexOf(line)) + " is not valid!")
+                            extract_program_committee_info_from_html(cnx, url,
+                                                           start_text, tag_start_text, tag_selector, stop_text, tag_stop_text,
+                                                           members_tag, single_or_all, inverted_name,
+                                                           member_name_separator, mixed)
+                        #TEXT_IN_HTML. It is used when all the information are contained in only one HTML tag.
+                        elif parser == "text_in_html":
+                            #URL. The url of the program committee or organizers
+                            url = json_entry.get("url")
+                            #TARGET_TAG. The tag to analyse
+                            target_tag = json_entry.get("target_tag")
+                            #START_TEXT. Remove everything that is before the START_TEXT (included)
+                            start_text = json_entry.get("start_text")
+                            #STOP_TEXT. Remove everything that is after the STOP_TEXT (included)
+                            stop_text = json_entry.get("stop_text")
+                            #MEMBER_SEPARATOR.
+                            #It defines how members are separated between each other (generally is NEW_LINE)
+                            member_separator = get_separator(json_entry.get("member_separator")).lower()
+                            #MIXED_ROLES. YES or NO.
+                            #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
+                            mixed = json_entry.get("mixed_roles").lower()
+                            #INVERTED_MEMBER_NAME. YES or NO
+                            #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            inverted_name = json_entry.get("inverted_member_name").lower()
+                            #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
+                            #It tells the program how for each member, its name is separated from the remaining information
+                            member_name_separator = get_separator(json_entry.get("member_name_separator")).lower()
+                            extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
+                                                                             mixed, inverted_name,
+                                                                             member_separator, member_name_separator)
+                        #TEXT. It is used when the preceding parsers can't do the job.
+                        #It expects a text with a list of members
+                        elif parser == 'text':
+                            #TEXT. It contains a list of members
+                            text = json_entry.get("text")
+                            #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
+                            entry_separator = get_separator(json_entry.get("entry_separator")).lower()
+                            extract_program_committee_info_from_text(cnx, text, entry_separator)
+            except:
+                logging.warning("json line " + str(line_counter) + " is not valid!")
+        line_counter += 1
     json_file.close()
     driver.close()
     cnx.close()
