@@ -28,36 +28,36 @@ CONFIG = {
 }
 
 
-def get_proceedings_web_link(acronym, year, month, proceedings_type, city):
-    driver.get(GOOGLE)
-    input_element = driver.find_element_by_name("q")
-    input_element.send_keys(acronym + " " + str(year) + " " + month + " " + city + " " + proceedings_type + Keys.RETURN)
-    #wait
-    WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.ID, "rso")))
-
-    google_hits = driver.find_elements_by_xpath(".//*[@id='rso']//div//h3/a")
-
-    flag = 0
-    for hit in google_hits:
-        link = hit.get_attribute("href")
-        if (acronym in link
-            or acronym.lower() in link) \
-                and ('dblp' not in link
-                and 'informatik.uni-trier.de' not in link
-                and '.pdf' not in link
-                and 'books' not in link
-                and 'worldcat' not in link
-                and 'amazon' not in link
-                and 'researchgate' not in link):
-            flag = 1
-            #driver.get(link + Keys.ESCAPE)
-            #link = driver.current_url
-            break
-
-    if flag == 1:
-        return link.replace("%EE%80%8C", "")
-    else:
-        return None
+# def get_proceedings_web_link(acronym, year, month, proceedings_type, city):
+#     driver.get(GOOGLE)
+#     input_element = driver.find_element_by_name("q")
+#     input_element.send_keys(acronym + " " + str(year) + " " + month + " " + city + " " + proceedings_type + Keys.RETURN)
+#     #wait
+#     WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.ID, "rso")))
+#
+#     google_hits = driver.find_elements_by_xpath(".//*[@id='rso']//div//h3/a")
+#
+#     flag = 0
+#     for hit in google_hits:
+#         link = hit.get_attribute("href")
+#         if (acronym in link
+#             or acronym.lower() in link) \
+#                 and ('dblp' not in link
+#                 and 'informatik.uni-trier.de' not in link
+#                 and '.pdf' not in link
+#                 and 'books' not in link
+#                 and 'worldcat' not in link
+#                 and 'amazon' not in link
+#                 and 'researchgate' not in link):
+#             flag = 1
+#             #driver.get(link + Keys.ESCAPE)
+#             #link = driver.current_url
+#             break
+#
+#     if flag == 1:
+#         return link.replace("%EE%80%8C", "")
+#     else:
+#         return None
 
 
 def get_dblp_proceedings(url, dblp_key):
@@ -168,13 +168,13 @@ def update_proceedings(cnx, dblp_key):
     return type
 
 
-def update_web_link_proceedings(cnx, id, url):
-    cursor = cnx.cursor()
-    query = "UPDATE aux_dblp_proceedings SET web_link = %s WHERE id = %s"
-    arguments = [url, id]
-    cursor.execute(query, arguments)
-    cnx.commit()
-    cursor.close()
+# def update_web_link_proceedings(cnx, id, url):
+#     cursor = cnx.cursor()
+#     query = "UPDATE aux_dblp_proceedings SET web_link = %s WHERE id = %s"
+#     arguments = [url, id]
+#     cursor.execute(query, arguments)
+#     cnx.commit()
+#     cursor.close()
 
 
 def get_acronym(dblp_key, dblp_acronym):
@@ -190,11 +190,12 @@ def add_proceedings_info(cnx, id):
     query = "SELECT id, dblp_key, url, source, year, month " \
             "FROM aux_dblp_proceedings " \
             "WHERE dblp_key IS NOT NULL AND " \
-            "web_link IS NULL AND " \
             "id > %s " \
             "AND year >= 2003 " \
             "AND source IN " \
-            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE')"
+            "('MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
+            #"('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE')"
+            #"web_link IS NULL AND " \
     arguments = [id]
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
@@ -223,14 +224,14 @@ def add_proceedings_info(cnx, id):
                 update_location_info(cnx, location, id)
             else:
                 logging.warning("unable to extract location from " + headline)
-            if proceedings_type in ('conference', 'symposium'):
-                if len(location) == 0:
-                    url = get_proceedings_web_link(acronym, year, month, proceedings_type, '')
-                else:
-                    url = get_proceedings_web_link(acronym, year, month, proceedings_type, location.split(',')[0])
-
-                if url is not None:
-                    update_web_link_proceedings(cnx, id, url)
+            # if proceedings_type in ('conference', 'symposium'):
+            #     if len(location) == 0:
+            #         url = get_proceedings_web_link(acronym, year, month, proceedings_type, '')
+            #     else:
+            #         url = get_proceedings_web_link(acronym, year, month, proceedings_type, location.split(',')[0])
+            #
+            #     if url is not None:
+            #         update_web_link_proceedings(cnx, id, url)
         except NoSuchElementException:
             logging.warning(str(proceedings_page.current_url))
 
@@ -243,8 +244,8 @@ def get_id_to_start(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT MAX(id) " \
             "FROM aux_dblp_proceedings " \
-            "WHERE dblp_key IS NOT NULL AND " \
-            "web_link IS NOT NULL"
+            "WHERE dblp_key IS NOT NULL"
+            #"web_link IS NOT NULL"
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
     return row[0]

@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import json
 import re
-import csv
+import codecs
 import time
 
 LOG_FILENAME = 'logger_program_committee.log'
@@ -62,12 +62,14 @@ def recover_id_by_querying_google(cnx, member):
     google_hits = google_driver.find_elements_by_xpath("//*[@id='rso']//h3/a")
     for hit in google_hits:
         link = hit.get_attribute("href")
-        if DBLP in link:
+        if DBLP in link and 'pers' in link:
             hit.click()
             dblp_name = google_driver.find_element_by_id("headline").find_element_by_tag_name("h1").text.strip()
             query_dblp_author = "SELECT DISTINCT author_id FROM dblp_authorid_ref_new WHERE author = %s"
             arguments = [dblp_name]
             data = calculate_query(cnx, query_dblp_author, arguments)
+            logging.warning("the member: " + member + " has been corrected to: " + dblp_name + "!"
+                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
             break
     google_driver.close()
     return data
@@ -76,7 +78,8 @@ def recover_id_by_querying_google(cnx, member):
 def get_dblp_id(data, member):
     id = None
     if len(data) == 0:
-        logging.warning("member not found in dblp: " + member)
+        logging.warning("member not found in dblp: " + member
+                        + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
     if len(data) == 1:
         id = data[0][0]
     else:
@@ -84,7 +87,8 @@ def get_dblp_id(data, member):
         auths = ''
         for d in data:
             auths = auths + ',' + d
-        logging.warning("multiple entries for member: " + auths)
+        logging.warning("multiple entries for member: " + auths
+                        + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
 
     return id
 
@@ -113,7 +117,7 @@ def find_dblp_id(cnx, member):
 
 def invert_name(name):
     names = name.split(',')
-    return (names[1].strip() + ' ' + names[0].strip())
+    return names[1].strip() + ' ' + names[0].strip()
 
 
 def insert_members_in_db(cnx, members):
@@ -139,11 +143,15 @@ def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word
         else:
             after_start_word = driver.find_elements_by_xpath("//*/descendant-or-self::*[contains(text(),'" + start_word + "')][1]/following::*")
     else:
-        if tag_start_word != 'NULL':
+        if tag_start_word != 'NULL' and tag_filter.lower() != 'all_first_columns':
             after_start_word = driver.find_elements_by_xpath(
                 "//" + tag_start_word + "/descendant-or-self::*[contains(text(),'" + start_word + "')][1]"
                 "/following::*[contains(@id,'" + tag_filter + "') or contains(@class,'" + tag_filter + "')]"
                 "/descendant-or-self::*")
+        elif tag_start_word != 'NULL' and tag_filter.lower() == 'all_first_columns':
+            after_start_word = driver.find_elements_by_xpath(
+                "//" + tag_start_word + "/descendant-or-self::*[contains(text(),'" + start_word + "')][1]"
+                "/following::tr/td[1]/descendant-or-self::*")
         else:
             after_start_word = driver.find_elements_by_xpath(
                 "//*/descendant-or-self::*[contains(text(),'" + start_word + "')][1]"
@@ -203,10 +211,9 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
 def add_name_to_list(members, name):
     if name != '':
         if u"\uFFFD" in name:
-            logging.warning(name + " has been discarded due to unrecognized character!"
+            logging.warning(name + " detected unrecognized character(s)!"
                             + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
-        else:
-            members.add(name)
+        members.add(name)
 
 
 def collect_members_from_web_elements(selected_web_elements, member_tag,
@@ -223,7 +230,7 @@ def collect_members_from_web_elements(selected_web_elements, member_tag,
                 else:
                     lines = text.split('\n')
                     for l in lines:
-                        name = extract_member_name(mixed, member_name_separator, inverted_name, l)
+                        name = extract_member_name(mixed, member_name_separator, inverted_name, l.strip())
                         add_name_to_list(members, name)
     return members
 
@@ -310,6 +317,8 @@ def get_separator(separator):
         s = ''
     elif separator.lower() == "left_par":
         s = '('
+    elif separator.lower() == "dash":
+        s = '-'
     return s
 
 
@@ -372,12 +381,11 @@ def main():
     cnx = mysql.connector.connect(**CONFIG)
     line_counter = 1
     #Each JSON data per line
-    json_file = open(JSON_FILE)
+    json_file = codecs.open(JSON_FILE, 'r', 'utf-8')
     json_lines = json_file.read()
-    for line in json_lines.split('\n'):
+    for line in json_lines.split('\r\n'):
         if line != '':
-            line_unicoded = unicode(line, errors='ignore')
-            json_entry = json.loads(line_unicoded)
+            json_entry = json.loads(line)
             try:
                 global ROLE, CONFERENCE, YEAR
                 parser = json_entry.get("parser").lower()
@@ -398,7 +406,8 @@ def main():
                             #TAG_START_TEXT. The tag that contains the START TEXT
                             tag_start_text = json_entry.get("tag_start_text")
                             #TAG_SELECTOR. It used to select only tags with a given id or class attributes
-                            #that follow the TAG_START_TEXT.
+                            #that follow the START_TEXT/TAG_START_TEXT. In addition, you can use the keyword ALL_FIRST_COLUMNS
+                            # and the parser will select all the first columns that follow the START_TEXT/TAG_START_TEXT
                             tag_selector = json_entry.get("id_or_class_selector")
                             #STOP_TEXT. The end point to parse the page
                             stop_text = json_entry.get("stop_text")
