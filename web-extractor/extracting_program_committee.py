@@ -84,10 +84,10 @@ def get_dblp_id(data, member):
         id = data[0][0]
     else:
         id = -1
-        auths = ''
+        auths = []
         for d in data:
-            auths = auths + ',' + d
-        logging.warning("multiple entries for member: " + auths
+            auths.append(int(d[0]))
+        logging.warning("multiple entries for member: " + member + "! ids:" + str(auths)
                         + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
 
     return id
@@ -238,7 +238,6 @@ def collect_members_from_web_elements(selected_web_elements, member_tag,
 def extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
                     member_tag, single_or_all, member_name_separator, inverted_name, mixed):
     driver.get(url)
-
     selected_web_elements = get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word, tag_stop_word)
     members = collect_members_from_web_elements(selected_web_elements, member_tag,
                                                 single_or_all, member_name_separator, inverted_name, mixed)
@@ -468,8 +467,8 @@ def main():
                             #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
                             entry_separator = get_separator(json_entry.get("entry_separator")).lower()
                             extract_program_committee_info_from_text(cnx, text, entry_separator)
-            except:
-                logging.warning("json line " + str(line_counter) + " is not valid!")
+            except Exception as e:
+                logging.warning("error on json line " + str(line_counter) + "!" + str(e.message))
         line_counter += 1
     json_file.close()
     driver.close()

@@ -225,9 +225,9 @@ def add_citation_info(cnx):
             "AND dblp_key NOT LIKE %s " \
             "AND year >= 2003 " \
             "AND NOT EXISTS (SELECT DISTINCT paper_id FROM aux_scholar_authors WHERE paper_id = pub.id) " \
-            "AND source IN " \
-            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
+            "AND source IN ('ICSM')"
+            # "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            # "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
     arguments = ['dblpnote%']
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()

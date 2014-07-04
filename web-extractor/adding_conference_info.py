@@ -192,9 +192,9 @@ def add_proceedings_info(cnx, id):
             "WHERE dblp_key IS NOT NULL AND " \
             "id > %s " \
             "AND year >= 2003 " \
-            "AND source IN " \
-            "('MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
-            #"('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE')"
+            "AND source IN ('ICSM')"
+            # "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            # "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
             #"web_link IS NULL AND " \
     arguments = [id]
     conf_cursor.execute(query, arguments)
