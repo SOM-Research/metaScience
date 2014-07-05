@@ -9,6 +9,7 @@ import json
 import re
 import codecs
 import time
+from unidecode import unidecode
 
 LOG_FILENAME = 'logger_program_committee.log'
 CONFIG = {
@@ -56,7 +57,7 @@ def recover_id_by_querying_google(cnx, member):
     google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     google_driver.get(GOOGLE)
     search_box = google_driver.find_element_by_name("q")
-    search_box.send_keys(member + " dblp " + Keys.RETURN)
+    search_box.send_keys(member + " dblp " + CONFERENCE + " " + YEAR + Keys.RETURN)
     #wait
     time.sleep(2)
     google_hits = google_driver.find_elements_by_xpath("//*[@id='rso']//h3/a")
@@ -123,13 +124,18 @@ def invert_name(name):
 def insert_members_in_db(cnx, members):
     cursor = cnx.cursor()
     for member in members:
-        if member != '':
-            member_id = find_dblp_id(cnx, member)
-            query = "INSERT IGNORE INTO aux_program_committee " \
-                    "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
-            arguments = [member, CONFERENCE, int(YEAR), ROLE, member_id]
-            cursor.execute(query, arguments)
-            cnx.commit()
+        if u"\uFFFD" in member:
+            member = member.replace(u"\uFFFD", '?')
+            logging.warning(member + " detected unrecognized character(s)!"
+                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+        member_decoded = unidecode(member).decode('utf-8')
+
+        member_id = find_dblp_id(cnx, member_decoded)
+        query = "INSERT IGNORE INTO aux_program_committee " \
+                "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
+        arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, member_id]
+        cursor.execute(query, arguments)
+        cnx.commit()
     cursor.close()
 
 
@@ -185,22 +191,46 @@ def define_replacement(member_name_separator):
 
 def extract_member_name(mixed, member_name_separator, inverted_name, text):
     name = ''
-    #the member_name_separator should be contained in text,
-    #this should avoid recognizing as member something that is not
-    if member_name_separator == '':
-        name = text
-    elif member_name_separator in text:
-        replacement = define_replacement(member_name_separator)
+    replacement = ''
+    if member_name_separator != '':
+        if member_name_separator in text:
+            replacement = define_replacement(member_name_separator)
 
-        if mixed == 'yes':
-            if ROLE == 'chair':
-                if 'chair' in text.lower():
+    if mixed == 'yes':
+        if ROLE == 'chair':
+            if 'chair' in text.lower():
+                if member_name_separator != '':
                     name = re.sub(replacement, '', text)
-            else:
-                if 'chair' not in text.lower():
-                    name = re.sub(replacement, '', text)
+                else:
+                    name = text
         else:
+            if 'chair' not in text.lower():
+                if member_name_separator != '':
+                    name = re.sub(replacement, '', text)
+                else:
+                    name = text
+    else:
+        if member_name_separator != '':
             name = re.sub(replacement, '', text)
+        else:
+            name = text
+
+    #this version is valid when the program chairs are inserted before the program members, since
+    #the insertion in the database is done by an "insert ignore"
+    # if member_name_separator == '':
+    #     name = text
+    # elif member_name_separator in text:
+    #     replacement = define_replacement(member_name_separator)
+    #
+    #     if mixed == 'yes':
+    #         if ROLE == 'chair':
+    #             if 'chair' in text.lower():
+    #                 name = re.sub(replacement, '', text)
+    #         else:
+    #             if 'chair' not in text.lower():
+    #                 name = re.sub(replacement, '', text)
+    #     else:
+    #        name = re.sub(replacement, '', text)
 
     if inverted_name == 'yes':
         if name != '':
@@ -210,9 +240,9 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
 
 def add_name_to_list(members, name):
     if name != '':
-        if u"\uFFFD" in name:
-            logging.warning(name + " detected unrecognized character(s)!"
-                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+        # if u"\uFFFD" in name:
+        #     logging.warning(name + " detected unrecognized character(s)!"
+        #                     + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
         members.add(name)
 
 
@@ -274,9 +304,15 @@ def extract_program_committee_info_from_html(cnx, url,
                               members_tag, single_or_all, member_name_separator, inverted_name, mixed)
     if len(members) == 0:
         logging.warning("members not found! conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
-    ##debug
+    # #debug
+    # print str(len(members))
     # for m in members:
-    #     print m
+    #     if u"\uFFFD" in m:
+    #         m = m.replace(u"\uFFFD", '?')
+    #         logging.warning(m + " detected unrecognized character(s)!"
+    #                         + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+    #     member_decoded = unidecode(m).decode('utf-8')
+    #     print unidecode(member_decoded).decode('utf-8')
     insert_members_in_db(cnx, members)
 
 
@@ -290,9 +326,15 @@ def extract_program_committee_info_from_text(cnx, text, entry_separator):
     for e in entries:
         if e != '':
             members.add(e.strip())
-    ##debug
+    #debug
+    # print str(len(members))
     # for m in members:
-    #     print m
+    #     if u"\uFFFD" in m:
+    #         m = m.replace(u"\uFFFD", '?')
+    #         logging.warning(m + " detected unrecognized character(s)!"
+    #                         + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+    #     member_decoded = unidecode(m).decode('utf-8')
+    #     print unidecode(member_decoded).decode('utf-8')
     insert_members_in_db(cnx, members)
 
 
@@ -300,9 +342,15 @@ def extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start
                                                      member_separator, member_name_separator):
     members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mixed, inverted_name,
                                                 member_separator, member_name_separator)
-    ##debug
+    #debug
+    # print str(len(members))
     # for m in members:
-    #     print m
+    #    if u"\uFFFD" in m:
+    #         m = m.replace(u"\uFFFD", '?')
+    #         logging.warning(m + " detected unrecognized character(s)!"
+    #                         + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+    #    member_decoded = unidecode(m).decode('utf-8')
+    #    print unidecode(member_decoded).decode('utf-8')
     insert_members_in_db(cnx, members)
 
 
@@ -422,6 +470,7 @@ def main():
                             mixed = json_entry.get("mixed_roles").lower()
                             #INVERTED_MEMBER_NAME. YES or NO
                             #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            #Note that the parser considers that there is always a comma between the first and last name
                             inverted_name = json_entry.get("inverted_member_name").lower()
                             #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
                             #It tells the program how for each member, its name is separated from the remaining information
@@ -443,24 +492,32 @@ def main():
                             #START_TEXT. Remove everything that is before the START_TEXT (included)
                             start_text = json_entry.get("start_text")
                             #STOP_TEXT. Remove everything that is after the STOP_TEXT (included)
+                            #Note that, if the content of STOP_TEXT is not found, the parser will return all the content
+                            #in the TARGET_TAG from the START_TEXT till the end.
                             stop_text = json_entry.get("stop_text")
                             #MEMBER_SEPARATOR.
-                            #It defines how members are separated between each other (generally is NEW_LINE)
+                            #It defines how members are separated between each other.
+                            #Possible separators are COMMA, NEW_LINE, LEFT PAR, DASH, EMPTY_STRING
+                            #or user defined separators
                             member_separator = get_separator(json_entry.get("member_separator")).lower()
                             #MIXED_ROLES. YES or NO.
                             #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
                             mixed = json_entry.get("mixed_roles").lower()
                             #INVERTED_MEMBER_NAME. YES or NO
                             #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            #Note that the parser considers that there is always a comma between the first and last name
                             inverted_name = json_entry.get("inverted_member_name").lower()
-                            #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
-                            #It tells the program how for each member, its name is separated from the remaining information
+                            #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING, DASH or custom separators
+                            #It tells the program how for each member, its name is separated from the affiliation information
                             member_name_separator = get_separator(json_entry.get("member_name_separator")).lower()
                             extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
                                                                              mixed, inverted_name,
                                                                              member_separator, member_name_separator)
                         #TEXT. It is used when the preceding parsers can't do the job.
                         #It expects a text with a list of members
+                        #Note that, the the text could contain unrecognized characters
+                        #(mostly when copying text from pdf files or old web-sites),
+                        #that cause errors in the json decoder
                         elif parser == 'text':
                             #TEXT. It contains a list of members
                             text = json_entry.get("text")
