@@ -57,7 +57,7 @@ def recover_id_by_querying_google(cnx, member):
     google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     google_driver.get(GOOGLE)
     search_box = google_driver.find_element_by_name("q")
-    search_box.send_keys(member + " dblp " + CONFERENCE + " " + YEAR + Keys.RETURN)
+    search_box.send_keys(member + " dblp " + Keys.RETURN)
     #wait
     time.sleep(2)
     google_hits = google_driver.find_elements_by_xpath("//*[@id='rso']//h3/a")
@@ -65,7 +65,11 @@ def recover_id_by_querying_google(cnx, member):
         link = hit.get_attribute("href")
         if DBLP in link and 'pers' in link:
             hit.click()
-            dblp_name = google_driver.find_element_by_id("headline").find_element_by_tag_name("h1").text.strip()
+            try:
+                dblp_name = google_driver.find_element_by_id("headline").find_element_by_tag_name("h1").text.strip()
+            except:
+                dblp_name = google_driver.find_element_by_xpath("//h1[contains(@id,'homepages')]").text
+
             query_dblp_author = "SELECT DISTINCT author_id FROM dblp_authorid_ref_new WHERE author = %s"
             arguments = [dblp_name]
             data = calculate_query(cnx, query_dblp_author, arguments)
@@ -81,7 +85,7 @@ def get_dblp_id(data, member):
     if len(data) == 0:
         logging.warning("member not found in dblp: " + member
                         + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
-    if len(data) == 1:
+    elif len(data) == 1:
         id = data[0][0]
     else:
         id = -1
@@ -112,6 +116,7 @@ def find_dblp_id(cnx, member):
     if len(data) == 0:
         data = recover_id_by_querying_google(cnx, member)
 
+
     id = get_dblp_id(data, member)
     return id
 
@@ -119,6 +124,118 @@ def find_dblp_id(cnx, member):
 def invert_name(name):
     names = name.split(',')
     return names[1].strip() + ' ' + names[0].strip()
+
+EXCEPTION_NAMES = {
+                'Ernesto Pimentel Sanchez':'Ernesto Pimentel',
+                'Rob Pettit': 'Robert G. Pettit IV',
+                'Aswin A. van den Berg': 'Aswin van den Berg',
+                'Albert Zuendorf': 'Albert Zundorf',
+                'Issy Ben-Shaul': 'Israel Ben-Shaul ',
+                'Brad Martin': 'Bradley C. Martin',
+                'James Larus': 'James R. Larus',
+                'Chandra Boyapati': 'Chandrasekhar Boyapati',
+                'R Venkatesh' : 'R. Venkatesh',
+                'Dany Yankelevich': 'Daniel Yankelevich',
+                'Annie Anton': 'Annie I. Anton',
+                'Julia Lawall': 'Julia L. Lawall',
+                'Lenore Zuck': 'Lenore D. Zuck',
+                'Julie McCann' : 'Julie A. McCann',
+                'Joe Loyall' : 'Joseph P. Loyall',
+                'Todd Proebsting': 'Todd A. Proebsting',
+                'Bart Jacobs': 'Bart Jacobs 0002',
+                'Laurie Tratt': 'Laurence Tratt',
+                'Todd Veldhuizen': 'Todd L. Veldhuizen',
+                'Atushi Ohori': 'Atsushi Ohori',
+                'Kapil Vaswani': 'Kapil Vaswani',
+                'Dimitra Giannakopolou': 'Dimitra Giannakopoulou',
+                'Jan ?yvind Aagedal': 'Jan Oyvind Aagedal',
+                'Andr?s Pataricza': 'Andras Pataricza',
+                'Alfred W. Strohmeier' : 'Alfred Strohmeier',
+                'Istvan Forgas': 'Istvan Forgacs',
+                'Jorge Figeiredo': 'Jorge C. A. de Figueiredo',
+                'Mohammady El-Ramly': 'Mohammad El-Ramly',
+                'Panos Linos': 'Panagiotis K. Linos',
+                'Tobias Roetschke': 'Tobias Rotschke',
+                'Manny Lehman': 'Meir M. Lehman',
+                'Jesus G. Molina': 'Jesus Garcia Molina',
+                'Shigeru Miyake Hitachi': 'Shigeru Miyake',
+                'Bill Claycomb': 'William Claycomb',
+                'Sandra Stincic Clarke': 'Sandra Stincic',
+                'Y. T. Yu ': 'Yuen-Tak Yu',
+                'Shahani Markus Weerawarana':'Sanjiva Weerawarana',
+                'David C. Kung' : 'David Chenho Kung',
+                'Nakife Yasemin Topaloglu': 'N. Yasemin Topaloglu',
+                'Tulin Berber-Atmaca': 'Tulin Atmaca',
+                'Tsong Y. Chen': 'T. Y. Chen',
+                'RamA3n LA3pez-CA3zar Delgado': 'Ramon Lopez-Cozar',
+                'Koichi Katsurada': 'Kouichi Katsurada',
+                'Sebastian MAPeller': 'Sebastian Muller',
+                'Y. C. Chen': 'Y. C. Chen',
+                'Yann-GaA<<l GuA(c)hA(c)neuc': 'Yann-Gael Gueheneuc',
+                'Sergey N. Baranov': 'Sergey Baranov',
+                'Bob Horgan': 'Joseph Robert Horgan',
+                'Peter In': 'Hoh Peter In',
+                'Y.T. Yu': 'Yuen-Tak Yu',
+                'Y TYu': 'Yuen-Tak Yu',
+                'Lujie Jiang': 'Jie Jiang',
+                'Jun Sun': 'Jun Sun 0001',
+                'Tamaii Tetsuo': 'Tetsuo Tamai',
+                'D. Zowghi': 'Didar Zowghi',
+                'Pornsiri Muenchaisr': 'Pornsiri Muenchaisri',
+                'Bob Fuhrer': 'Robert M. Fuhrer',
+                'Kostas Kontagiannis': 'Kostas Kontogiannis',
+                'Matthias Hauswith' : 'Matthias Hauswirth',
+                'Sophia Drossopolou': 'Sophia Drossopoulou',
+                'Nyekyne Gaizler Judit': 'Judit Nyeki-Gaizler',
+                'Claude R. Baudoi': 'Claude Baudoin',
+                'Viktor Gergel': 'Victor P. Gergel',
+                'Peri Loucopoulos': 'Pericles Loucopoulos',
+                'Renata Guizardi': 'Renata S. S. Guizzardi',
+                'Kenji Taguchi': 'Kenji Taguchi 0001',
+                'Ahmad Barfourosh': 'Ahmad Abdollahzadeh Barforoush',
+                'Marite Kirkova': 'Marite Kirikova',
+                'Havard Jorgensen': 'Havard D. Jorgensen',
+                'Mart Roantree': 'Mark Roantree',
+                'Regina Laleau': 'Regine Laleau',
+                'Klaus D. Schewe': 'Klaus-Dieter Schewe',
+                'Steve Liddle': 'Stephen W. Liddle',
+                'Vadim Ermoleyev': 'Vadim Ermolayev',
+                'Benk Wangler': 'Benkt Wangler',
+                'Sutcliffe A.': 'Alistair G. Sutcliffe',
+                'Leonard M.': 'Michel Leonard',
+                'Rabinovich M.': 'Michael Rabinovich',
+                'Kangassalo H.': 'Hannu Kangassalo',
+                'Catarci T.': 'Tiziana Catarci',
+                'Yu E.': 'Eric S. K. Yu',
+                'Wangler B.': 'Benkt Wangler',
+                'Rabitti F.': 'Fausto Rabitti',
+                'Geppert A.': 'Andreas Geppert',
+                'Siau K.': 'Keng Siau',
+                'Alberto Leander': 'Alberto H. F. Laender',
+                'Ryan U Leong Hou': 'Leong Hou U',
+                'Iris Reinhertz': 'Iris Reinhartz-Berger',
+                'X.Sean Wang': 'Xiaoyang Sean Wang',
+                'Tosiyasu Laurence Kunii': 'Tosiyasu L. Kunii',
+                'Srinath Srinivasan': 'Srinath Srinivasa',
+                'Ray Liuzzi': 'Raymond A. Liuzzi',
+                'Wen Lei Mao': 'Mao Lin Huang',
+                'Marcela Fabiana Genero Bocco': 'Marcela Genero',
+                'Paulo C. Masiero': 'Paulo Cesar Masiero',
+                'Chris Verhoef Vrije': 'Chris Verhoef',
+                'Pankoj Jalote': 'Pankaj Jalote',
+                'Peggy Aravantinou': '',
+                'Vasilis Chrisikopoulos': '',
+                'Jean-Claude Asselborn': '',
+                'Juris Roberts Kalnins': '',
+                'David Frankel': '',
+                'Daryl J. Martin': '',
+                'Fernando Alcantara': '',
+                'Bhaskar Harita': '',
+                'Edward Zou': '',
+                'Tingyue Li': '',
+                'Wanchai Rivebipoon': '',
+                'Qiangxiang Wang': '',
+            }
 
 
 def insert_members_in_db(cnx, members):
@@ -128,14 +245,23 @@ def insert_members_in_db(cnx, members):
             member = member.replace(u"\uFFFD", '?')
             logging.warning(member + " detected unrecognized character(s)!"
                             + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
-        member_decoded = unidecode(member).decode('utf-8')
+        member_decoded = unidecode(member).decode('utf-8').strip().strip(',')
 
-        member_id = find_dblp_id(cnx, member_decoded)
-        query = "INSERT IGNORE INTO aux_program_committee " \
-                "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
-        arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, member_id]
-        cursor.execute(query, arguments)
-        cnx.commit()
+        #exceptions:
+        member_to_find = member_decoded
+        if EXCEPTION_NAMES.has_key(member_to_find):
+            member_to_find = EXCEPTION_NAMES.get(member_to_find)
+
+        if member_to_find != '':
+            member_id = find_dblp_id(cnx, member_to_find)
+            query = "INSERT IGNORE INTO aux_program_committee " \
+                    "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
+            arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, member_id]
+            cursor.execute(query, arguments)
+            cnx.commit()
+        else:
+            logging.warning("member not entered in the database: " + member_decoded
+                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
     cursor.close()
 
 
@@ -240,9 +366,6 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
 
 def add_name_to_list(members, name):
     if name != '':
-        # if u"\uFFFD" in name:
-        #     logging.warning(name + " detected unrecognized character(s)!"
-        #                     + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
         members.add(name)
 
 
@@ -326,7 +449,7 @@ def extract_program_committee_info_from_text(cnx, text, entry_separator):
     for e in entries:
         if e != '':
             members.add(e.strip())
-    #debug
+    # #debug
     # print str(len(members))
     # for m in members:
     #     if u"\uFFFD" in m:
@@ -342,7 +465,7 @@ def extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start
                                                      member_separator, member_name_separator):
     members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mixed, inverted_name,
                                                 member_separator, member_name_separator)
-    #debug
+    # #debug
     # print str(len(members))
     # for m in members:
     #    if u"\uFFFD" in m:
