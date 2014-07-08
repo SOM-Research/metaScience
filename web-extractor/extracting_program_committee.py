@@ -223,6 +223,8 @@ EXCEPTION_NAMES = {
                 'Paulo C. Masiero': 'Paulo Cesar Masiero',
                 'Chris Verhoef Vrije': 'Chris Verhoef',
                 'Pankoj Jalote': 'Pankaj Jalote',
+                'Laurent Balmeli': 'Laurent Balmelli',
+                'Laurent Safa': '',
                 'Peggy Aravantinou': '',
                 'Vasilis Chrisikopoulos': '',
                 'Jean-Claude Asselborn': '',
@@ -235,6 +237,7 @@ EXCEPTION_NAMES = {
                 'Tingyue Li': '',
                 'Wanchai Rivebipoon': '',
                 'Qiangxiang Wang': '',
+                'Torsten Layda': ''
             }
 
 
