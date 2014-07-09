@@ -6,6 +6,24 @@ from mysql.connector import errorcode
 from selenium import webdriver
 import time
 
+#This script gathers (via Selenium) the CONFERENCE RANK for the proceedings in AUX_DBLP_PROCEEDINGS
+#and add them to the table.
+#The RANK is retrieved from the link pointed by COMPUTER_SCIENCE_CONFERENCE_RANK
+#
+#The table AUX_DBLP_PROCEEDINGS is derived from DBLP_PUB_NEW
+#Below the mysql script to generate the AUX_DBLP_PROCEEDINGS is shown
+# create table dblp.aux_dblp_proceedings as
+# select id as dblp_id, dblp_key, url, source, year
+# from dblp.dblp_pub_new where type = 'proceedings';
+#
+# alter table dblp.aux_dblp_proceedings
+# add column id int(11) primary key auto_increment first,
+# add column location varchar(256),
+# add column type varchar(25),
+# add column month varchar(25),
+# add column rank varchar(10),
+# add index dblp_key (dblp_key);
+
 COMPUTER_SCIENCE_CONFERENCE_RANK = 'http://lipn.univ-paris13.fr/~bennani/CSRank.html'
 
 LOG_FILENAME = 'logger_conference_rank.log'

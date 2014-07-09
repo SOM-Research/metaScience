@@ -7,6 +7,24 @@ from selenium import webdriver
 import time
 from selenium.common.exceptions import NoSuchElementException
 
+#This script gathers (via Selenium) the TRACK and SUB-TRACK(s) assigned to the paper in the conferences stored in
+#AUX_DBLP_INPROCEEDINGS_TRACKS table
+#
+#The TRACK and SUB-TRACK(s) information is stored in AUX_DBLP_INPROCEEDINGS_TRACKS
+#The table AUX_DBLP_INPROCEEDINGS_TRACKS is derived from DBLP_PUB_NEW
+#Below the mysql script to generate the AUX_DBLP_INPROCEEDINGS_TRACKS is shown
+# create table dblp.aux_dblp_inproceedings_tracks as
+# select id as dblp_id, dblp_key, crossref, url
+# from dblp.dblp_pub_new where type = 'inproceedings';
+#
+# alter table dblp.aux_dblp_inproceedings_tracks
+# add column id int(11) primary key auto_increment first,
+# add column track varchar(256),
+# add column subtrack1 varchar(256),
+# add column subtrack2 varchar(256),
+# add column citations numeric(10),
+# add index dblp_key (dblp_key);
+
 LOG_FILENAME = 'logger_paper_track.log'
 DBLP = 'http://www.informatik.uni-trier.de/~ley/'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
@@ -69,6 +87,7 @@ def get_page_conference_dblp(conf_url):
     time.sleep(1)
     return driver
 
+    ##This part relies on the Selenium WebDriverWait, but it can be replace by the time.sleep(xxx) function
     # driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     # driver.get(GOOGLE)
     # search_box = driver.find_element_by_id("gbqfq")

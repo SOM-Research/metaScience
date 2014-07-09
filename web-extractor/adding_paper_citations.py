@@ -13,6 +13,53 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+#This script performs two actions:
+#1) For each paper published from 2003 in the conferences below(*),
+#   it gathers (via Selenium) the current number of CITATIONS
+#(*) ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
+#    MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
+#    SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
+#
+#Such information is stored in AUX_DBLP_INPROCEEDINGS_TRACKS
+#The table AUX_DBLP_INPROCEEDINGS_TRACKS is derived from DBLP_PUB_NEW
+#Below the mysql script to generate the AUX_DBLP_INPROCEEDINGS_TRACKS is shown
+# create table dblp.aux_dblp_inproceedings_tracks as
+# select id as dblp_id, dblp_key, crossref, url
+# from dblp.dblp_pub_new where type = 'inproceedings';
+#
+# alter table dblp.aux_dblp_inproceedings_tracks
+# add column id int(11) primary key auto_increment first,
+# add column track varchar(256),
+# add column subtrack1 varchar(256),
+# add column subtrack2 varchar(256),
+# add column citations numeric(10),
+# add index dblp_key (dblp_key);
+#
+#2) It finds (via Selenium) the google scholar page for each author that published in the previous conferences
+#   and collects the author CITATIONS, INDEX, I10 for the past five year and the global CITATIONS, INDEX, I10.
+#   In addition, it collects for each author his INTERESTS (defined in his scholar page)
+#   Note that, Scholar could blocked this process, if the requests are too fast. Thereof, we strongly suggest to
+#   use at least time.sleep(2) after each google scholar request
+#
+#Such information are stored in AUX_SCHOLAR_AUTHORS
+#Below the mysql script to generate the AUX_SCHOLAR_AUTHORS is shown
+# create table dblp.aux_scholar_authors (
+# 	name varchar(256) primary key,
+# 	citations numeric(15),
+# 	citations2009 numeric(15),
+# 	indexH numeric(15),
+# 	indexH2009 numeric(15),
+# 	i10 numeric(15),
+# 	i102009 numeric(15),
+# 	interests text,
+#   dblp_author_id numeric(15),
+#   paper_id numeric(15),
+#   author_url text
+# );
+#
+# alter table dblp.aux_scholar_authors
+# add index paper_id (paper_id);
+
 LOG_FILENAME = 'logger_paper_citations.log'
 SCHOLAR = 'http://scholar.google.com'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
@@ -225,9 +272,10 @@ def add_citation_info(cnx):
             "AND dblp_key NOT LIKE %s " \
             "AND year >= 2003 " \
             "AND NOT EXISTS (SELECT DISTINCT paper_id FROM aux_scholar_authors WHERE paper_id = pub.id) " \
-            "AND source IN ('ICSM')"
-            # "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            # "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
+            "AND source IN " \
+            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
+            "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA')"
     arguments = ['dblpnote%']
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
@@ -238,15 +286,6 @@ def add_citation_info(cnx):
         add_scholar_citations(cnx, title, key, paper_id)
         row = conf_cursor.fetchone()
     conf_cursor.close()
-
-
-def get_pos_to_start(cnx):
-    conf_cursor = cnx.cursor()
-    query = "SELECT MAX(paper_id) " \
-            "FROM aux_scholar_authors"
-    conf_cursor.execute(query)
-    row = conf_cursor.fetchone()
-    return row[0]
 
 
 def main():

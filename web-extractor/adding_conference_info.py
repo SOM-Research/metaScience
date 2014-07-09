@@ -3,14 +3,34 @@ __author__ = 'atlanmod'
 import logging
 import mysql.connector
 from mysql.connector import errorcode
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import time
 
+#This script gathers (via Selenium) the LOCATION, TYPE and MONTH for each proceedings in DBLP
+#and add them to the table AUX_DBLP_PROCEEDINGS.
+#LOCATION is the location where the conference is settle
+#TYPE can be "conference", "workshop" or "symposium"
+#MONTH is the month when the conference takes place
+#
+#Currently, the script has been tuned to collect only the information for the following conferences from 2003:
+#ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
+#MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
+#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
+#
+#The table AUX_DBLP_PROCEEDINGS is derived from DBLP_PUB_NEW
+#Below the mysql script to generate the AUX_DBLP_PROCEEDINGS is shown
+# create table dblp.aux_dblp_proceedings as
+# select id as dblp_id, dblp_key, url, source, year
+# from dblp.dblp_pub_new where type = 'proceedings';
+#
+# alter table dblp.aux_dblp_proceedings
+# add column id int(11) primary key auto_increment first,
+# add column location varchar(256),
+# add column type varchar(25),
+# add column month varchar(25),
+# add column rank varchar(10),
+# add index dblp_key (dblp_key);
 
 GOOGLE = 'http://www.google.com'
 DBLP = 'http://www.informatik.uni-trier.de/~ley/'
@@ -28,40 +48,7 @@ CONFIG = {
 }
 
 
-# def get_proceedings_web_link(acronym, year, month, proceedings_type, city):
-#     driver.get(GOOGLE)
-#     input_element = driver.find_element_by_name("q")
-#     input_element.send_keys(acronym + " " + str(year) + " " + month + " " + city + " " + proceedings_type + Keys.RETURN)
-#     #wait
-#     WebDriverWait(driver, 15).until(EC.visibility_of_element_located((By.ID, "rso")))
-#
-#     google_hits = driver.find_elements_by_xpath(".//*[@id='rso']//div//h3/a")
-#
-#     flag = 0
-#     for hit in google_hits:
-#         link = hit.get_attribute("href")
-#         if (acronym in link
-#             or acronym.lower() in link) \
-#                 and ('dblp' not in link
-#                 and 'informatik.uni-trier.de' not in link
-#                 and '.pdf' not in link
-#                 and 'books' not in link
-#                 and 'worldcat' not in link
-#                 and 'amazon' not in link
-#                 and 'researchgate' not in link):
-#             flag = 1
-#             #driver.get(link + Keys.ESCAPE)
-#             #link = driver.current_url
-#             break
-#
-#     if flag == 1:
-#         return link.replace("%EE%80%8C", "")
-#     else:
-#         return None
-
-
 def get_dblp_proceedings(url, dblp_key):
-    link = ''
     if url is not None:
         link = url
     else:
@@ -72,6 +59,7 @@ def get_dblp_proceedings(url, dblp_key):
     time.sleep(1)
     return driver
 
+    ##This part relies on the Selenium WebDriverWait, but it can be replace by the time.sleep(xxx) function
     # driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     # driver.get(GOOGLE)
     # search_box = driver.find_element_by_id("gbqfq")
@@ -115,8 +103,6 @@ def update_type_proceedings(cnx, dblp_key, title):
     cnx.commit()
 
     cursor.close()
-
-    return type
 
 
 def update_month_proceedings(cnx, dblp_key, title):
@@ -162,40 +148,21 @@ def update_proceedings(cnx, dblp_key):
     cursor.execute(query, arguments)
     title = cursor.fetchone()[0]
 
-    type = update_type_proceedings(cnx, dblp_key, title)
+    update_type_proceedings(cnx, dblp_key, title)
     update_month_proceedings(cnx, dblp_key, title)
-
-    return type
-
-
-# def update_web_link_proceedings(cnx, id, url):
-#     cursor = cnx.cursor()
-#     query = "UPDATE aux_dblp_proceedings SET web_link = %s WHERE id = %s"
-#     arguments = [url, id]
-#     cursor.execute(query, arguments)
-#     cnx.commit()
-#     cursor.close()
-
-
-def get_acronym(dblp_key, dblp_acronym):
-    acronym = dblp_acronym
-    if dblp_acronym is None:
-        acronym = dblp_key.split('/')[1]
-
-    return acronym
 
 
 def add_proceedings_info(cnx, id):
     conf_cursor = cnx.cursor()
-    query = "SELECT id, dblp_key, url, source, year, month " \
+    query = "SELECT id, dblp_key, url " \
             "FROM aux_dblp_proceedings " \
             "WHERE dblp_key IS NOT NULL AND " \
             "id > %s " \
             "AND year >= 2003 " \
-            "AND source IN ('ICSM')"
-            # "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            # "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', 'SCAM', 'TOOLS', 'CAISE', 'ER')"
-            #"web_link IS NULL AND " \
+            "AND source IN " \
+            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
+            "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA')"
     arguments = [id]
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
@@ -203,35 +170,17 @@ def add_proceedings_info(cnx, id):
         id = row[0]
         dblp_key = row[1]
         proceedings = row[2]
-        acronym = get_acronym(dblp_key, row[3])
-
-        if row[4] is None:
-            year = ''
-        else:
-            year = row[4]
-        if row[5] is None:
-            month = ''
-        else:
-            month = row[5]
 
         proceedings_page = get_dblp_proceedings(proceedings, dblp_key)
         try:
             headline = proceedings_page.find_element_by_id("headline").text
-            proceedings_type = update_proceedings(cnx, dblp_key)
+            update_proceedings(cnx, dblp_key)
             location = ''
             if ':' in headline:
                 location = headline.split(':')[1]
                 update_location_info(cnx, location, id)
             else:
                 logging.warning("unable to extract location from " + headline)
-            # if proceedings_type in ('conference', 'symposium'):
-            #     if len(location) == 0:
-            #         url = get_proceedings_web_link(acronym, year, month, proceedings_type, '')
-            #     else:
-            #         url = get_proceedings_web_link(acronym, year, month, proceedings_type, location.split(',')[0])
-            #
-            #     if url is not None:
-            #         update_web_link_proceedings(cnx, id, url)
         except NoSuchElementException:
             logging.warning(str(proceedings_page.current_url))
 
@@ -240,15 +189,20 @@ def add_proceedings_info(cnx, id):
     logging.warning("last conf analysed " + str(proceedings))
 
 
+#This method is used to recover an execution that went wrong.
+#It restart the extraction process from the last id entered in the database
+#To activate the recover process, just activate the flag "RECOVER_PROCESS"
 def get_id_to_start(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT MAX(id) " \
             "FROM aux_dblp_proceedings " \
             "WHERE dblp_key IS NOT NULL"
-            #"web_link IS NOT NULL"
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
     return row[0]
+
+
+RECOVER_PROCESS = False
 
 
 def main():
@@ -256,16 +210,13 @@ def main():
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**CONFIG)
-    #set the row id (from the table 'aux_dblp_proceedings') to start extracting the conference websites
+    #set the row id from the table 'aux_dblp_proceedings' to start extracting the conference information
+    id_to_start = 0
+    if RECOVER_PROCESS:
+        if get_id_to_start(cnx) is not None:
+            id_to_start = int(id)
 
-    #get last id to start
-    # id = get_id_to_start(cnx)
-    # if id is None:
-    #     id_to_start = 0
-    # else:
-    #     id_to_start = int(id)
-
-    add_proceedings_info(cnx, 0)
+    add_proceedings_info(cnx, id_to_start)
     driver.close()
 
 if __name__ == "__main__":

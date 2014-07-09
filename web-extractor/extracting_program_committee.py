@@ -11,6 +11,26 @@ import codecs
 import time
 from unidecode import unidecode
 
+#This script gathers (via Selenium) the PROGRAM COMMITTEE CHAIR and MEMBERS
+#for the editions from 2003 of the following conferences:
+#ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
+#MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
+#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
+#It relies on a json file (program_committee_info.json).
+#The configuration of the json file is explained clearly in the main()
+#
+#Such information is stored in the AUX_PROGRAM_COMMITTEE table
+#Below the mysql script to generate the AUX_PROGRAM_COMMITTEE is shown
+# CREATE TABLE dblp.aux_program_committee
+# (
+# 	name varchar(256),
+# 	conference varchar(256),
+# 	year numeric(5),
+# 	role varchar(10),
+# 	dblp_author_id numeric(15),
+# 	primary key (name, conference, year)
+# );
+
 LOG_FILENAME = 'logger_program_committee.log'
 CONFIG = {
     'user': 'root',
@@ -639,7 +659,7 @@ def main():
                             extract_program_committee_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
                                                                              mixed, inverted_name,
                                                                              member_separator, member_name_separator)
-                        #TEXT. It is used when the preceding parsers can't do the job.
+                        #TEXT. It is used when the previous parsers can't do the job.
                         #It expects a text with a list of members
                         #Note that, the the text could contain unrecognized characters
                         #(mostly when copying text from pdf files or old web-sites),
