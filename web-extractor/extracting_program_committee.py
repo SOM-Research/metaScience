@@ -56,6 +56,7 @@ JSON_ENTRY_ATTRIBUTES_FOR_HTML = 16
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 7
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 13
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 GOOGLE = "http://www.google.com"
 DBLP = "www.informatik.uni-trier.de"
 
@@ -74,7 +75,6 @@ def calculate_query(cnx, query, arguments):
 
 def recover_id_by_querying_google(cnx, member):
     data = []
-    google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     google_driver.get(GOOGLE)
     search_box = google_driver.find_element_by_name("q")
     search_box.send_keys(member + " dblp " + Keys.RETURN)
@@ -96,7 +96,6 @@ def recover_id_by_querying_google(cnx, member):
             logging.warning("the member: " + member + " has been corrected to: " + dblp_name + "!"
                             + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
             break
-    google_driver.close()
     return data
 
 
@@ -154,13 +153,13 @@ EXCEPTION_NAMES = {
                 'Brad Martin': 'Bradley C. Martin',
                 'James Larus': 'James R. Larus',
                 'Chandra Boyapati': 'Chandrasekhar Boyapati',
-                'R Venkatesh' : 'R. Venkatesh',
+                'R Venkatesh': 'R. Venkatesh',
                 'Dany Yankelevich': 'Daniel Yankelevich',
                 'Annie Anton': 'Annie I. Anton',
                 'Julia Lawall': 'Julia L. Lawall',
                 'Lenore Zuck': 'Lenore D. Zuck',
-                'Julie McCann' : 'Julie A. McCann',
-                'Joe Loyall' : 'Joseph P. Loyall',
+                'Julie McCann': 'Julie A. McCann',
+                'Joe Loyall': 'Joseph P. Loyall',
                 'Todd Proebsting': 'Todd A. Proebsting',
                 'Bart Jacobs': 'Bart Jacobs 0002',
                 'Laurie Tratt': 'Laurence Tratt',
@@ -196,7 +195,9 @@ EXCEPTION_NAMES = {
                 'Bob Horgan': 'Joseph Robert Horgan',
                 'Peter In': 'Hoh Peter In',
                 'Y.T. Yu': 'Yuen-Tak Yu',
+                'Y. T. Yu': 'Yuen-Tak Yu',
                 'Y TYu': 'Yuen-Tak Yu',
+                'Y.C. Chen': 'Y. C. Chen',
                 'Lujie Jiang': 'Jie Jiang',
                 'Jun Sun': 'Jun Sun 0001',
                 'Tamaii Tetsuo': 'Tetsuo Tamai',
@@ -210,6 +211,7 @@ EXCEPTION_NAMES = {
                 'Claude R. Baudoi': 'Claude Baudoin',
                 'Viktor Gergel': 'Victor P. Gergel',
                 'Peri Loucopoulos': 'Pericles Loucopoulos',
+                'Pericles Locoupolous': 'Pericles Loucopoulos',
                 'Renata Guizardi': 'Renata S. S. Guizzardi',
                 'Kenji Taguchi': 'Kenji Taguchi 0001',
                 'Ahmad Barfourosh': 'Ahmad Abdollahzadeh Barforoush',
@@ -244,6 +246,16 @@ EXCEPTION_NAMES = {
                 'Chris Verhoef Vrije': 'Chris Verhoef',
                 'Pankoj Jalote': 'Pankaj Jalote',
                 'Laurent Balmeli': 'Laurent Balmelli',
+                'Urs Hoelzle': 'Urs Holzle',
+                'Susan Sim': 'Susan Elliott Sim',
+                'Jesus M. Gonzales': 'Jesus M. Gonzalez-Barahona',
+                'Yamaoka Katsunori': 'Katsunori Yamaoka',
+                'Dave Kung': 'David Chenho Kung',
+                'W. Jumpamule': 'Watcharee Jumpamule',
+                'Cerulo Luigi': 'Luigi Cerulo',
+                'Judit Nyekyne Gaizler': 'Judit Nyeki-Gaizler',
+                'Havard D. Jorgensen': 'Havard D. Jorgensen',
+                'Miryun Kim': 'Miryung Kim ',
                 'Laurent Safa': '',
                 'Peggy Aravantinou': '',
                 'Vasilis Chrisikopoulos': '',
@@ -257,21 +269,28 @@ EXCEPTION_NAMES = {
                 'Tingyue Li': '',
                 'Wanchai Rivebipoon': '',
                 'Qiangxiang Wang': '',
-                'Torsten Layda': ''
+                'Torsten Layda': '',
+                'Yossi Raanan': '',
+                'Chang-Kang Fan': '',
+                'James Steel': '',
+                'Terry Bailey': ''
             }
 
 
 def insert_members_in_db(cnx, members):
+    # #debug
+    #print(str(len(members)) + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
     cursor = cnx.cursor()
     for member in members:
         if u"\uFFFD" in member:
             member = member.replace(u"\uFFFD", '?')
             logging.warning(member + " detected unrecognized character(s)!"
                             + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+        #TODO, member_decoded = re.sub('\s+', ' ', unidecode(member).decode('utf-8').strip().strip(','))
         member_decoded = unidecode(member).decode('utf-8').strip().strip(',')
 
         #exceptions:
-        member_to_find = member_decoded
+        member_to_find = member_decoded.strip()
         if EXCEPTION_NAMES.has_key(member_to_find):
             member_to_find = EXCEPTION_NAMES.get(member_to_find)
 
@@ -283,7 +302,12 @@ def insert_members_in_db(cnx, members):
             cursor.execute(query, arguments)
             cnx.commit()
         else:
-            logging.warning("member not entered in the database: " + member_decoded
+            query = "INSERT IGNORE INTO aux_program_committee " \
+                    "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
+            arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, -1]
+            cursor.execute(query, arguments)
+            cnx.commit()
+            logging.warning("member not found in dblp: " + member_decoded
                             + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
     cursor.close()
 
@@ -414,6 +438,7 @@ def collect_members_from_web_elements(selected_web_elements, member_tag,
 def extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
                     member_tag, single_or_all, member_name_separator, inverted_name, mixed):
     driver.get(url)
+    time.sleep(5)
     selected_web_elements = get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word, tag_stop_word)
     members = collect_members_from_web_elements(selected_web_elements, member_tag,
                                                 single_or_all, member_name_separator, inverted_name, mixed)
@@ -423,6 +448,7 @@ def extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_
 def extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mixed, inverted_name,
                                       member_separator, member_name_separator):
     driver.get(url)
+    time.sleep(5)
     members = set()
 
     element = driver.find_element_by_xpath("//" + target_tag + "[contains(.,'" + start_text + "')]")
@@ -573,11 +599,12 @@ def main():
         log_file.write('\n')
     cnx = mysql.connector.connect(**CONFIG)
     line_counter = 1
+    #TODO, put all editions of a conference in a file. It will be easier to maintain
     #Each JSON data per line
     json_file = codecs.open(JSON_FILE, 'r', 'utf-8')
     json_lines = json_file.read()
     for line in json_lines.split('\r\n'):
-        if line != '':
+        if line.strip() != '':
             json_entry = json.loads(line)
             try:
                 global ROLE, CONFERENCE, YEAR
@@ -675,6 +702,7 @@ def main():
         line_counter += 1
     json_file.close()
     driver.close()
+    google_driver.close()
     cnx.close()
 
 
