@@ -6,6 +6,8 @@ from mysql.connector import errorcode
 from selenium import webdriver
 import time
 from selenium.common.exceptions import NoSuchElementException
+import cross_module_variables as shared
+import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the TRACK and SUB-TRACK(s) assigned to the paper in the conferences stored in
 #AUX_DBLP_INPROCEEDINGS_TRACKS table
@@ -26,18 +28,7 @@ from selenium.common.exceptions import NoSuchElementException
 # add index dblp_key (dblp_key);
 
 LOG_FILENAME = 'logger_paper_track.log'
-DBLP = 'http://www.informatik.uni-trier.de/~ley/'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
-
-CONFIG = {
-    'user': 'root',
-    'password': 'coitointerrotto',
-    'host': 'atlanmodexp.info.emn.fr',
-    'port': '13506',
-    'database': 'dblp',
-    'raise_on_warnings': False,
-    'buffered': True
-}
 
 
 def find_header(topic):
@@ -83,7 +74,7 @@ def get_paper_for_conf_from_crossref(cnx, crossref):
 
 
 def get_page_conference_dblp(conf_url):
-    driver.get(DBLP + "/" + conf_url)
+    driver.get(shared.DBLP + "/" + conf_url)
     time.sleep(1)
     return driver
 
@@ -133,7 +124,7 @@ def add_track_info_from_url(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT DISTINCT SUBSTRING_INDEX(url, '#', 1) " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE track IS NULL and url IS NOT NULL"
+            "WHERE url IS NOT NULL AND track IS NULL"
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
 
@@ -193,7 +184,7 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**CONFIG)
+    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     add_track_info_from_url(cnx)
     add_track_info_from_crossref(cnx)
     driver.close()

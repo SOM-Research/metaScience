@@ -6,6 +6,8 @@ from mysql.connector import errorcode
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 import time
+import cross_module_variables as shared
+import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the LOCATION, TYPE and MONTH for each proceedings in DBLP
 #and add them to the table AUX_DBLP_PROCEEDINGS.
@@ -32,20 +34,8 @@ import time
 # add column rank varchar(10),
 # add index dblp_key (dblp_key);
 
-GOOGLE = 'http://www.google.com'
-DBLP = 'http://www.informatik.uni-trier.de/~ley/'
 LOG_FILENAME = 'logger_conference_info.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
-
-CONFIG = {
-    'user': 'root',
-    'password': 'coitointerrotto',
-    'host': 'atlanmodexp.info.emn.fr',
-    'port': '13506',
-    'database': 'dblp',
-    'raise_on_warnings': False,
-    'buffered': True
-}
 
 
 def get_dblp_proceedings(url, dblp_key):
@@ -55,7 +45,7 @@ def get_dblp_proceedings(url, dblp_key):
         conf_info = dblp_key.split("/")
         link = "db/" + conf_info[0] + "/" + conf_info[1] + "/" + conf_info[1] + conf_info[2] + ".html"
 
-    driver.get(DBLP + "/" + link)
+    driver.get(shared.DBLP + "/" + link)
     time.sleep(1)
     return driver
 
@@ -157,12 +147,17 @@ def add_proceedings_info(cnx, id):
     query = "SELECT id, dblp_key, url " \
             "FROM aux_dblp_proceedings " \
             "WHERE dblp_key IS NOT NULL AND " \
-            "id > %s " \
-            "AND year >= 2003 " \
-            "AND source IN " \
-            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
-            "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA')"
+            "location IS NULL AND " \
+            "type IS NULL AND " \
+            "month IS NULL AND " \
+            "rank IS NULL AND " \
+            "id > %s "
+    # query = "SELECT id, dblp_key, url " \
+    #         "FROM aux_dblp_proceedings " \
+    #         "WHERE dblp_key IS NOT NULL AND " \
+    #         "id > %s " \
+    #         "AND year >= 2003 " \
+    #         "AND source IN (" + shared.CONFERENCES + ")"
     arguments = [id]
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
@@ -209,7 +204,7 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**CONFIG)
+    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     #set the row id from the table 'aux_dblp_proceedings' to start extracting the conference information
     id_to_start = 0
     if RECOVER_PROCESS:

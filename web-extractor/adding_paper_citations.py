@@ -12,6 +12,7 @@ import nltk.metrics
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import database_connection_config as dbconnection
 
 #This script performs two actions:
 #1) For each paper published from 2003 in the conferences below(*),
@@ -60,29 +61,9 @@ from selenium.webdriver.support import expected_conditions as EC
 # alter table dblp.aux_scholar_authors
 # add index paper_id (paper_id);
 
-LOG_FILENAME = 'logger_paper_citations.log'
 SCHOLAR = 'http://scholar.google.com'
+LOG_FILENAME = 'logger_paper_citations.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
-
-CONFIG = {
-    'user': 'root',
-    'password': 'coitointerrotto',
-    'host': 'atlanmodexp.info.emn.fr',
-    'port': '13506',
-    'database': 'dblp',
-    'raise_on_warnings': False,
-    'buffered': True
-}
-
-# CONFIG = {
-#     'user': 'root',
-#     'password': 'coitointerrotto',
-#     'host': '127.0.0.1',
-#     'port': '3307',
-#     'database': 'dblp',
-#     'raise_on_warnings': False,
-#     'buffered': True
-# }
 
 
 def get_dblp_author_id_from_title(cnx, title, author_name):
@@ -117,29 +98,28 @@ def get_dblp_author_id_from_aliases(cnx, author_name):
 
 def get_dblp_author_id_from_position(cnx, title, author_pos):
     cursor = cnx.cursor()
-    query = "SELECT author_id " \
-            "FROM dblp_authorid_ref_new author " \
+    query = "SELECT author.id " \
+            "FROM dblp_author_ref_new author " \
             "JOIN dblp_pub_new pub " \
             "ON author.id = pub.id " \
-            "WHERE title = %s"
-    arguments = [title]
+            "WHERE title = %s and author_num = %s"
+    arguments = [title, author_pos]
     cursor.execute(query, arguments)
-    ids = cursor.fetchall()
-    id = ids[author_pos]
+    id = cursor.fetchone()[0]
     cursor.close()
     if id is None:
         return 0
-    return id[0]
+    return id
 
 
 def get_dblp_author_id(cnx, title, author_name, author_pos):
-    author_name = get_dblp_author_id_from_title(cnx, title, author_name)
-    if author_name is None:
-        author_name = get_dblp_author_id_from_aliases(cnx, author_name)
+    author_id = get_dblp_author_id_from_title(cnx, title, author_name)
+    if author_id is None:
+        author_id = get_dblp_author_id_from_aliases(cnx, author_name)
     else:
-        author_name = get_dblp_author_id_from_position(cnx, title, author_pos)
+        author_id = get_dblp_author_id_from_position(cnx, title, author_pos)
 
-    return author_name
+    return author_id
 
 
 def author_is_already_in_db(cnx, link):
@@ -158,12 +138,22 @@ def author_is_already_in_db(cnx, link):
     return found
 
 
+def get_author_positions(hit):
+    positions = []
+    author_positions = re.sub(" - .*", "", hit.find_element_by_class_name("gs_a").text).split(',')
+    for author in author_positions:
+        positions.append(author.strip())
+    return positions
+
+
 def add_authors_citations(hit, cnx, title, paper_id):
-    authors = hit.find_element_by_class_name("gs_a").find_elements_by_tag_name("a")
+    author_links = hit.find_element_by_class_name("gs_a").find_elements_by_tag_name("a")
+    author_positions = get_author_positions(hit)
     links = {}
-    if authors:
-        for author in authors:
-            links.update({author.get_attribute("href"): authors.index(author)})
+    if author_links:
+        for author in author_links:
+            position = author_positions.index(author.text.strip())
+            links.update({author.get_attribute("href"): position})
 
     if links:
         for link in links.keys():
@@ -227,6 +217,8 @@ def add_paper_citation(hit, cnx, key):
 
     if citations != 0:
         update_paper_citations_info(cnx, key, citations)
+    else:
+        update_paper_citations_info(cnx, key, 0)
 
 
 def add_scholar_citations(cnx, title, key, paper_id):
@@ -262,22 +254,44 @@ def update_paper_citations_info(cnx, key, citations):
     cnx.commit()
     cursor.close()
 
+    # #check if the citations have already been set
+    # cursor = cnx.cursor()
+    # query = "SELECT citations FROM aux_dblp_inproceedings_tracks WHERE dblp_key = %s"
+    # arguments = [key]
+    # cursor.execute(query, arguments)
+    # cit = cursor.fetchone()[0]
+    #
+    # #if citations are null
+    # if cit is None:
+    #     query = "UPDATE aux_dblp_inproceedings_tracks SET citations = %s WHERE dblp_key = %s"
+    #     arguments = [citations, key]
+    #     cursor.execute(query, arguments)
+    #     cnx.commit()
+    # cursor.close()
+    # #TODO if citations are not null, we should update this number from one year to the next
+
 
 def add_citation_info(cnx):
     conf_cursor = cnx.cursor()
     query = "SELECT id, dblp_key, title " \
-            "FROM dblp_pub_new pub " \
-            "WHERE dblp_key IS NOT NULL AND title IS NOT NULL " \
-            "AND type NOT IN ('www', 'phdthesis', 'masterthesis')" \
-            "AND dblp_key NOT LIKE %s " \
-            "AND year >= 2003 " \
-            "AND NOT EXISTS (SELECT DISTINCT paper_id FROM aux_scholar_authors WHERE paper_id = pub.id) " \
-            "AND source IN " \
-            "('ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
-            "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA')"
-    arguments = ['dblpnote%']
-    conf_cursor.execute(query, arguments)
+            "FROM aux_dblp_inproceedings_tracks " \
+            "WHERE citations IS NULL"
+    conf_cursor.execute(query)
+    # query = "SELECT id, dblp_key, title " \
+    #         "FROM dblp_pub_new pub " \
+    #         "WHERE dblp_key IS NOT NULL AND title IS NOT NULL " \
+    #         "AND type NOT IN ('www', 'phdthesis', 'masterthesis')" \
+    #         "AND dblp_key NOT LIKE %s " \
+    #         "AND year >= 2003 " \
+    #         "AND NOT EXISTS (SELECT DISTINCT dblp_key " \
+    #                         "FROM aux_dblp_inproceedings_tracks " \
+    #                         "WHERE pub.dblp_key = dblp_key AND citations IS NOT NULL) " \
+    #         "AND NOT EXISTS (SELECT DISTINCT paper_id " \
+    #                         "FROM aux_scholar_authors " \
+    #                         "WHERE paper_id = pub.id) " \
+    #         "AND source IN (" + shared.CONFERENCES + ")"
+    #arguments = ['dblpnote%']
+    #conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
     while row is not None:
         paper_id = row[0]
@@ -292,7 +306,7 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**CONFIG)
+    cnx = mysql.connector.connect(**dbconnection.CONFIG)
 
     add_citation_info(cnx)
     driver.close()

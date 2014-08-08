@@ -10,6 +10,8 @@ import re
 import codecs
 import time
 from unidecode import unidecode
+import cross_module_variables as shared
+import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the PROGRAM COMMITTEE CHAIR and MEMBERS
 #for the editions from 2003 of the following conferences:
@@ -32,24 +34,7 @@ from unidecode import unidecode
 # );
 
 LOG_FILENAME = 'logger_program_committee.log'
-CONFIG = {
-    'user': 'root',
-    'password': 'coitointerrotto',
-    'host': 'atlanmodexp.info.emn.fr',
-    'port': '13506',
-    'database': 'dblp',
-    'raise_on_warnings': False,
-    'buffered': True
-}
-# CONFIG = {
-#     'user': 'root',
-#     'password': 'root',
-#     'host': '127.0.0.1',
-#     'port': '3306',
-#     'database': 'test',
-#     'raise_on_warnings': False,
-#     'buffered': True
-# }
+
 
 JSON_FILE = "./program_committee_info.json"
 JSON_ENTRY_ATTRIBUTES_FOR_HTML = 16
@@ -57,8 +42,6 @@ JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 7
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 13
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
-GOOGLE = "http://www.google.com"
-DBLP = "www.informatik.uni-trier.de"
 
 CONFERENCE = ''
 YEAR = ''
@@ -75,7 +58,7 @@ def calculate_query(cnx, query, arguments):
 
 def recover_id_by_querying_google(cnx, member):
     data = []
-    google_driver.get(GOOGLE)
+    google_driver.get(shared.GOOGLE)
     search_box = google_driver.find_element_by_name("q")
     search_box.send_keys(member + " dblp " + Keys.RETURN)
     #wait
@@ -83,7 +66,7 @@ def recover_id_by_querying_google(cnx, member):
     google_hits = google_driver.find_elements_by_xpath("//*[@id='rso']//h3/a")
     for hit in google_hits:
         link = hit.get_attribute("href")
-        if DBLP in link and 'pers' in link:
+        if shared.DBLP in link and 'pers' in link:
             hit.click()
             try:
                 dblp_name = google_driver.find_element_by_id("headline").find_element_by_tag_name("h1").text.strip()
@@ -597,7 +580,7 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**CONFIG)
+    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     line_counter = 1
     #TODO, put all editions of a conference in a file. It will be easier to maintain
     #Each JSON data per line

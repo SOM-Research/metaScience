@@ -5,6 +5,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from selenium import webdriver
 import time
+import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the CONFERENCE RANK for the proceedings in AUX_DBLP_PROCEEDINGS
 #and add them to the table.
@@ -24,20 +25,10 @@ import time
 # add column rank varchar(10),
 # add index dblp_key (dblp_key);
 
-COMPUTER_SCIENCE_CONFERENCE_RANK = 'http://lipn.univ-paris13.fr/~bennani/CSRank.html'
+
 
 LOG_FILENAME = 'logger_conference_rank.log'
-
-CONFIG = {
-    'user': 'root',
-    'password': 'coitointerrotto',
-    'host': 'atlanmodexp.info.emn.fr',
-    'port': '13506',
-    'database': 'dblp',
-    'raise_on_warnings': False,
-    'buffered': True
-}
-
+COMPUTER_SCIENCE_CONFERENCE_RANK = 'http://lipn.univ-paris13.fr/~bennani/CSRank.html'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 
 
@@ -72,7 +63,7 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**CONFIG)
+    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     add_proceedings_rank(cnx)
 
 if __name__ == "__main__":
