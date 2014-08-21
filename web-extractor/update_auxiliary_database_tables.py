@@ -16,8 +16,8 @@ import database_connection_config as dbconnection
 #In particular, it retrieves the last dump of the DBLP database (available here -> http://dblp.l3s.de/dblp++.php)
 #and updates the dblp tables and the aux tables
 
-CONFERENCES = "'ICSE', 'FSE', 'ESEC', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            "'MODELS', 'WCRE', 'CSMR', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
+CONFERENCES = "'ICSE', 'SIGSOFT FSE', 'ESEC/SIGSOFT FSE', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
+            "'MODELS', 'WCRE', 'CSMR', 'CSMR-WCRE', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
             "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA'"
 STARTING_YEAR = 2013
 DBLP_DUMP = 'http://dblp.l3s.de/dblp++.php'

@@ -78,7 +78,7 @@ def get_dblp_author_id_from_title(cnx, title, author_name):
     id = cursor.fetchone()
     cursor.close()
     if id is None:
-        return 0
+        return None
     return id[0]
 
 
@@ -92,7 +92,7 @@ def get_dblp_author_id_from_aliases(cnx, author_name):
     id = cursor.fetchone()
     cursor.close()
     if id is None:
-        return 0
+        return None
     return id[0]
 
 
@@ -105,18 +105,19 @@ def get_dblp_author_id_from_position(cnx, title, author_pos):
             "WHERE title = %s and author_num = %s"
     arguments = [title, author_pos]
     cursor.execute(query, arguments)
-    id = cursor.fetchone()[0]
+    id = cursor.fetchone()
     cursor.close()
     if id is None:
-        return 0
-    return id
+        return None
+    return id[0]
 
 
 def get_dblp_author_id(cnx, title, author_name, author_pos):
     author_id = get_dblp_author_id_from_title(cnx, title, author_name)
     if author_id is None:
         author_id = get_dblp_author_id_from_aliases(cnx, author_name)
-    else:
+
+    if author_id is None:
         author_id = get_dblp_author_id_from_position(cnx, title, author_pos)
 
     return author_id
@@ -142,6 +143,7 @@ def get_author_positions(hit):
     positions = []
     author_positions = re.sub(" - .*", "", hit.find_element_by_class_name("gs_a").text).split(',')
     for author in author_positions:
+        author = author.replace(u"\u2026", "")
         positions.append(author.strip())
     return positions
 
@@ -223,7 +225,10 @@ def add_paper_citation(hit, cnx, key):
 
 def add_scholar_citations(cnx, title, key, paper_id):
     driver.get(SCHOLAR)
-    search_box = driver.find_element_by_id("gs_hp_tsi")
+    try:
+        search_box = driver.find_element_by_id("gs_hp_tsi")
+    except:
+        search_box = driver.find_element_by_id("gs_hdr_frm_in_txt")
     search_box.send_keys(title + Keys.RETURN)
     #wait
     time.sleep(4)

@@ -31,7 +31,7 @@ def create_auxiliary_tables(cnx):
 
     create_table_aux_scholar_authors = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_scholar_authors" \
                                        "(" \
-                                       "name varchar(256) primary key, " \
+                                       "name varchar(256), " \
                                        "citations numeric(15), " \
                                        "citations2009 numeric(15), " \
                                        "indexH numeric(15), " \
@@ -42,6 +42,7 @@ def create_auxiliary_tables(cnx):
                                        "dblp_author_id numeric(15), " \
                                        "paper_id numeric(15), " \
                                        "author_url text, " \
+                                       "primary key (name, dblp_author_id), " \
                                        "index paper_id (paper_id)" \
                                        ");"
     cursor.execute(create_table_aux_scholar_authors)
