@@ -247,6 +247,8 @@ def add_scholar_citations(cnx, title, key, paper_id):
                 add_paper_citation(hit, cnx, key)
                 add_authors_citations(hit, cnx, title, paper_id)
                 break
+            elif leveh_distance <= 6 and leveh_distance >= 4:
+                logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
         except NoSuchElementException:
             continue
 

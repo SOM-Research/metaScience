@@ -34,6 +34,7 @@ import database_connection_config as dbconnection
 # );
 
 LOG_FILENAME = 'logger_program_committee.log'
+GOOGLE = 'http://www.google.com'
 
 
 JSON_FILE = "./program_committee_info.json"
@@ -58,7 +59,7 @@ def calculate_query(cnx, query, arguments):
 
 def recover_id_by_querying_google(cnx, member):
     data = []
-    google_driver.get(shared.GOOGLE)
+    google_driver.get(GOOGLE)
     search_box = google_driver.find_element_by_name("q")
     search_box.send_keys(member + " dblp " + Keys.RETURN)
     #wait
@@ -239,6 +240,7 @@ EXCEPTION_NAMES = {
                 'Judit Nyekyne Gaizler': 'Judit Nyeki-Gaizler',
                 'Havard D. Jorgensen': 'Havard D. Jorgensen',
                 'Miryun Kim': 'Miryung Kim ',
+                'James Steel': 'Jim Steel',
                 'Laurent Safa': '',
                 'Peggy Aravantinou': '',
                 'Vasilis Chrisikopoulos': '',
@@ -255,7 +257,6 @@ EXCEPTION_NAMES = {
                 'Torsten Layda': '',
                 'Yossi Raanan': '',
                 'Chang-Kang Fan': '',
-                'James Steel': '',
                 'Terry Bailey': ''
             }
 
@@ -395,7 +396,7 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
 
 
 def add_name_to_list(members, name):
-    if name != '':
+    if name.strip() != '':
         members.add(name)
 
 
@@ -409,12 +410,14 @@ def collect_members_from_web_elements(selected_web_elements, member_tag,
             if element.tag_name == member_tag:
                 if single_or_all == "single":
                     name = extract_member_name(mixed, member_name_separator, inverted_name, text)
-                    add_name_to_list(members, name)
+                    if name.strip() != '':
+                        add_name_to_list(members, name)
                 else:
                     lines = text.split('\n')
                     for l in lines:
                         name = extract_member_name(mixed, member_name_separator, inverted_name, l.strip())
-                        add_name_to_list(members, name)
+                        if name.strip() != '':
+                            add_name_to_list(members, name)
     return members
 
 
@@ -442,7 +445,8 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text, mi
     for me in member_entries:
         if me != '':
             name = extract_member_name(mixed, member_name_separator, inverted_name, me)
-            members.add(name.strip())
+            if name.strip() != '':
+                members.add(name.strip())
 
         # name = re.sub(member_name_separator + '.*', '', me)
         # if name != '':
