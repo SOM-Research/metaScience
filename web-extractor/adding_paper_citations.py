@@ -231,7 +231,7 @@ def add_scholar_citations(cnx, title, key, paper_id):
         search_box = driver.find_element_by_id("gs_hdr_frm_in_txt")
     search_box.send_keys(title + Keys.RETURN)
     #wait
-    time.sleep(4)
+    time.sleep(10)
 
     scholar_hits = driver.find_elements_by_class_name("gs_ri")
 
@@ -241,14 +241,12 @@ def add_scholar_citations(cnx, title, key, paper_id):
             title_hit = info_hit.find_element_by_tag_name("a").text
             leveh_distance = nltk.metrics.edit_distance(re.sub(r'\s+', '', title_hit.lower()), re.sub(r'\s+', '', title.lower()))
             #if re.sub(r'\s+', '', title_hit.lower()) in re.sub(r'\s+', '', title.lower()):
-            if leveh_distance <= 3:
+            if leveh_distance <= 6:
                 if leveh_distance > 1:
                     logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
                 add_paper_citation(hit, cnx, key)
                 add_authors_citations(hit, cnx, title, paper_id)
                 break
-            elif leveh_distance <= 6 and leveh_distance >= 4:
-                logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
         except NoSuchElementException:
             continue
 
