@@ -167,11 +167,11 @@ def add_authors_citations(hit, cnx, title, paper_id):
             if not author_is_already_in_db(cnx, author_link):
                 driver.get(link)
                 #wait
-                WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "stats")))
+                WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, "gsc_rsb_st")))
                 time.sleep(2)
 
                 author_name = driver.title.split('-')[0]
-                stats = driver.find_element_by_id("stats")
+                stats = driver.find_element_by_id("gsc_rsb_st")
                 all = stats.find_element_by_xpath("//tr[2]/td[2]").text
                 all_y5 = stats.find_element_by_xpath("//tr[2]/td[3]").text
                 indexH = stats.find_element_by_xpath("//tr[3]/td[2]").text
@@ -180,7 +180,7 @@ def add_authors_citations(hit, cnx, title, paper_id):
                 i10_y5 = stats.find_element_by_xpath("//tr[4]/td[3]").text
 
                 try:
-                    interests = driver.find_element_by_id("cit-int-form").text
+                    interests = driver.find_elements_by_class_name("gsc_prf_il")[1].text
                 except:
                     interests = None
 
