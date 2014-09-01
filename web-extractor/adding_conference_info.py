@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 import time
 import cross_module_variables as shared
+import re
 import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the LOCATION, TYPE and MONTH for each proceedings in DBLP
@@ -152,12 +153,6 @@ def add_proceedings_info(cnx, id):
             "month IS NULL AND " \
             "rank IS NULL AND " \
             "id > %s "
-    # query = "SELECT id, dblp_key, url " \
-    #         "FROM aux_dblp_proceedings " \
-    #         "WHERE dblp_key IS NOT NULL AND " \
-    #         "id > %s " \
-    #         "AND year >= 2003 " \
-    #         "AND source IN (" + shared.CONFERENCES + ")"
     arguments = [id]
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
@@ -173,6 +168,7 @@ def add_proceedings_info(cnx, id):
             location = ''
             if ':' in headline:
                 location = headline.split(':')[1]
+                location = re.sub("( - | \().*", "", location)
                 update_location_info(cnx, location, id)
             else:
                 logging.warning("unable to extract location from " + headline)

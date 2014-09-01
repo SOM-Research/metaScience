@@ -17,9 +17,9 @@ import database_connection_config as dbconnection
 #and updates the dblp tables and the aux tables
 
 CONFERENCES = "'ICSE', 'SIGSOFT FSE', 'ESEC/SIGSOFT FSE', 'ASE', 'SPLASH', 'OOPSLA', 'ECOOP', 'ISSTA', 'FASE', " \
-            "'MODELS', 'WCRE', 'CSMR', 'CSMR-WCRE', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
-            "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA'"
-STARTING_YEAR = 2013
+              "'MODELS', 'WCRE', 'CSMR', 'CSMR-WCRE', 'ICMT', 'COMPSAC', 'APSEC', 'VISSOFT', 'ICSM', 'SOFTVIS', " \
+              "'SCAM', 'TOOLS', 'CAISE', 'ER', 'ECMFA', 'ECMDA-FA'"
+STARTING_YEAR = 2003
 DBLP_DUMP = 'http://dblp.l3s.de/dblp++.php'
 DUMP_LOCATION = '../facetedDBLP/'
 LOG_FILENAME = 'logger_update_database.log'
@@ -124,7 +124,7 @@ def main():
 
     ##note that the script that updates the program committee can be executed separately,
     ##since it mainly relies on the information contained into the program_committee_info.json
-    os.system("extracting_program_committee.py")
+    #os.system("extracting_program_committee.py")
 
 if __name__ == "__main__":
     main()
