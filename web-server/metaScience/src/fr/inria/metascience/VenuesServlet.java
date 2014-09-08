@@ -2,6 +2,10 @@ package fr.inria.metascience;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -36,11 +40,13 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonArray venues = new JsonArray();
 		
 		if(searchString != null) {
-			// TODO Ask the database to retrieve ALL the venues (no search param)
+			// TODO Ask the database to retrieve those venues LIKE searchString
+			venues = this.prepareAnswer(this.getAllVenues(searchString));
 			LOGGER.info("Asked for venues with search string: " + searchString);
 			test(venues);
 		} else {
-			// TODO Ask the database to retrieve those venues LIKE searchString
+			// TODO Ask the database to retrieve ALL the venues (no search param)
+			venues = this.prepareAnswer(this.getAllVenues());
 			LOGGER.info("Asked for venues without search string");
 			test(venues);
 		}
@@ -50,6 +56,76 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		response.add("venues", venues);
 		PrintWriter pw = resp.getWriter();
 		pw.append(venues.toString());
+	}
+	
+	private ResultSet getAllVenues() {
+		Connection con = Pooling.getInstance().getConnection();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = con.createStatement();
+			String query = "select title, source"
+							+ " from dblp_pub_new"
+							+ " where source is not null";
+			rs = stmt.executeQuery(query);
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();		
+		} finally {
+			try {
+				stmt.close();
+				rs.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return rs;
+	}
+	
+	private ResultSet getAllVenues(String searchString) {
+		Connection con = Pooling.getInstance().getConnection();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT title, source"
+							+ " FROM dblp_pub_new"
+							+ " WHERE source IS NOT NULL AND type = 'proceedings' AND"
+							+ " title LIKE '%" + searchString + "%' OR source LIKE '%" + searchString + "%'";
+			rs = stmt.executeQuery(query);
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();		
+		} finally {
+			try {
+				stmt.close();
+				rs.close();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return rs;
+	}
+	
+	private JsonArray prepareAnswer(ResultSet rs) {
+		JsonArray answer = null;
+		
+		try {
+			while(rs.next()) {
+				String venue = rs.getString("source") + " - " + rs.getString("title");
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return answer;
+		
 	}
 	
 	/**
