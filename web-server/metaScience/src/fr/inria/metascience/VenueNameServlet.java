@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -45,33 +47,36 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 	}
 	
 
-	private String getNameForVenueId(String venueId) {
+	private String getNameForVenueId(String venueId) throws ServletException {
 		Connection con = Pooling.getInstance().getConnection();
 		String venueName = "";
 		Statement stmt = null;
 		ResultSet rs = null;
+		
 		try {
-			String query = "SELECT title, source"
+			// TODO Get the title
+			String query = "SELECT title, source_id"
 							+ " FROM dblp_pub_new"
-							+ " WHERE source IS NOT NULL AND id = " + venueId;
+							+ " WHERE source IS NOT NULL AND source_id = '" + venueId + "'";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);
-	        if (rs.next())
-	        	venueName = rs.getString("source") + " - " + rs.getString("title");
-	        	
 	        
+	        if (rs.next())
+	        	venueName = rs.getString("source_id");
 		} catch (SQLException e) {
-			e.printStackTrace();		
+			throw new ServletException("Error getting the Id for the venue", e);
 		} finally {
 			try {
-				stmt.close();
-				rs.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
+				if(stmt != null) stmt.close();
+				if(rs != null) rs.close();
+			} catch (SQLException e) {
+				throw new ServletException("Impossible to close the connection", e);	
 			}
 		}
+		
+		
+		
 		return venueName;
 	}
 }

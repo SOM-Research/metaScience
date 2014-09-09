@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 
 /**
  * GET method returns the list of venues
- *
  */
 @WebServlet("/venues")
 public class VenuesServlet extends AbstractMetaScienceServlet{
@@ -41,14 +40,10 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		
 		if(searchString != null) {
 			// TODO Ask the database to retrieve those venues LIKE searchString
-			venues = this.prepareAnswer(this.getAllVenues(searchString));
-			LOGGER.info("Asked for venues with search string: " + searchString);
-			test(venues);
+			venues = this.getAllVenues(searchString);
 		} else {
 			// TODO Ask the database to retrieve ALL the venues (no search param)
-			venues = this.prepareAnswer(this.getAllVenues());
-			LOGGER.info("Asked for venues without search string");
-			test(venues);
+			venues = this.getAllVenues();
 		}
 		
 		// Building the response
@@ -58,74 +53,96 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		pw.append(venues.toString());
 	}
 	
-	private ResultSet getAllVenues() {
+	/**
+	 * Returns the list of venues
+	 * 
+	 * @return ResultSet
+	 * @throws ServletException 
+	 */
+	private JsonArray getAllVenues() throws ServletException {
 		Connection con = Pooling.getInstance().getConnection();
 		Statement stmt = null;
 		ResultSet rs = null;
+		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "select title, source"
-							+ " from dblp_pub_new"
-							+ " where source is not null";
-			rs = stmt.executeQuery(query);
-		} 
-		catch (SQLException e) {
-			e.printStackTrace();		
-		} finally {
-			try {
-				stmt.close();
-				rs.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return rs;
-	}
-	
-	private ResultSet getAllVenues(String searchString) {
-		Connection con = Pooling.getInstance().getConnection();
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = con.createStatement();
-			String query = "SELECT title, source"
+			String query = "SELECT DISTINCT source_id"
 							+ " FROM dblp_pub_new"
-							+ " WHERE source IS NOT NULL AND type = 'proceedings' AND"
-							+ " title LIKE '%" + searchString + "%' OR source LIKE '%" + searchString + "%'";
+							+ " WHERE source_id IS NOT NULL AND source IS NOT NULL AND"
+							+ " type = 'proceedings'";
 			rs = stmt.executeQuery(query);
-		} 
-		catch (SQLException e) {
-			e.printStackTrace();		
+			answer = prepareAnswer(rs);
+		} catch (SQLException e) {
+			throw new ServletException("Error getting venues without search param", e);
 		} finally {
 			try {
-				stmt.close();
-				rs.close();
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
+				if(stmt != null) stmt.close();
+				if(rs != null) rs.close();
+			} catch (SQLException e) {
+				throw new ServletException("Impossible to close the connection", e);
 			}
 		}
-		
-		return rs;
+		return answer;
 	}
 	
-	private JsonArray prepareAnswer(ResultSet rs) {
-		JsonArray answer = null;
+	/**
+	 * Returns the list of venues LIKE a specific search string
+	 * 
+	 * @param searchString
+	 * @return
+	 * @throws ServletException 
+	 */
+	private JsonArray getAllVenues(String searchString) throws ServletException {
+		Connection con = Pooling.getInstance().getConnection();
+		Statement stmt = null;
+		ResultSet rs = null;
+		JsonArray answer = new JsonArray();
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT DISTINCT source_id"
+							+ " FROM dblp_pub_new"
+							+ " WHERE source_id IS NOT NULL AND source IS NOT NULL AND "
+							+ " type = 'proceedings' AND "
+							+ " (source LIKE '%" + searchString + " %' OR source_id LIKE '%" + searchString + "%' ) ";
+			rs = stmt.executeQuery(query);
+			answer = prepareAnswer(rs);
+		} 
+		catch (SQLException e) {
+			throw new ServletException("Error getting venues with search param", e);	
+		} finally {
+			try {
+				if(stmt != null) stmt.close();
+				if(rs != null) rs.close();
+			} catch (SQLException e) {
+				throw new ServletException("Impossible to close the connection", e);	
+			}
+		}
+		return answer;
+	}
+	
+	/**
+	 * Digest the ResultSet to create a JsonArray to be used as response
+	 * 
+	 * @param rs
+	 * @return
+	 * @throws ServletException 
+	 */
+	private JsonArray prepareAnswer(ResultSet rs) throws ServletException {
+		JsonArray answer = new JsonArray();
 		
 		try {
 			while(rs.next()) {
-				String venue = rs.getString("source") + " - " + rs.getString("title");
-				
+				JsonObject jsonObject = new JsonObject();
+				String venue = rs.getString("source_id");
+				jsonObject.addProperty("name", venue.toUpperCase());
+				jsonObject.addProperty("id", venue);
+				answer.add(jsonObject);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ServletException("Error retrieving the fields from the ResultSet", e);	
 		}
 		
 		return answer;
-		
 	}
 	
 	/**
