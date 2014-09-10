@@ -9,7 +9,9 @@ CREATE TABLE aux_perished_survived_authors_per_conf (
 	author_name varchar(70),
 	status varchar(10),
 	conf varchar(256),
-	period varchar(10)
+	period varchar(10),
+	index conf (conf),
+	index period (period)
 );
 DELIMITER //
 CREATE PROCEDURE perished_survived_authors_between_two_conf_editions (IN year_x numeric(4), IN year_x_plus_1 numeric(4), IN conf varchar(255)) 
