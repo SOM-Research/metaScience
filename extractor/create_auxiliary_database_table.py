@@ -84,6 +84,17 @@ def create_auxiliary_tables(cnx):
     cnx.commit()
     cursor.close()
 
+    create_table_aux_dblp_inproceedings_abstract = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_dblp_inproceedings_abstract" \
+                                                   "(" \
+                                                   "id int(11) primary key auto_increment, " \
+                                                   "dblp_key varchar(150), " \
+                                                   "abstract text" \
+                                                   ");"
+    cursor.execute(create_table_aux_dblp_inproceedings_abstract)
+
+    cnx.commit()
+    cursor.close()
+
 
 def update_conference_database():
     os.system("update_auxiliary_database_tables.py")
