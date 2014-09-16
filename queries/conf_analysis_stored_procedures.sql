@@ -2,8 +2,8 @@ USE dblp;
 DROP PROCEDURE IF EXISTS perished_survived_authors_between_two_conf_editions;
 DROP PROCEDURE IF EXISTS calculate_perished_survived_authors_in_conf;
 DROP PROCEDURE IF EXISTS calculate_perished_survived_authors;
-DROP TABLE IF EXISTS aux_perished_survived_authors_per_conf;
-CREATE TABLE aux_perished_survived_authors_per_conf (
+DROP TABLE IF EXISTS _perished_survived_authors_per_conf;
+CREATE TABLE _perished_survived_authors_per_conf (
 	id int(11) primary key auto_increment,
 	author numeric(8),
 	author_name varchar(70),
@@ -16,7 +16,7 @@ CREATE TABLE aux_perished_survived_authors_per_conf (
 DELIMITER //
 CREATE PROCEDURE perished_survived_authors_between_two_conf_editions (IN year_x numeric(4), IN year_x_plus_1 numeric(4), IN conf varchar(255)) 
 BEGIN
-	insert into aux_perished_survived_authors_per_conf
+	insert into _perished_survived_authors_per_conf
 	select NULL, author_x_year as author, author_name, if(author_x_plus_1_year IS NULL,'perished', 'survived') as status, conf as conf, CONCAT(year_x, '-', year_x_plus_1) as period
 	from 
 	(select auth.author_id as author_x_year, author as author_name
