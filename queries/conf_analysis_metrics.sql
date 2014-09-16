@@ -347,7 +347,7 @@ group by source, source_id, year;
 
 /* avg number of papers per author per conf */
 create table _avg_number_papers_per_author_per_conf as
-select auth.author, avg_num_paper_per_author_per_conf.*
+select auth.author as author_name, avg_num_paper_per_author_per_conf.*
 from
 dblp_author_ref_new auth
 join
@@ -361,7 +361,7 @@ from (
 	where type = 'inproceedings'
 	group by author, source, source_id) as count
 group by source, source_id) as avg_num_paper_per_author_per_conf
-on auth.id = avg_num_paper_per_author_per_conf = author;
+on auth.id = avg_num_paper_per_author_per_conf.author;
 
 
 /* number of pages per conference per year */
