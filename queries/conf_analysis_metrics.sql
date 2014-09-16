@@ -317,7 +317,7 @@ where type = 'inproceedings' and title REGEXP '([[:punct:]]|[[:space:]])xquery([
 group by year;
 
 /* number of papers per satellite and main conferences per year */
-create table _num_of_papers_per_conference as
+create table _num_of_papers_per_conference_per_year as
 select count(id) as num_papers, source, source_id, year
 from dblp_pub_new where type = 'inproceedings' and source_id is not null and source is not null
 group by source, source_id, year;
@@ -345,36 +345,22 @@ from (
 	group by paper_id, source, source_id, year) as count
 group by source, source_id, year;
 
-/* avg number of papers per author per conf */
-create table _avg_number_papers_per_author_per_conf as
-select auth.author as author_name, avg_num_paper_per_author_per_conf.*
-from
-dblp_author_ref_new auth
+/* number of papers per author per conf per year */
+create table _number_papers_per_author_per_conf_per_year as
+select auth.author_id as author_id, auth.author as author_name, 
+count(distinct pub.id) as num_paper_per_author, source, source_id, year
+from dblp_pub_new pub
 join
-(select author, avg(paper_per_author) as paper_per_author, source, source_id
-from (
-	select auth.author_id as author, count(distinct pub.id) as paper_per_author, source, source_id
-	from dblp_pub_new pub
-	join
-	dblp_authorid_ref_new auth
-	on pub.id = auth.id
-	where type = 'inproceedings'
-	group by author, source, source_id) as count
-group by source, source_id) as avg_num_paper_per_author_per_conf
-on auth.id = avg_num_paper_per_author_per_conf.author;
+dblp_authorid_ref_new auth
+on pub.id = auth.id
+where type = 'inproceedings'
+group by author_id, source, source_id, year;
 
 
-/* number of pages per conference per year */
+/* number of pages per conference per year and avg number of pages per conference per year*/
 /* note that some page intervals are wrong, currently we do not remove them */
-create table _num_pages_per_conf_per_year as
-select source, source_id, year, sum(calculate_num_of_pages(pages)) as sum_of_pages
-from dblp_pub_new 
-where type = 'inproceedings' and pages is not null
-group by source, source_id, year;
-
-/* avg number of pages per conference per year */
-create table _avg_pages_per_conf_per_year as
-select source, source_id, year, avg(calculate_num_of_pages(pages)) as avg_num_of_pages
+create table _num_and_avg_pages_per_conf_per_year as
+select source, source_id, year, sum(calculate_num_of_pages(pages)) as sum_of_pages, avg(calculate_num_of_pages(pages)) as avg_num_of_pages
 from dblp_pub_new 
 where type = 'inproceedings' and pages is not null
 group by source, source_id, year;
