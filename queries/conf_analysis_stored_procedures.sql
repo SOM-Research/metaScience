@@ -2,6 +2,8 @@ USE dblp;
 DROP PROCEDURE IF EXISTS perished_survived_authors_between_two_conf_editions;
 DROP PROCEDURE IF EXISTS calculate_perished_survived_authors_in_conf;
 DROP PROCEDURE IF EXISTS calculate_perished_survived_authors;
+DROP PROCEDURE IF EXISTS get_perished_survived_authors;
+DROP FUNCTION IF EXISTS calculate_num_of_pages;
 DROP TABLE IF EXISTS _perished_survived_authors_per_conf;
 CREATE TABLE _perished_survived_authors_per_conf (
 	id int(11) primary key auto_increment,
@@ -75,6 +77,25 @@ BEGIN
 
 END //
 
+CREATE PROCEDURE get_perished_survived_authors(IN c varchar(255))
+BEGIN
+	DECLARE perished_survived_number_of_rows INTEGER;
+
+	SELECT count(*) INTO perished_survived_number_of_rows
+	FROM _perished_survived_authors_per_conf
+	WHERE conf = c;
+
+	IF perished_survived_number_of_rows = 0 THEN
+		CALL calculate_perished_survived_authors_in_conf(c);
+	END IF;
+
+	SELECT *
+	FROM _perished_survived_authors_per_conf
+	WHERE conf = c;
+	
+
+END //
+
 CREATE PROCEDURE calculate_perished_survived_authors()
 BEGIN
 	DECLARE exit_loop BOOLEAN;
@@ -97,6 +118,33 @@ BEGIN
 			LEAVE get_source;
 		END IF;
 	END LOOP get_source;
+END //
+
+
+CREATE FUNCTION calculate_num_of_pages(pages varchar(100)) RETURNS INTEGER 
+	DETERMINISTIC
+BEGIN
+	DECLARE page_number INTEGER;
+	DECLARE occ_dash INTEGER DEFAULT (LENGTH(pages) - LENGTH(REPLACE(pages, '-', '')));
+	DECLARE left_part INTEGER DEFAULT CONVERT(SUBSTRING_INDEX(pages, '-', 1), SIGNED INTEGER);
+	DECLARE right_part INTEGER DEFAULT CONVERT(SUBSTRING_INDEX(pages, '-', -1), SIGNED INTEGER);
+
+	IF occ_dash > 1 OR left_part = 0 OR right_part = 0 THEN
+		SET page_number = 1;
+	ELSE
+		IF right_part > left_part THEN
+			SET page_number = right_part - left_part;
+		ELSE
+			SET page_number = left_part - right_part;
+		END IF;
+
+        IF page_number = 0 THEN
+			SET page_number = 1;
+		END IF;
+	END IF;
+
+	RETURN page_number;
+
 END //
 
 DELIMITER ;
