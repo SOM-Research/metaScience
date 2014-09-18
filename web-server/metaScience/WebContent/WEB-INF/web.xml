@@ -13,7 +13,7 @@
     <description>
     </description>
 
-	 <resource-ref> 
+	<resource-ref> 
         <description>DB Connection Pooling</description>
         <res-ref-name>jdbc/dbCon</res-ref-name>
         <res-type>org.apache.tomcat.jdbc.pool.DataSource</res-type>

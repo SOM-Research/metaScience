@@ -66,10 +66,10 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT DISTINCT source_id"
-							+ " FROM dblp_pub_new"
-							+ " WHERE source_id IS NOT NULL AND source IS NOT NULL AND"
-							+ " type = 'proceedings'";
+			String query = "SELECT DISTINCT source, title"
+							+ " FROM aux_dblp_proceedings"
+							+ " WHERE source IS NOT NULL AND "
+							+ " type = 'conference'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
@@ -78,6 +78,7 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 			try {
 				if(stmt != null) stmt.close();
 				if(rs != null) rs.close();
+				if(con != null) con.close();
 			} catch (SQLException e) {
 				throw new ServletException("Impossible to close the connection", e);
 			}
@@ -99,20 +100,20 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT DISTINCT source_id"
-							+ " FROM dblp_pub_new"
-							+ " WHERE source_id IS NOT NULL AND source IS NOT NULL AND "
-							+ " type = 'proceedings' AND "
-							+ " (source LIKE '%" + searchString + " %' OR source_id LIKE '%" + searchString + "%' ) ";
+			String query = "SELECT DISTINCT source, title"
+							+ " FROM aux_dblp_proceedings"
+							+ " WHERE source IS NOT NULL AND "
+							+ " type = 'conference' AND "
+							+ " (source LIKE '%" + searchString + " %' OR title LIKE '%" + searchString + "%' ) ";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			throw new ServletException("Error getting venues with search param", e);	
 		} finally {
 			try {
 				if(stmt != null) stmt.close();
 				if(rs != null) rs.close();
+				if(con != null) con.close();
 			} catch (SQLException e) {
 				throw new ServletException("Impossible to close the connection", e);	
 			}
@@ -133,8 +134,9 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		try {
 			while(rs.next()) {
 				JsonObject jsonObject = new JsonObject();
-				String venue = rs.getString("source_id");
-				jsonObject.addProperty("name", venue.toUpperCase());
+				String venue = rs.getString("source");
+				String title = rs.getString("title");
+				jsonObject.addProperty("name", venue.toUpperCase() + " - " + title);
 				jsonObject.addProperty("id", venue);
 				answer.add(jsonObject);
 			}
