@@ -54,7 +54,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// Getting avergae authors 
 			String query1 = "SELECT ROUND(AVG(num_unique_authors), 2) as avg " +
 					"FROM _num_authors_per_conf_per_year " +
-					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "' GROUP BY year;";
+					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "';";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query1);
@@ -91,7 +91,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// Getting average papers
 			String query3 = "SELECT ROUND(AVG(num_papers), 2) as avg " +
 					"FROM _num_of_papers_per_conference_per_year " +
-					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "' GROUP BY year;";
+					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "';";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query3);
@@ -128,7 +128,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// Getting average value
 			String query5 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as avg " +
 					"FROM _avg_number_authors_per_paper_per_conf_per_year " +
-					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "' GROUP BY year;";
+					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "';";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query5);
@@ -165,7 +165,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// Getting average value
 			String query7 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as avg " +
 					"FROM _avg_number_papers_per_author_per_conf_per_year " +
-					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "' GROUP BY year;";
+					"WHERE source_id = '" + venueId + "' AND source = '" + venueId + "';";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query7);
