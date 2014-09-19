@@ -230,6 +230,7 @@ EXCEPTION_NAMES = {
                 'Havard D. Jorgensen': 'Havard D. Jorgensen',
                 'Miryun Kim': 'Miryung Kim ',
                 'James Steel': 'Jim Steel',
+                'Carsten Goerg': 'Carsten Gorg',
                 'Laurent Safa': '',
                 'Peggy Aravantinou': '',
                 'Vasilis Chrisikopoulos': '',
