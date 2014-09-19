@@ -13,58 +13,25 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import database_connection_config as dbconnection
+import datetime
+from selenium.common.exceptions import TimeoutException
 
 #This script performs two actions:
-#1) For each paper published from 2003 in the conferences below(*),
-#   it gathers (via Selenium) the current number of CITATIONS
-#(*) ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
-#    MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
-#    SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
-#
-#Such information is stored in AUX_DBLP_INPROCEEDINGS_TRACKS
-#The table AUX_DBLP_INPROCEEDINGS_TRACKS is derived from DBLP_PUB_NEW
-#Below the mysql script to generate the AUX_DBLP_INPROCEEDINGS_TRACKS is shown
-# create table dblp.aux_dblp_inproceedings_tracks as
-# select id as dblp_id, dblp_key, crossref, url
-# from dblp.dblp_pub_new where type = 'inproceedings';
-#
-# alter table dblp.aux_dblp_inproceedings_tracks
-# add column id int(11) primary key auto_increment first,
-# add column track varchar(256),
-# add column subtrack1 varchar(256),
-# add column subtrack2 varchar(256),
-# add column citations numeric(10),
-# add index dblp_key (dblp_key);
+#1) For each paper presents in the table aux_dblp_inproceedings_tracks,
+#   the script gathers (via Selenium) the current number of CITATIONS
 #
 #2) It finds (via Selenium) the google scholar page for each author that published in the previous conferences
 #   and collects the author CITATIONS, INDEX, I10 for the past five year and the global CITATIONS, INDEX, I10.
-#   In addition, it collects for each author his INTERESTS (defined in his scholar page)
-#   Note that, Scholar could blocked this process, if the requests are too fast. Thereof, we strongly suggest to
-#   use at least time.sleep(2) after each google scholar request
-#
-#Such information are stored in AUX_SCHOLAR_AUTHORS
-#Below the mysql script to generate the AUX_SCHOLAR_AUTHORS is shown
-# create table dblp.aux_scholar_authors (
-# 	name varchar(256) primary key,
-# 	citations numeric(15),
-# 	citations2009 numeric(15),
-# 	indexH numeric(15),
-# 	indexH2009 numeric(15),
-# 	i10 numeric(15),
-# 	i102009 numeric(15),
-# 	interests text,
-#   dblp_author_id numeric(15),
-#   paper_id numeric(15),
-#   author_url text
-# );
-#
-# alter table dblp.aux_scholar_authors
-# add index paper_id (paper_id);
+#   In addition, it collects for each author his INTERESTS (defined in his scholar page).
+#   Since the citations can change over time, the script stores also the month-year when the citations were collected
 
 SCHOLAR = 'http://scholar.google.com'
 LOG_FILENAME = 'logger_paper_citations.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+UPDATE_CITATIONS = 0
+UPDATED_BEFORE = "01-01-2015"
 
+WAIT_TIME = 10
 
 def get_dblp_author_id_from_title(cnx, title, author_name):
     cursor = cnx.cursor()
@@ -80,6 +47,10 @@ def get_dblp_author_id_from_title(cnx, title, author_name):
     if id is None:
         return None
     return id[0]
+
+
+def get_current_day():
+    return datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
 
 
 def get_dblp_author_id_from_aliases(cnx, author_name):
@@ -188,24 +159,28 @@ def add_authors_citations(hit, cnx, title, paper_id):
                 dblp_author_id = get_dblp_author_id(cnx, title, author_name, author_pos)
 
                 cursor = cnx.cursor()
-                arguments = [author_name.strip(), all, all_y5, indexH, indexH_y5, i10, i10_y5, interests, dblp_author_id, paper_id, author_link]
+                arguments = [author_name.strip(), all, all_y5, indexH, indexH_y5, i10, i10_y5,
+                             interests, dblp_author_id, paper_id, author_link, get_current_day()]
                 query = "INSERT IGNORE INTO aux_scholar_authors " \
-                        "SET name = %s, citations = %s, " \
-                        "citations2009 = %s, " \
+                        "SET name = %s, " \
+                        "citations = %s, " \
+                        "citations_5Y = %s, " \
                         "indexH = %s, " \
-                        "indexH2009 = %s, i10 = %s, " \
-                        "i102009 = %s, " \
+                        "indexH_5Y = %s, " \
+                        "i10 = %s, " \
+                        "i10_5Y = %s, " \
                         "interests = %s, " \
                         "dblp_author_id = %s, " \
-                        "paper_id = %s, " \
-                        "author_url = %s"
+                        "dblp_paper_id = %s, " \
+                        "author_url = %s, " \
+                        "tracked_at = %s"
                 cursor.execute(query, arguments)
                 cnx.commit()
                 cursor.close()
                 driver.back()
 
 
-def add_paper_citation(hit, cnx, key):
+def add_paper_citation(hit, cnx, paper_id):
     citations = 0
     try:
         citations_info = hit.find_element_by_class_name("gs_fl").find_elements_by_tag_name("a")
@@ -218,85 +193,82 @@ def add_paper_citation(hit, cnx, key):
         citations = 0
 
     if citations != 0:
-        update_paper_citations_info(cnx, key, citations)
+        update_paper_citations_info(cnx, paper_id, citations)
     else:
-        update_paper_citations_info(cnx, key, 0)
+        update_paper_citations_info(cnx, paper_id, 0)
+
+
+def in_captcha_page():
+    time.sleep(1)
+    flag = True
+    try:
+        capcha = driver.find_element_by_id("gs_captcha_ccl")
+    except:
+        flag = False
+
+    if not flag:
+        try:
+            capcha = driver.find_element_by_xpath("form/input[name='captcha']")
+        except:
+            flag = False
+
+    return flag
 
 
 def add_scholar_citations(cnx, title, key, paper_id):
     driver.get(SCHOLAR)
+
     try:
-        search_box = driver.find_element_by_id("gs_hp_tsi")
-    except:
-        search_box = driver.find_element_by_id("gs_hdr_frm_in_txt")
+        search_box = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "gs_hp_tsi")))
+    except TimeoutException:
+        search_box = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "gs_hdr_frm_in_txt")))
+
     search_box.send_keys(title + Keys.RETURN)
-    #wait
-    time.sleep(10)
-
-    scholar_hits = driver.find_elements_by_class_name("gs_ri")
-
-    for hit in scholar_hits:
-        info_hit = hit.find_element_by_class_name("gs_rt")
-        try:
-            title_hit = info_hit.find_element_by_tag_name("a").text
-            leveh_distance = nltk.metrics.edit_distance(re.sub(r'\s+', '', title_hit.lower()), re.sub(r'\s+', '', title.lower()))
-            #if re.sub(r'\s+', '', title_hit.lower()) in re.sub(r'\s+', '', title.lower()):
-            if leveh_distance <= 6:
-                if leveh_distance > 1:
-                    logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
-                add_paper_citation(hit, cnx, key)
-                add_authors_citations(hit, cnx, title, paper_id)
-                break
-        except NoSuchElementException:
-            continue
 
 
-def update_paper_citations_info(cnx, key, citations):
+    if in_captcha_page():
+        print "redirected to captcha"
+
+    try:
+        #wait
+        scholar_hits = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "gs_ri")))
+        time.sleep(2)
+
+        for hit in scholar_hits:
+            info_hit = hit.find_element_by_class_name("gs_rt")
+            try:
+                title_hit = info_hit.find_element_by_tag_name("a").text
+                leveh_distance = nltk.metrics.edit_distance(re.sub(r'\s+', '', title_hit.lower()), re.sub(r'\s+', '', title.lower()))
+                #if re.sub(r'\s+', '', title_hit.lower()) in re.sub(r'\s+', '', title.lower()):
+                if leveh_distance <= 6:
+                    if leveh_distance > 1:
+                        logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
+                    add_paper_citation(hit, cnx, paper_id)
+                    add_authors_citations(hit, cnx, title, paper_id)
+                    break
+                elif 7 <= leveh_distance <= 12:
+                    logging.warning("unmatch: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
+            except NoSuchElementException:
+                continue
+    except TimeoutException:
+        logging.warning("result not found for " + title)
+
+
+def update_paper_citations_info(cnx, paper_id, citations):
     cursor = cnx.cursor()
-    query = "UPDATE aux_dblp_inproceedings_tracks SET citations = %s WHERE dblp_key = %s"
-    arguments = [citations, key]
+    query = "UPDATE aux_dblp_inproceedings_tracks SET citations = %s, tracked_at = %s WHERE dblp_id = %s"
+    arguments = [citations, get_current_day(), paper_id]
     cursor.execute(query, arguments)
     cnx.commit()
     cursor.close()
 
-    # #check if the citations have already been set
-    # cursor = cnx.cursor()
-    # query = "SELECT citations FROM aux_dblp_inproceedings_tracks WHERE dblp_key = %s"
-    # arguments = [key]
-    # cursor.execute(query, arguments)
-    # cit = cursor.fetchone()[0]
-    #
-    # #if citations are null
-    # if cit is None:
-    #     query = "UPDATE aux_dblp_inproceedings_tracks SET citations = %s WHERE dblp_key = %s"
-    #     arguments = [citations, key]
-    #     cursor.execute(query, arguments)
-    #     cnx.commit()
-    # cursor.close()
-    # #TODO if citations are not null, we should update this number from one year to the next
 
-
-def add_citation_info(cnx):
+def collect_citation_info(cnx, query, arguments):
     conf_cursor = cnx.cursor()
-    query = "SELECT id, dblp_key, title " \
-            "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE citations IS NULL"
-    conf_cursor.execute(query)
-    # query = "SELECT id, dblp_key, title " \
-    #         "FROM dblp_pub_new pub " \
-    #         "WHERE dblp_key IS NOT NULL AND title IS NOT NULL " \
-    #         "AND type NOT IN ('www', 'phdthesis', 'masterthesis')" \
-    #         "AND dblp_key NOT LIKE %s " \
-    #         "AND year >= 2003 " \
-    #         "AND NOT EXISTS (SELECT DISTINCT dblp_key " \
-    #                         "FROM aux_dblp_inproceedings_tracks " \
-    #                         "WHERE pub.dblp_key = dblp_key AND citations IS NOT NULL) " \
-    #         "AND NOT EXISTS (SELECT DISTINCT paper_id " \
-    #                         "FROM aux_scholar_authors " \
-    #                         "WHERE paper_id = pub.id) " \
-    #         "AND source IN (" + shared.CONFERENCES + ")"
-    #arguments = ['dblpnote%']
-    #conf_cursor.execute(query, arguments)
+    if arguments:
+        conf_cursor.execute(query, arguments)
+    else:
+        conf_cursor.execute(query)
     row = conf_cursor.fetchone()
     while row is not None:
         paper_id = row[0]
@@ -307,13 +279,32 @@ def add_citation_info(cnx):
     conf_cursor.close()
 
 
+def update_citation_info(cnx):
+    query = "SELECT dblp_id, dblp_key, title " \
+            "FROM aux_dblp_inproceedings_tracks " \
+            "WHERE tracked_at < %s"
+    arguments = [UPDATED_BEFORE]
+    collect_citation_info(cnx, query, arguments)
+
+
+def add_citation_info(cnx):
+    query = "SELECT dblp_id, dblp_key, title " \
+            "FROM aux_dblp_inproceedings_tracks " \
+            "WHERE citations IS NULL"
+    arguments = []
+    collect_citation_info(cnx, query, arguments)
+
+
 def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
-    with open(LOG_FILENAME, "w") as log_file:
+    with open(LOG_FILENAME, "a") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**dbconnection.CONFIG)
 
-    add_citation_info(cnx)
+    if UPDATE_CITATIONS:
+        update_citation_info(cnx)
+    else:
+        add_citation_info(cnx)
     driver.close()
     cnx.close()
 

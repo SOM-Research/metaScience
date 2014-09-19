@@ -16,27 +16,34 @@ import database_connection_config as dbconnection
 #TYPE can be "conference", "workshop" or "symposium"
 #MONTH is the month when the conference takes place
 #
-#Currently, the script has been tuned to collect only the information for the following conferences from 2003:
-#ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
-#MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
-#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
-#
 #The table AUX_DBLP_PROCEEDINGS is derived from DBLP_PUB_NEW
-#Below the mysql script to generate the AUX_DBLP_PROCEEDINGS is shown
-# create table dblp.aux_dblp_proceedings as
-# select id as dblp_id, dblp_key, url, source, year
-# from dblp.dblp_pub_new where type = 'proceedings';
-#
-# alter table dblp.aux_dblp_proceedings
-# add column id int(11) primary key auto_increment first,
-# add column location varchar(256),
-# add column type varchar(25),
-# add column month varchar(25),
-# add column rank varchar(10),
-# add index dblp_key (dblp_key);
 
 LOG_FILENAME = 'logger_conference_info.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+
+
+def get_dblp_full_name_conference(dblp_key):
+    title = ""
+    conf_info = dblp_key.split("/")
+    link = "db/" + conf_info[0] + "/" + conf_info[1] + "/" + "index.html"
+    driver.get(shared.DBLP + "/" + link)
+    try:
+        title = re.sub("\(.*\)", "", driver.find_element_by_id("headline").find_element_by_tag_name("h1").text)
+    except NoSuchElementException:
+        logging.info("title for " + link + " not found!")
+
+    return title
+
+
+def update_title_conference(cnx, dblp_key, id):
+    title = get_dblp_full_name_conference(dblp_key)
+
+    cursor = cnx.cursor()
+    query = "UPDATE aux_dblp_proceedings SET title = %s WHERE id = %s"
+    arguments = [title, id]
+    cursor.execute(query, arguments)
+    cnx.commit()
+    cursor.close()
 
 
 def get_dblp_proceedings(url, dblp_key):
@@ -69,10 +76,10 @@ def get_dblp_proceedings(url, dblp_key):
     # return driver
 
 
-def update_location_info(cnx, id, conf):
+def update_location_info(cnx, location, id):
     cursor = cnx.cursor()
     query = "UPDATE aux_dblp_proceedings SET location = %s WHERE id = %s"
-    arguments = [id, conf]
+    arguments = [location, id]
     cursor.execute(query, arguments)
     cnx.commit()
     cursor.close()
@@ -88,7 +95,7 @@ def update_type_proceedings(cnx, dblp_key, title):
     elif 'symposium' in title.lower():
         type = 'symposium'
 
-    query = "UPDATE aux_dblp_proceedings SET type = %s WHERE dblp_key = %s"
+    query = "UPDATE aux_dblp_proceedings SET type = %s WHERE BINARY dblp_key = %s"
     arguments = [type, dblp_key]
     cursor.execute(query, arguments)
     cnx.commit()
@@ -124,7 +131,7 @@ def update_month_proceedings(cnx, dblp_key, title):
     elif 'december' in title.lower():
         month = 'december'
 
-    query = "UPDATE aux_dblp_proceedings SET month = %s WHERE dblp_key = %s"
+    query = "UPDATE aux_dblp_proceedings SET month = %s WHERE BINARY dblp_key = %s"
     arguments = [month, dblp_key]
     cursor.execute(query, arguments)
     cnx.commit()
@@ -134,7 +141,7 @@ def update_month_proceedings(cnx, dblp_key, title):
 
 def update_proceedings(cnx, dblp_key):
     cursor = cnx.cursor()
-    query = "SELECT title FROM dblp_pub_new WHERE type='proceedings' AND dblp_key = %s"
+    query = "SELECT title FROM dblp_pub_new WHERE type='proceedings' AND BINARY dblp_key = %s"
     arguments = [dblp_key]
     cursor.execute(query, arguments)
     title = cursor.fetchone()[0]
@@ -148,6 +155,7 @@ def add_proceedings_info(cnx, id):
     query = "SELECT id, dblp_key, url " \
             "FROM aux_dblp_proceedings " \
             "WHERE dblp_key IS NOT NULL AND " \
+            "title IS NULL AND " \
             "location IS NULL AND " \
             "type IS NULL AND " \
             "month IS NULL AND " \
@@ -156,10 +164,13 @@ def add_proceedings_info(cnx, id):
     arguments = [id]
     conf_cursor.execute(query, arguments)
     row = conf_cursor.fetchone()
+    proceedings = "empty"
     while row is not None:
         id = row[0]
         dblp_key = row[1]
         proceedings = row[2]
+
+        update_title_conference(cnx, dblp_key, id)
 
         proceedings_page = get_dblp_proceedings(proceedings, dblp_key)
         try:

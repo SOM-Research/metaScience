@@ -12,18 +12,8 @@ import database_connection_config as dbconnection
 #The RANK is retrieved from the link pointed by COMPUTER_SCIENCE_CONFERENCE_RANK
 #
 #The table AUX_DBLP_PROCEEDINGS is derived from DBLP_PUB_NEW
-#Below the mysql script to generate the AUX_DBLP_PROCEEDINGS is shown
-# create table dblp.aux_dblp_proceedings as
-# select id as dblp_id, dblp_key, url, source, year
-# from dblp.dblp_pub_new where type = 'proceedings';
-#
-# alter table dblp.aux_dblp_proceedings
-# add column id int(11) primary key auto_increment first,
-# add column location varchar(256),
-# add column type varchar(25),
-# add column month varchar(25),
-# add column rank varchar(10),
-# add index dblp_key (dblp_key);
+
+#Note that this script will be removed in the next version
 
 
 

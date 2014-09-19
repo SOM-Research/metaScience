@@ -95,7 +95,7 @@ def get_abstract_from_computersociety():
     return abstract
 
 
-def add_abstract_to_paper(hit, cnx, key):
+def add_abstract_to_paper(hit, cnx, id, key):
     hit.click()
     time.sleep(1)
     url = driver.current_url
@@ -115,10 +115,10 @@ def add_abstract_to_paper(hit, cnx, key):
     else:
         logging.info("define a parser for " + url)
 
-    insert_paper_abstract_info(cnx, key, abstract)
+    insert_paper_abstract_info(cnx, id, key, abstract)
 
 
-def find_paper_in_scholar(cnx, title, key):
+def find_paper_in_scholar(cnx, title, id, key):
     driver.get(SCHOLAR)
     try:
         search_box = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "gs_hp_tsi")))
@@ -135,7 +135,7 @@ def find_paper_in_scholar(cnx, title, key):
                 if leveh_distance <= 6:
                     if leveh_distance > 1:
                         logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
-                    add_abstract_to_paper(hit_link, cnx, key)
+                    add_abstract_to_paper(hit_link, cnx, id, key)
 
                     break
             except NoSuchElementException:
@@ -145,10 +145,10 @@ def find_paper_in_scholar(cnx, title, key):
 
 
 
-def insert_paper_abstract_info(cnx, key, abstract):
+def insert_paper_abstract_info(cnx, id, key, abstract):
     cursor = cnx.cursor()
-    query = "INSERT aux_dblp_inproceedings_abstract VALUES (%s, %s)"
-    arguments = [key, abstract]
+    query = "INSERT aux_dblp_inproceedings_abstract VALUES (%s, %s, %s)"
+    arguments = [id, key, abstract]
     cursor.execute(query, arguments)
     cnx.commit()
     cursor.close()
@@ -156,15 +156,16 @@ def insert_paper_abstract_info(cnx, key, abstract):
 
 def add_abstract_info(cnx):
     conf_cursor = cnx.cursor()
-    query = "SELECT dblp_key, title " \
+    query = "SELECT dblp_id, dblp_key, title " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE dblp_key NOT IN (SELECT dblp_key FROM aux_dblp_inproceedings_abstract)"
+            "WHERE dblp_id NOT IN (SELECT dblp_id FROM aux_dblp_inproceedings_abstract)"
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
     while row is not None:
-        key = row[0]
-        title = row[1]
-        find_paper_in_scholar(cnx, title, key)
+        id = row[0]
+        key = row[1]
+        title = row[2]
+        find_paper_in_scholar(cnx, title, id, key)
         row = conf_cursor.fetchone()
     conf_cursor.close()
 
