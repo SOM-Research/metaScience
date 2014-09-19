@@ -17,7 +17,6 @@ public class Pooling {
 			instance = new Pooling();
 			initContext();
 		}
-		
 		return instance;
 	}
 	
@@ -36,7 +35,8 @@ public class Pooling {
 	public Connection getConnection() {
 		Connection connection = null;
 		try {
-			connection = dataSource.getConnection();
+            if(dataSource == null) initContext();
+            connection = dataSource.getConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

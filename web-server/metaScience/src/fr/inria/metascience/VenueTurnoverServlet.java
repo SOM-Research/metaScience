@@ -11,17 +11,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Iterator;
 
 /**
  * Simple servlet to calculate the persihing rate
  */
-@WebServlet("/venuePerishing")
-public class VenuePerishingServlet extends AbstractMetaScienceServlet {
+@WebServlet("/venueTurnover")
+public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,14 +29,20 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
         if(venueId == null)
             throw new ServletException("The id cannot be null");
 
-        JsonObject response = getPershingRate(venueId);
+        JsonObject response = getTurnoverInfo(venueId);
 
         resp.setContentType("text/x-json;charset=UTF-8");
         PrintWriter pw = resp.getWriter();
         pw.append(response.toString());
     }
 
-    private JsonObject getPershingRate(String venueId) throws ServletException {
+    /**
+     * Obtains the turnover information for a venue
+     * @param venueId
+     * @return
+     * @throws ServletException
+     */
+    private JsonObject getTurnoverInfo(String venueId) throws ServletException {
         Connection con = Pooling.getInstance().getConnection();
         Statement stmt = null;
         ResultSet rs = null;
@@ -48,7 +51,14 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
         JsonObject perishingData = new JsonObject();
         JsonObject survivedData = new JsonObject();
         try {
+            // We first call the procedure that will fill the table if the data is still not there
+            String query1 = "{call dblp.get_perished_survived_authors('" + venueId + "')}";
+            CallableStatement cs = con.prepareCall(query1);
+            cs.execute();
+
             // Getting the data yearly
+            // We get the number of perished authors per year AND
+            // We get the number of survived authors per year
             String query2 = "SELECT p.perished AS perished, s.survived AS survived, p.period AS period " +
                     "FROM " +
                         " (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p, " +
@@ -58,6 +68,7 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
             stmt = con.createStatement();
             rs = stmt.executeQuery(query2);
 
+            // 1. Creating the info regarding the perished/survived
             JsonArray perishedYearlyValues = new JsonArray();
             JsonArray perishedYearlyRates = new JsonArray();
             perishedYearlyRates.add(new JsonPrimitive("Perished"));
@@ -68,6 +79,7 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
             survivedYearlyRates.add(new JsonPrimitive("Survived"));
             JsonArray survivedYearlyYears = new JsonArray();
             survivedYearlyYears.add(new JsonPrimitive("x2"));
+            // 1.1. Yearly
             while(rs.next()) {
                 float perished = rs.getFloat("perished");
                 float survived = rs.getFloat("survived");
@@ -82,6 +94,7 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
                 survivedYearlyRates.add(new JsonPrimitive(String.valueOf(survived / (perished + survived))));
                 survivedYearlyYears.add(new JsonPrimitive(year));
             }
+            // 1.2 Average
             Iterator<JsonElement> perishedIterator = perishedYearlyValues.iterator();
             float totalPerished = 0;
             while(perishedIterator.hasNext()) {
@@ -96,7 +109,7 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
                 totalSurvived += value;
             }
 
-
+            // 2. preparing the final JSON objects
             JsonArray perishedYearly = new JsonArray();
             perishingData.addProperty("avg", String.valueOf(totalPerished / (totalPerished + totalSurvived)).substring(0, 4));
             perishedYearly.add(perishedYearlyValues);
@@ -122,6 +135,7 @@ public class VenuePerishingServlet extends AbstractMetaScienceServlet {
             }
         }
 
+        // Building the result
         JsonObject result = new JsonObject();
         result.add("perished", perishingData);
         result.add("survived", survivedData);

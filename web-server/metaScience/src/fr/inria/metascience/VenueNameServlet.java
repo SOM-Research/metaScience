@@ -17,12 +17,11 @@ import com.google.gson.JsonObject;
 
 /**
  * Simple servlet to get the name from an id
- *
  */
 @WebServlet("/venueName")
 public class VenueNameServlet extends AbstractMetaScienceServlet {
 	private static final long serialVersionUID = 3L;
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		addResponseOptions(resp);
@@ -32,7 +31,6 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 		if(venueId == null) 
 			throw new ServletException("The id cannot be null");
 		
-		// TODO Ask the database the name for venueId venue
 		String venueName = getNameForVenueId(venueId);
 		
 		JsonObject response = new JsonObject();
@@ -61,7 +59,7 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 	        if (rs.next())
 	        	venueName = rs.getString("title");
 		} catch (SQLException e) {
-			throw new ServletException("Error getting the Id for the venue", e);
+			throw new ServletException("Error accesing the database", e);
 		} finally {
 			try {
 				if(stmt != null) stmt.close();
