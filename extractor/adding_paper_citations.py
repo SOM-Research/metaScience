@@ -16,6 +16,7 @@ import database_connection_config as dbconnection
 import datetime
 from selenium.common.exceptions import TimeoutException
 
+#Launch this script in debug mode and put a break point on the instruction "print "redirected to captcha"
 #This script performs two actions:
 #1) For each paper presents in the table aux_dblp_inproceedings_tracks,
 #   the script gathers (via Selenium) the current number of CITATIONS
