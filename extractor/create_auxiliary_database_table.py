@@ -12,6 +12,7 @@ import database_connection_config as dbconnection
 # aux_dblp_proceedings
 # aux_program_committee
 # aux_scholar_authors
+# aux_dblp_inproceedings_abstract
 
 LOG_FILENAME = 'logger_update_database.log'
 
@@ -33,17 +34,18 @@ def create_auxiliary_tables(cnx):
                                        "(" \
                                        "name varchar(256), " \
                                        "citations numeric(15), " \
-                                       "citations2009 numeric(15), " \
+                                       "citations_5Y numeric(15), " \
                                        "indexH numeric(15), " \
-                                       "indexH2009 numeric(15), " \
+                                       "indexH_5Y numeric(15), " \
                                        "i10 numeric(15), " \
-                                       "i102009 numeric(15), " \
+                                       "i10_5Y numeric(15), " \
                                        "interests text, " \
                                        "dblp_author_id numeric(15), " \
-                                       "paper_id numeric(15), " \
+                                       "dblp_paper_id numeric(15), " \
                                        "author_url text, " \
-                                       "primary key (name, dblp_author_id), " \
-                                       "index paper_id (paper_id)" \
+                                       "tracked_at date, " \
+                                       "primary key (name, dblp_author_id, tracked_at), " \
+                                       "index dblp_paper_id (dblp_paper_id)" \
                                        ");"
     cursor.execute(create_table_aux_scholar_authors)
 
@@ -55,10 +57,12 @@ def create_auxiliary_tables(cnx):
                                    "url varchar(150), " \
                                    "source varchar(150), " \
                                    "year int(4), " \
+                                   "title varchar(255), " \
                                    "location varchar(256), " \
                                    "type varchar(25), " \
                                    "month varchar(25), " \
                                    "rank varchar(10), " \
+                                   "index dblp_id (dblp_id), " \
                                    "index dblp_key (dblp_key)" \
                                    ");"
     cursor.execute(create_table_aux_proceedings)
@@ -75,20 +79,20 @@ def create_auxiliary_tables(cnx):
                                             "subtrack1 varchar(256), " \
                                             "subtrack2 varchar(256), " \
                                             "citations numeric(10), " \
+                                            "tracked_at date, " \
                                             "index dblp_id (dblp_id), " \
                                             "index url (url), " \
                                             "index dblp_key (dblp_key)" \
                                             ");"
     cursor.execute(create_table_aux_inproceedings_tracks)
 
-    cnx.commit()
-    cursor.close()
-
     create_table_aux_dblp_inproceedings_abstract = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_dblp_inproceedings_abstract" \
                                                    "(" \
                                                    "id int(11) primary key auto_increment, " \
+                                                   "dblp_id int(8), " \
                                                    "dblp_key varchar(150), " \
-                                                   "abstract text" \
+                                                   "abstract text, " \
+                                                   "index dblp_id (dblp_id)" \
                                                    ");"
     cursor.execute(create_table_aux_dblp_inproceedings_abstract)
 

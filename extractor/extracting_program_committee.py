@@ -14,24 +14,13 @@ import cross_module_variables as shared
 import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the PROGRAM COMMITTEE CHAIR and MEMBERS
-#for the editions from 2003 of the following conferences:
+#for the editions from 2003 of the conferences defined in the program_committee_info.json
+#Currently, we track
 #ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
 #MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
-#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA
-#It relies on a json file (program_committee_info.json).
+#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA, MSR
 #The configuration of the json file is explained clearly in the main()
-#
-#Such information is stored in the AUX_PROGRAM_COMMITTEE table
-#Below the mysql script to generate the AUX_PROGRAM_COMMITTEE is shown
-# CREATE TABLE dblp.aux_program_committee
-# (
-# 	name varchar(256),
-# 	conference varchar(256),
-# 	year numeric(5),
-# 	role varchar(10),
-# 	dblp_author_id numeric(15),
-# 	primary key (name, conference, year)
-# );
+
 
 LOG_FILENAME = 'logger_program_committee.log'
 GOOGLE = 'http://www.google.com'

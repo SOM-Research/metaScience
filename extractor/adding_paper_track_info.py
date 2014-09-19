@@ -14,18 +14,6 @@ import database_connection_config as dbconnection
 #
 #The TRACK and SUB-TRACK(s) information is stored in AUX_DBLP_INPROCEEDINGS_TRACKS
 #The table AUX_DBLP_INPROCEEDINGS_TRACKS is derived from DBLP_PUB_NEW
-#Below the mysql script to generate the AUX_DBLP_INPROCEEDINGS_TRACKS is shown
-# create table dblp.aux_dblp_inproceedings_tracks as
-# select id as dblp_id, dblp_key, crossref, url
-# from dblp.dblp_pub_new where type = 'inproceedings';
-#
-# alter table dblp.aux_dblp_inproceedings_tracks
-# add column id int(11) primary key auto_increment first,
-# add column track varchar(256),
-# add column subtrack1 varchar(256),
-# add column subtrack2 varchar(256),
-# add column citations numeric(10),
-# add index dblp_key (dblp_key);
 
 LOG_FILENAME = 'logger_paper_track.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
@@ -55,7 +43,7 @@ def collect_topics(topic, h_level, topics):
 
 def get_paper_for_conf_from_url(cnx, conf):
     cursor = cnx.cursor()
-    query = "SELECT dblp_key FROM aux_dblp_inproceedings_tracks WHERE url LIKE %s"
+    query = "SELECT dblp_key, dblp_id FROM aux_dblp_inproceedings_tracks WHERE url LIKE %s"
     arguments = [conf + '%']
     cursor.execute(query, arguments)
     data = cursor.fetchall()
@@ -65,7 +53,7 @@ def get_paper_for_conf_from_url(cnx, conf):
 
 def get_paper_for_conf_from_crossref(cnx, crossref):
     cursor = cnx.cursor()
-    query = "SELECT dblp_key FROM aux_dblp_inproceedings_tracks WHERE crossref = %s"
+    query = "SELECT dblp_key, dblp_id FROM aux_dblp_inproceedings_tracks WHERE BINARY crossref = %s"
     arguments = [crossref]
     cursor.execute(query, arguments)
     data = cursor.fetchall()
@@ -97,21 +85,21 @@ def get_page_conference_dblp(conf_url):
     # return driver
 
 
-def insert_topics(cnx, paper, topics):
+def insert_topics(cnx, paper_id, topics):
     if len(topics) == 3:
-        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s, subtrack1 = %s, subtrack2 = %s WHERE dblp_key = %s"
-        arguments = [topics[2], topics[1], topics[0], paper]
+        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s, subtrack1 = %s, subtrack2 = %s WHERE dblp_id = %s"
+        arguments = [topics[2], topics[1], topics[0], paper_id]
     elif len(topics) == 2:
-        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s, subtrack1 = %s WHERE dblp_key = %s"
-        arguments = [topics[1], topics[0], paper]
+        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s, subtrack1 = %s WHERE dblp_id = %s"
+        arguments = [topics[1], topics[0], paper_id]
     elif len(topics) == 1:
-        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s WHERE dblp_key = %s"
-        arguments = [topics[0], paper]
+        query = "UPDATE aux_dblp_inproceedings_tracks SET track = %s WHERE dblp_id = %s"
+        arguments = [topics[0], paper_id]
     elif len(topics) == 0:
-        query = "UPDATE aux_dblp_inproceedings_tracks SET track = 'Main' WHERE dblp_key = %s"
-        arguments = [paper]
+        query = "UPDATE aux_dblp_inproceedings_tracks SET track = 'Main' WHERE dblp_id = %s"
+        arguments = [paper_id]
     else:
-        print('paper: ' + paper + ' topics: ' + str(topics))
+        print('paper_id: ' + paper_id + ' topics: ' + str(topics))
 
     if len(topics) <= 3:
         cursor = cnx.cursor()
@@ -139,7 +127,7 @@ def add_track_info_from_url(cnx):
                     topics = collect_topics(topic, find_header(topic), [topic.text])
                 except NoSuchElementException:
                     topics = []
-                insert_topics(cnx, paper[0], topics)
+                insert_topics(cnx, paper[1], topics)
             row = conf_cursor.fetchone()
         except:
             if conference_url is not None:
@@ -170,7 +158,7 @@ def add_track_info_from_crossref(cnx):
                     topics = collect_topics(topic, find_header(topic), [topic.text])
                 except NoSuchElementException:
                     topics = []
-                insert_topics(cnx, paper[0], topics)
+                insert_topics(cnx, paper[1], topics)
             row = conf_cursor.fetchone()
         except:
             if conference_url is not None:

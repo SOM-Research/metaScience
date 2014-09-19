@@ -15,7 +15,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import database_connection_config as dbconnection
 
+#Launch this script in debug mode and put a break point on the instruction "print "redirected to captcha"
 
+#This script looks for paper abstracts
 SCHOLAR = 'http://scholar.google.com'
 LOG_FILENAME = 'logger_paper_abstract.log'
 WAIT_TIME = 10
@@ -33,73 +35,87 @@ def get_abstract_from_ieeexplore():
 
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.XPATH, "//div[@class='article']/p")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "(//div[@class='article'])[1]/p")))
         if abstract_container:
-            abstract = abstract_container[0].text
+            abstract = abstract_container.text
         else:
             logging.info("abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
+
+    if abstract == "":
+        logging.info("abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_springer():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.XPATH, "//div[starts-with(@class, 'abstract-content')]/p")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "(//div[starts-with(@class, 'abstract-content')])[1]/p")))
         if abstract_container:
-            abstract = abstract_container[0].text
+            abstract = abstract_container.text
         else:
             logging.info("abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
+
+    if abstract == "":
+        logging.info("abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_acm():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.ID, "abstract")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, "abstract")))
         if abstract_container:
-            abstract = abstract_container[0].text
+            abstract = abstract_container.text
         else:
             logging.info("abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
+
+    if abstract == "":
+        logging.info("abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_sciencedirect():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.XPATH, "//div[starts-with(@class, 'abstract')]/p")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "(//div[starts-with(@class, 'abstract')])[1]/p")))
         if abstract_container:
-            abstract = abstract_container[0].text
+            abstract = abstract_container.text
         else:
             logging.info("abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
+
+    if abstract == "":
+        logging.info("abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_computersociety():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "abs-articlesummary")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.CLASS_NAME, "abs-articlesummary")))
         if abstract_container:
-            abstract = abstract_container[0].text
+            abstract = abstract_container.text
         else:
             logging.info("abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
+
+    if abstract == "":
+        logging.info("abstract not loaded for: " + driver.current_url)
     return abstract
 
 
-def add_abstract_to_paper(hit, cnx, key):
+def add_abstract_to_paper(hit, cnx, id, key):
     hit.click()
     time.sleep(1)
     url = driver.current_url
-
     abstract = ""
 
     if IEEEXPLORE in url:
@@ -115,40 +131,66 @@ def add_abstract_to_paper(hit, cnx, key):
     else:
         logging.info("define a parser for " + url)
 
-    insert_paper_abstract_info(cnx, key, abstract)
+    insert_paper_abstract_info(cnx, id, key, abstract)
 
 
-def find_paper_in_scholar(cnx, title, key):
+def in_captcha_page():
+    time.sleep(1)
+    flag = True
+    try:
+        capcha = driver.find_element_by_id("gs_captcha_ccl")
+    except:
+        flag = False
+
+    if not flag:
+        try:
+            capcha = driver.find_element_by_xpath("form/input[name='captcha']")
+        except:
+            flag = False
+
+    return flag
+
+
+def find_paper_in_scholar(cnx, title, id, key):
     driver.get(SCHOLAR)
     try:
         search_box = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "gs_hp_tsi")))
         search_box.send_keys(title + Keys.RETURN)
 
-        scholar_hits = driver.find_elements_by_class_name("gs_ri")
+        if in_captcha_page():
+            print "redirected to captcha"
 
-        for hit in scholar_hits:
-            info_hit = hit.find_element_by_class_name("gs_rt")
-            try:
-                hit_link = info_hit.find_element_by_tag_name("a")
-                title_hit = hit_link.text
-                leveh_distance = nltk.metrics.edit_distance(re.sub(r'\s+', '', title_hit.lower()), re.sub(r'\s+', '', title.lower()))
-                if leveh_distance <= 6:
-                    if leveh_distance > 1:
-                        logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
-                    add_abstract_to_paper(hit_link, cnx, key)
+        try:
+            #wait
+            scholar_hits = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "gs_ri")))
+            time.sleep(2)
 
-                    break
-            except NoSuchElementException:
-                continue
+            for hit in scholar_hits:
+                info_hit = hit.find_element_by_class_name("gs_rt")
+                try:
+                    hit_link = info_hit.find_element_by_tag_name("a")
+                    title_hit = hit_link.text
+                    leveh_distance = nltk.metrics.edit_distance(re.sub(r'\s+', '', title_hit.lower()), re.sub(r'\s+', '', title.lower()))
+                    if leveh_distance <= 6:
+                        if leveh_distance > 1:
+                            logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
+                        add_abstract_to_paper(hit_link, cnx, id, key)
+
+                        break
+                except NoSuchElementException:
+                    continue
+        except TimeoutException:
+            logging.warning("abstract not found for " + title)
+
     except TimeoutException:
         logging.info("Google Scholar not loaded")
 
 
 
-def insert_paper_abstract_info(cnx, key, abstract):
+def insert_paper_abstract_info(cnx, id, key, abstract):
     cursor = cnx.cursor()
-    query = "INSERT aux_dblp_inproceedings_abstract VALUES (%s, %s)"
-    arguments = [key, abstract]
+    query = "INSERT aux_dblp_inproceedings_abstract VALUES (NULL, %s, %s, %s)"
+    arguments = [id, key, abstract]
     cursor.execute(query, arguments)
     cnx.commit()
     cursor.close()
@@ -156,15 +198,21 @@ def insert_paper_abstract_info(cnx, key, abstract):
 
 def add_abstract_info(cnx):
     conf_cursor = cnx.cursor()
-    query = "SELECT dblp_key, title " \
+
+    query = "SELECT dblp_id, dblp_key, title " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE dblp_key NOT IN (SELECT dblp_key FROM aux_dblp_inproceedings_abstract)"
+            "WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(crossref, '/', 2), '/', -1) = 'msr'"
+    # query = "SELECT dblp_id, dblp_key, title " \
+    #         "FROM aux_dblp_inproceedings_tracks " \
+    #         "WHERE dblp_id NOT IN (SELECT dblp_id FROM aux_dblp_inproceedings_abstract)"
+
     conf_cursor.execute(query)
     row = conf_cursor.fetchone()
     while row is not None:
-        key = row[0]
-        title = row[1]
-        find_paper_in_scholar(cnx, title, key)
+        id = row[0]
+        key = row[1]
+        title = row[2]
+        find_paper_in_scholar(cnx, title, id, key)
         row = conf_cursor.fetchone()
     conf_cursor.close()
 
