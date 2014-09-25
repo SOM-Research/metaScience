@@ -1,6 +1,7 @@
 package fr.inria.metascience;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.servlet.ServletException;
@@ -17,6 +18,9 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 
     /** Params used inthe servlets */
 	static final String ID_PARAM = "id";
+
+    /** Some conference whose source/sourceId vary */
+    HashMap<String, String> preCachedVenues = new HashMap();
 	
 	/**
 	 * String to be used for CORS
@@ -25,6 +29,8 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 	
 	@Override
 	public void init() throws ServletException {
+        preCachedVenues.put("ecmfa", "ecmdafa");
+
 		try {
 			Properties properties = new Properties();
 			properties.load(getServletContext().getResourceAsStream("/WEB-INF/config.properties"));
