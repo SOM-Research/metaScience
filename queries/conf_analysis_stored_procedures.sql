@@ -154,28 +154,37 @@ END //
 
 CREATE PROCEDURE fill_pc_coauthored_papers_rate_table(IN dblp_source varchar(256), IN conference_name varchar(256))
 BEGIN
-	DECLARE exit_loop BOOLEAN;
-	DECLARE _exists VARCHAR(256);
+	DECLARE not_found BOOLEAN;
+	DECLARE _exists_table VARCHAR(256);
+	DECLARE _exists_entry VARCHAR(256);
 	DECLARE _cursor CURSOR FOR
 								SELECT TABLE_NAME 
 								FROM information_schema.tables 
-								WHERE TABLE_NAME = "_pc_coauthored_papers_rate";
-	DECLARE CONTINUE HANDLER FOR NOT FOUND SET exit_loop = TRUE;
+								WHERE TABLE_NAME = "_pc_coauthored_papers_rate";	
+	DECLARE _cursor_table CURSOR FOR
+								SELECT conf
+								FROM _pc_coauthored_papers_rate
+								WHERE conf = dblp_source; 
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET not_found = TRUE;
 	OPEN _cursor;
-	FETCH _cursor INTO _exists;
-	IF (exit_loop) THEN
+	FETCH _cursor INTO _exists_table;
+	IF (not_found) THEN
 		CLOSE _cursor;
 		CREATE TABLE _pc_coauthored_papers_rate (num_of_papers NUMERIC(11), 
 												num_of_coauthored_papers_pc_members NUMERIC(11), 
 												perc_of_coauthored_papers_pc_members DECIMAL(5,2),
 												perc_of_no_coauthored_papers_pc_members DECIMAL(5,2),
 												pub_year NUMERIC(11),
-												conf VARCHAR(256),
-												primary key (pub_year, conf));
+												conf VARCHAR(256));
 		CALL insert_pc_coauthored_papers_rate_for_conf(dblp_source, conference_name);
 	ELSE 
 		CLOSE _cursor;
-		CALL insert_pc_coauthored_papers_rate_for_conf(dblp_source, conference_name);
+		
+		OPEN _cursor_table;
+		FETCH _cursor_table INTO _exists_entry;
+		IF (not_found) THEN
+			CALL insert_pc_coauthored_papers_rate_for_conf(dblp_source, conference_name);
+		END IF;
 	END IF;
 END //
 
@@ -193,7 +202,7 @@ BEGIN
 	WHERE source = dblp_source and type = 'inproceedings'
 	group by year) as total_papers
 	JOIN
-	(SELECT count(paper_id) as num_of_coauthored_papers_pc_members, pub_year
+	(SELECT count(distinct paper_id) as num_of_coauthored_papers_pc_members, pub_year
 	FROM
 	(SELECT pub.id as paper_id, title, author_id, pub.year as pub_year 
 	FROM dblp_pub_new pub
