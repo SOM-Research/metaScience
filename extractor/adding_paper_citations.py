@@ -244,6 +244,7 @@ def add_scholar_citations(cnx, title, key, paper_id):
         scholar_hits = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "gs_ri")))
         time.sleep(2)
 
+        flag = 0
         for hit in scholar_hits:
             info_hit = hit.find_element_by_class_name("gs_rt")
             try:
@@ -255,11 +256,16 @@ def add_scholar_citations(cnx, title, key, paper_id):
                         logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
                     add_paper_citation(hit, cnx, paper_id)
                     add_authors_citations(hit, cnx, title, paper_id)
+                    flag = 1
                     break
                 elif 7 <= leveh_distance <= 12:
                     logging.warning("unmatch: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
             except NoSuchElementException:
                 continue
+
+        if flag == 0:
+            update_paper_citations_info(cnx, paper_id, -1)
+
     except TimeoutException:
         logging.warning("result not found for " + title)
 
@@ -327,7 +333,7 @@ def main():
     cnx = mysql.connector.connect(**dbconnection.CONFIG)
 
     #update_citation_info(cnx)
-    update_citation_info_by_id_interval(cnx, 220001, 2300000)
+    update_citation_info_by_id_interval(cnx, 1900001, 2000000)
     #update_citation_info_by_conference(cnx, "conf/icse/2006")
 
     driver.close()
