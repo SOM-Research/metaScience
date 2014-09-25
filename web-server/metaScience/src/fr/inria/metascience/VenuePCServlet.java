@@ -66,8 +66,8 @@ public class VenuePCServlet extends AbstractMetaScienceServlet {
             withoutPCYearlyYears.add(new JsonPrimitive("x2"));
 
             while(rs.next()) {
-                float withPC = rs.getFloat("withPC");
-                float withoutPC = rs.getFloat("withoutPC");
+                float withPC = rs.getFloat("withPC")/100;
+                float withoutPC = rs.getFloat("withoutPC")/100;
                 String year = rs.getString("year");
 
                 withPCYearlyRates.add(new JsonPrimitive(withPC));

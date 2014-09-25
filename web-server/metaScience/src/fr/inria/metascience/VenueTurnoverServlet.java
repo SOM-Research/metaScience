@@ -111,18 +111,14 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
 
             // 2. preparing the final JSON objects
             JsonArray perishedYearly = new JsonArray();
-            String avgPerishedDigested = "0";
-            if(totalPerished / (totalPerished + totalSurvived) > 0 ) String.valueOf(totalPerished / (totalPerished + totalSurvived)).substring(0, 4);
-            perishingData.addProperty("avg", avgPerishedDigested);
+            perishingData.addProperty("avg", String.valueOf((totalPerished / (totalPerished + totalSurvived))*100).substring(0, 5));
             perishedYearly.add(perishedYearlyValues);
             perishedYearly.add(perishedYearlyRates);
             perishedYearly.add(perishedYearlyYears);
             perishingData.add("yearly", perishedYearly);
 
             JsonArray survivedYearly = new JsonArray();
-            String avgSurviveddDigested = "0";
-            if(totalSurvived / (totalPerished + totalSurvived) > 0 ) String.valueOf(totalSurvived / (totalPerished + totalSurvived)).substring(0, 4);
-            survivedData.addProperty("avg", avgSurviveddDigested);
+            survivedData.addProperty("avg", String.valueOf((totalSurvived / (totalPerished + totalSurvived))*100).substring(0, 5));
             survivedYearly.add(survivedYearlyValues);
             survivedYearly.add(survivedYearlyRates);
             survivedYearly.add(survivedYearlyYears);
