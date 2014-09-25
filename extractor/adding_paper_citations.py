@@ -15,6 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import database_connection_config as dbconnection
 import datetime
 from selenium.common.exceptions import TimeoutException
+import sys
 
 #Launch this script in debug mode and put a break point on the instruction "print "redirected to captcha"
 #This script performs two actions:
@@ -30,7 +31,7 @@ SCHOLAR = 'http://scholar.google.com'
 LOG_FILENAME = 'logger_paper_citations.log'
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 UPDATE_CITATIONS = 0
-UPDATED_BEFORE = "01-01-2015"
+UPDATED_BEFORE = "0000-00-00"
 
 WAIT_TIME = 10
 
@@ -209,16 +210,15 @@ def in_captcha_page():
 
     if not flag:
         try:
-            capcha = driver.find_element_by_xpath("form/input[name='captcha']")
+            capcha = driver.find_elements_by_xpath("//input[@name='captcha']")
+            if capcha:
+                flag = True
         except:
             flag = False
-
     return flag
 
 
-def add_scholar_citations(cnx, title, key, paper_id):
-    driver.get(SCHOLAR)
-
+def send_keys_to_browser(title):
     try:
         search_box = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "gs_hp_tsi")))
     except TimeoutException:
@@ -227,8 +227,17 @@ def add_scholar_citations(cnx, title, key, paper_id):
     search_box.send_keys(title + Keys.RETURN)
 
 
+def add_scholar_citations(cnx, title, key, paper_id):
+    driver.get(SCHOLAR)
+
     if in_captcha_page():
         print "redirected to captcha"
+
+    send_keys_to_browser(title)
+
+    if in_captcha_page():
+        print "redirected to captcha"
+
 
     try:
         #wait
@@ -280,19 +289,34 @@ def collect_citation_info(cnx, query, arguments):
     conf_cursor.close()
 
 
+#update all citation info for all conferences, real time-consuming time
 def update_citation_info(cnx):
     query = "SELECT dblp_id, dblp_key, title " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE tracked_at < %s"
+            "WHERE tracked_at <= %s"
     arguments = [UPDATED_BEFORE]
     collect_citation_info(cnx, query, arguments)
 
 
-def add_citation_info(cnx):
+def update_citation_info_by_conference(cnx, crossref):
+    if crossref is None:
+        query = "SELECT dblp_id, dblp_key, title " \
+                "FROM aux_dblp_inproceedings_tracks " \
+                "WHERE crossref IS NULL and tracked_at <= %s"
+        arguments = [UPDATED_BEFORE]
+    else:
+        query = "SELECT dblp_id, dblp_key, title " \
+                "FROM aux_dblp_inproceedings_tracks " \
+                "WHERE crossref = %s and tracked_at <= %s"
+        arguments = [crossref, UPDATED_BEFORE]
+    collect_citation_info(cnx, query, arguments)
+
+#min 1376236	max 2745443
+def update_citation_info_by_id_interval(cnx, min, max):
     query = "SELECT dblp_id, dblp_key, title " \
             "FROM aux_dblp_inproceedings_tracks " \
-            "WHERE citations IS NULL"
-    arguments = []
+            "WHERE id >= %s and id <= %s and tracked_at <= %s"
+    arguments = [min, max, UPDATED_BEFORE]
     collect_citation_info(cnx, query, arguments)
 
 
@@ -302,10 +326,10 @@ def main():
         log_file.write('\n')
     cnx = mysql.connector.connect(**dbconnection.CONFIG)
 
-    if UPDATE_CITATIONS:
-        update_citation_info(cnx)
-    else:
-        add_citation_info(cnx)
+    #update_citation_info(cnx)
+    update_citation_info_by_id_interval(cnx, 220001, 2300000)
+    #update_citation_info_by_conference(cnx, "conf/icse/2006")
+
     driver.close()
     cnx.close()
 

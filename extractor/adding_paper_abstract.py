@@ -35,48 +35,53 @@ def get_abstract_from_ieeexplore():
 
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "(//div[@class='article'])[1]/p")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.visibility_of_element_located((By.XPATH, "(//div[@class='article'])[1]/p")))
         if abstract_container:
             abstract = abstract_container.text
         else:
-            logging.info("abstract not found for: " + driver.current_url)
+            logging.info("ieeexplore - abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
 
     if abstract == "":
-        logging.info("abstract not loaded for: " + driver.current_url)
+        logging.info("ieeexplore - abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_springer():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.XPATH, "(//div[starts-with(@class, 'abstract-content')])[1]/p")))
+        abstract_container = WebDriverWait(driver, WAIT_TIME).\
+            until(EC.presence_of_element_located((By.XPATH, "(//div[starts-with(@class, 'abstract-content')])[1]/p")))
         if abstract_container:
             abstract = abstract_container.text
         else:
-            logging.info("abstract not found for: " + driver.current_url)
+            logging.info("springer - abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
 
     if abstract == "":
-        logging.info("abstract not loaded for: " + driver.current_url)
+        logging.info("springer - abstract not loaded for: " + driver.current_url)
     return abstract
 
 
 def get_abstract_from_acm():
     abstract = ""
     try:
-        abstract_container = WebDriverWait(driver, WAIT_TIME).until(EC.visibility_of_element_located((By.ID, "abstract")))
+        WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.ID, "citationdetails")))
+        WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_element_located((By.CLASS_NAME, "tabbody")))
+        time.sleep(1)
+        abstract_container = driver.find_element_by_id("abstract")
         if abstract_container:
             abstract = abstract_container.text
         else:
-            logging.info("abstract not found for: " + driver.current_url)
+            logging.info("acm - abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
 
     if abstract == "":
-        logging.info("abstract not loaded for: " + driver.current_url)
+        logging.info("acm -abstract not loaded for: " + driver.current_url)
+
     return abstract
 
 
@@ -87,12 +92,12 @@ def get_abstract_from_sciencedirect():
         if abstract_container:
             abstract = abstract_container.text
         else:
-            logging.info("abstract not found for: " + driver.current_url)
+            logging.info("sciencedirect - abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
 
     if abstract == "":
-        logging.info("abstract not loaded for: " + driver.current_url)
+        logging.info("sciencedirect - abstract not loaded for: " + driver.current_url)
     return abstract
 
 
@@ -103,12 +108,12 @@ def get_abstract_from_computersociety():
         if abstract_container:
             abstract = abstract_container.text
         else:
-            logging.info("abstract not found for: " + driver.current_url)
+            logging.info("computersociety - abstract not found for: " + driver.current_url)
     except TimeoutException:
         logging.info("timeout for: " + driver.current_url)
 
     if abstract == "":
-        logging.info("abstract not loaded for: " + driver.current_url)
+        logging.info("computersociety - abstract not loaded for: " + driver.current_url)
     return abstract
 
 
