@@ -14,7 +14,7 @@ import cross_module_variables as shared
 import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the PROGRAM COMMITTEE CHAIR and MEMBERS
-#for the editions from 2003 of the conferences defined in the program_committee_info.json
+#for the editions from 2003 of the conferences defined in the pc_info.json
 #Currently, we track
 #ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
 #MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
@@ -344,7 +344,7 @@ def extract_member_name(mixed, member_name_separator, inverted_name, text):
             replacement = define_replacement(member_name_separator)
 
     if mixed == 'yes':
-        if ROLE == 'chair':
+        if ROLE in ('chair', 'c_board'):
             if 'chair' in text.lower():
                 if member_name_separator != '':
                     name = re.sub(replacement, '', text)
@@ -552,18 +552,18 @@ def check_input(json_entry, parser):
                       check_value('action', json_entry.get("action"), ['proc', 'skip']) and
                       check_value('containment', json_entry.get("containment"), ['single', 'all']) and
                       check_value('inverted_member_name', json_entry.get("inverted_member_name"), ['yes', 'no']) and
-                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'chair']) and
+                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'm_board', 'c_board', 'chair']) and
                       check_value('mixed_roles',json_entry.get("mixed_roles"), ['yes', 'no']))
         elif parser == "text":
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_TEXT and
                       check_type(json_entry.get('year'), 'year') and
-                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'chair']))
+                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'm_board', 'c_board', 'chair']))
         elif parser == "text_in_html":
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML and
                       check_type(json_entry.get('year'), 'year') and
                       check_value('mixed_roles',json_entry.get("mixed_roles"), ['yes', 'no']) and
                       check_value('inverted_member_name', json_entry.get("inverted_member_name"), ['yes', 'no']) and
-                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'chair']))
+                      check_value('extract_role', json_entry.get("extract_role"), ['member', 'm_board', 'c_board', 'chair']))
     else:
         logging.warning("parser " + parser + " unknown!"
                         +" conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
