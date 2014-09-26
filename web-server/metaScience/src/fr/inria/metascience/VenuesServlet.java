@@ -104,7 +104,7 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 							+ " FROM aux_dblp_proceedings"
 							+ " WHERE source IS NOT NULL AND "
 							+ " type = 'conference' AND "
-							+ " (source LIKE '%" + searchString + " %' OR title LIKE '%" + searchString + "%' ) ";
+							+ " (source LIKE '%" + searchString + "%' OR title LIKE '%" + searchString + "%' ) ";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
