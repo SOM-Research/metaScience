@@ -16,8 +16,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AbstractMetaScienceServlet extends HttpServlet {
 	private static final long serialVersionUID = 315L;
 
-    /** Params used inthe servlets */
+    /** Params used in the servlets */
 	static final String ID_PARAM = "id";
+    static final String SUBID_PARAM = "subid";
 
     /** Some conference whose source/sourceId vary */
     HashMap<String, String> preCachedVenues = new HashMap();

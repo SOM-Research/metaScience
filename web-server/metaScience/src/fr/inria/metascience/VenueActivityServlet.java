@@ -29,26 +29,30 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 		addResponseOptions(resp);
 
 		String venueId = req.getParameter(ID_PARAM);
+        String subVenueId = req.getParameter(SUBID_PARAM);
 
 		if(venueId == null) 
 			throw new ServletException("The id cannot be null");
 
 		//JsonObject response = testGetActivityForVenueId();
-		JsonObject response = getActivityForVenueId(venueId);
+		JsonObject response = getActivityForVenueId(venueId, subVenueId);
 
 		resp.setContentType("text/x-json;charset=UTF-8");    
 		PrintWriter pw = resp.getWriter();
 		pw.append(response.toString());
 	}
 
-	private JsonObject getActivityForVenueId(String source) throws ServletException {
+	private JsonObject getActivityForVenueId(String venue, String subvenue) throws ServletException {
 		Connection con = Pooling.getInstance().getConnection();
 		Statement stmt = null;
 		ResultSet rs = null;
 
         // Checking if we know the conference has different source / source_id
-        String sourceId = preCachedVenues.get(source);
-        if(sourceId == null) sourceId = source;
+        String sourceId = preCachedVenues.get(venue);
+        if(sourceId == null) sourceId = venue;
+
+        String source = subvenue;
+        if(subvenue == null) source = sourceId;
 
 		// Preparing the result
 		JsonObject authors = new JsonObject();
