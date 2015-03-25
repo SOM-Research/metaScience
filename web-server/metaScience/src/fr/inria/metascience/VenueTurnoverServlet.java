@@ -19,17 +19,21 @@ import java.util.Iterator;
  */
 @WebServlet("/venueTurnover")
 public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
+    /** Parameter indicating the span **/
+    static final String SPAN_PARAM = "span";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         addResponseOptions(resp);
 
         String venueId = req.getParameter(ID_PARAM);
+        String span = req.getParameter(SPAN_PARAM);
+        if(span == null) span = "1";
 
         if(venueId == null)
             throw new ServletException("The id cannot be null");
 
-        JsonObject response = getTurnoverInfo(venueId);
+        JsonObject response = getTurnoverInfo(venueId, span);
 
         resp.setContentType("text/x-json;charset=UTF-8");
         PrintWriter pw = resp.getWriter();
@@ -42,7 +46,7 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
      * @return
      * @throws ServletException
      */
-    private JsonObject getTurnoverInfo(String venueId) throws ServletException {
+    private JsonObject getTurnoverInfo(String venueId, String span) throws ServletException {
         Connection con = Pooling.getInstance().getConnection();
         Statement stmt = null;
         ResultSet rs = null;
@@ -52,7 +56,7 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
         JsonObject survivedData = new JsonObject();
         try {
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call dblp.get_perished_survived_authors('" + venueId + "')}";
+            String query1 = "{call dblp.get_perished_survived_authors('" + venueId + "', " + span + ")}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
 
@@ -61,8 +65,8 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
             // We get the number of survived authors per year
             String query2 = "SELECT p.perished AS perished, s.survived AS survived, p.period AS period " +
                     "FROM " +
-                        " (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p, " +
-                        " (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE conf= '" + venueId + "' AND status = 'survived' GROUP BY period) as s " +
+                        " (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p, " +
+                        " (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "' AND conf= '" + venueId + "' AND status = 'survived' GROUP BY period) as s " +
                     "WHERE p.period = s.period;";
 
             stmt = con.createStatement();
