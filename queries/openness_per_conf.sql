@@ -9,6 +9,9 @@ CREATE TABLE _openness_conf (
 	id int(11) primary key auto_increment,
 	number_of_papers numeric(8),
 	from_outsiders numeric(8),
+	from_community numeric(8),
+	new_authors numeric(8),
+	perc_new_authors decimal(8,2),
 	conf varchar(256),
 	year numeric(4),
 	index conf(conf),
@@ -19,7 +22,12 @@ DELIMITER //
 CREATE PROCEDURE openness_conference_at_year (IN year_x numeric(4), IN conf varchar(255))
 BEGIN
 	insert into _openness_conf
-	select NULL, count(*) as papers, sum(if (num_of_previous_authors = 0, 1, 0)) as outsiders, conf, year_x
+	select NULL, count(*) as papers,
+	sum(if (num_of_previous_authors = 0, 1, 0)) as outsiders,
+	sum(if (num_of_authors = num_of_previous_authors, 1, 0)) as from_community,
+	x_authors - previous_authors as new_authors,
+	truncate((((x_authors - previous_authors) / x_authors) * 100),2) as perc_new_authors,
+	conf, year_x
     from (
         select paper_id, count(x_year.author_id) as num_of_authors, count(previous_years.author_id) as num_of_previous_authors, year
             from (
@@ -38,7 +46,26 @@ BEGIN
             where type = 'inproceedings' and year < year_x and source = conf
             group by auth.author_id) as previous_years
         on x_year.author_id = previous_years.author_id
-    group by paper_id) as openness;
+    group by paper_id) as openness
+    join
+        (select count(distinct x_year.author_id) as x_authors, count(distinct previous_years.author_id) as previous_authors
+           from (
+            select auth.id as paper_id, auth.author_id, year
+            from dblp_pub_new pub
+            join
+            dblp_authorid_ref_new auth
+            on pub.id = auth.id
+            where type = 'inproceedings' and year = year_x and source = conf) as x_year
+        left join
+            (select auth.author_id
+            from dblp_pub_new pub
+            join
+            dblp_authorid_ref_new auth
+            on pub.id = auth.id
+            where type = 'inproceedings' and year < year_x and source = conf
+            group by auth.author_id) as previous_years
+        on x_year.author_id = previous_years.author_id) as authors_info
+    on 1 = 1;
 
 END //
 
