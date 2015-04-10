@@ -88,15 +88,15 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
                 float perished = rs.getFloat("perished");
                 float survived = rs.getFloat("survived");
                 String period = rs.getString("period");
-                String year = period.substring(period.indexOf("-") + 1, period.length());
+                //String year = period.substring(period.indexOf("-") + 1, period.length());
 
                 perishedYearlyValues.add(new JsonPrimitive(perished));
                 perishedYearlyRates.add(new JsonPrimitive(String.valueOf(perished / (perished + survived))));
-                perishedYearlyYears.add(new JsonPrimitive(year));
+                perishedYearlyYears.add(new JsonPrimitive(period));
 
                 survivedYearlyValues.add(new JsonPrimitive(survived));
                 survivedYearlyRates.add(new JsonPrimitive(String.valueOf(survived / (perished + survived))));
-                survivedYearlyYears.add(new JsonPrimitive(year));
+                survivedYearlyYears.add(new JsonPrimitive(period));
             }
             // 1.2 Average
             Iterator<JsonElement> perishedIterator = perishedYearlyValues.iterator();
@@ -115,20 +115,22 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
 
             // 2. preparing the final JSON objects
             JsonArray perishedYearly = new JsonArray();
-            perishingData.addProperty("avg", String.valueOf((totalPerished / (totalPerished + totalSurvived))*100).substring(0, 5));
+            String perishedAvgResult = String.valueOf((totalPerished / (totalPerished + totalSurvived))*100);
+            perishingData.addProperty("avg", perishedAvgResult.substring(0, (perishedAvgResult.length() < 5) ? perishedAvgResult.length() : 5));
             perishedYearly.add(perishedYearlyValues);
             perishedYearly.add(perishedYearlyRates);
             perishedYearly.add(perishedYearlyYears);
             perishingData.add("yearly", perishedYearly);
 
             JsonArray survivedYearly = new JsonArray();
-            survivedData.addProperty("avg", String.valueOf((totalSurvived / (totalPerished + totalSurvived))*100).substring(0, 5));
+            String survivedAvgResult = String.valueOf(String.valueOf((totalSurvived / (totalPerished + totalSurvived))*100));
+            survivedData.addProperty("avg", survivedAvgResult.substring(0, (survivedAvgResult.length() < 5) ? survivedAvgResult.length() : 5));
             survivedYearly.add(survivedYearlyValues);
             survivedYearly.add(survivedYearlyRates);
             survivedYearly.add(survivedYearlyYears);
             survivedData.add("yearly", survivedYearly);
         } catch (SQLException e) {
-            throw new ServletException("Error accesing the database", e);
+            throw new ServletException("Error accessing the database", e);
         } finally {
             try {
                 if(stmt != null) stmt.close();
