@@ -1,6 +1,6 @@
 # MetaScience
 
-MetaScience is a new online service we have developed to help on this critical matter. The current version relies on the database provided by DBLP, to derive some useful metrics for conferences and workshops. Such metrics show:
+MetaScience is a new online service we have developed to help researchers on analyzing conferences. The current version relies on the database provided by DBLP, to derive some useful metrics for conferences and workshops. Such metrics show:
 
 - **Conference activity**. It provides the overall number of authors and papers for each conference edition.
 - **Conference ratios**. It presents the number of authors per paper and papers per author for each edition.
