@@ -1,37 +1,10 @@
 USE dblp;
-DROP FUNCTION IF EXISTS calculate_num_of_pages;
 DROP PROCEDURE IF EXISTS fill_pc_coauthored_papers_rate_table;
 DROP PROCEDURE IF EXISTS insert_pc_coauthored_papers_rate_for_conf;
 
 DROP TABLE IF EXISTS _pc_coauthored_papers_rate;
 
 DELIMITER //
-CREATE FUNCTION calculate_num_of_pages(pages varchar(100)) RETURNS INTEGER 
-	DETERMINISTIC
-BEGIN
-	DECLARE page_number INTEGER;
-	DECLARE occ_dash INTEGER DEFAULT (LENGTH(pages) - LENGTH(REPLACE(pages, '-', '')));
-	DECLARE left_part INTEGER DEFAULT CONVERT(SUBSTRING_INDEX(pages, '-', 1), SIGNED INTEGER);
-	DECLARE right_part INTEGER DEFAULT CONVERT(SUBSTRING_INDEX(pages, '-', -1), SIGNED INTEGER);
-
-	IF occ_dash > 1 OR left_part = 0 OR right_part = 0 THEN
-		SET page_number = 1;
-	ELSE
-		IF right_part > left_part THEN
-			SET page_number = right_part - left_part;
-		ELSE
-			SET page_number = left_part - right_part;
-		END IF;
-
-        IF page_number = 0 THEN
-			SET page_number = 1;
-		END IF;
-	END IF;
-
-	RETURN page_number;
-
-END //
-
 CREATE PROCEDURE fill_pc_coauthored_papers_rate_table(IN dblp_source varchar(256), IN conference_name varchar(256))
 BEGIN
 	DECLARE not_found BOOLEAN;
