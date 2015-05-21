@@ -50,11 +50,13 @@ on target_author_papers.id = connected_author_papers.id
 group by connected_author_papers.author_id;
 
 /* number of pages per author per year for a given conference */
+/*
 select airn.author_id, airn.author, sum(calculate_num_of_pages(pub.pages)) as total_pages
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
 where source = 'icse' and type = 'inproceedings' and title NOT LIKE '%workshop%' and pages is not null
 group by airn.author_id;
+*/
 
 /* top regular author attendance for a given conference */
 select airn.author_id, airn.author, count(distinct year) as presence
@@ -73,3 +75,27 @@ where source = 'icse'
 group by airn.author_id
 order by publications desc
 limit 10;
+
+/* collaboration graph between authors of a given conference */
+select source_author_name, source_author_id, target_author_name, target_author_id, relation_strength
+from
+(
+select source_authors.author as source_author_name, source_authors.author_id as source_author_id,
+target_authors.author as target_author_name, target_authors.author_id as target_author_id,
+count(*) as relation_strength, source_authors.author_id * target_authors.author_id as connection_id
+from (
+select pub.id as pub, author, author_id
+from dblp_pub_new pub
+	join dblp_authorid_ref_new airn
+	on pub.id = airn.id
+where source = 'icse') as source_authors
+join
+(select pub.id as pub, author, author_id
+from dblp_pub_new pub
+	join dblp_authorid_ref_new airn
+	on pub.id = airn.id
+where source = 'icse') as target_authors
+on source_authors.pub = target_authors.pub and source_authors.author_id <> target_authors.author_id
+group by source_authors.author_id, target_authors.author_id) as x
+where relation_strength > 1
+group by connection_id;
