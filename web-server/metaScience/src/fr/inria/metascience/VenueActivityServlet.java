@@ -34,7 +34,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 		//JsonObject response = testGetActivityForVenueId();
 		JsonObject response = getActivityForVenueId(venueId, subVenueId);
 
-		resp.setContentType("text/x-json;charset=UTF-8");    
+		resp.setContentType("text/x-json;charset=UTF-8");
 		PrintWriter pw = resp.getWriter();
 		pw.append(response.toString());
 	}

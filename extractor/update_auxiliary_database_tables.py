@@ -19,8 +19,8 @@ import database_connection_config as dbconnection
 CREATE_DUMP_DB = 0
 UPDATE_DBLP_TABLES = 0
 UPDATE_AUX_TABLES = 1
-EXTRACT_ABSTRACTS = 1
-EXTRACT_PROGRAM_COMMITTEES = 1
+EXTRACT_ABSTRACTS = 0
+EXTRACT_PROGRAM_COMMITTEES = 0
 
 #activate manual/automatic process
 MANUAL = 0
@@ -96,7 +96,7 @@ def update_aux_dblp_inproceedings_tracks(cnx, starting_year):
 
     cursor = cnx.cursor()
     query = "INSERT INTO dblp.aux_dblp_inproceedings_tracks " \
-            "SELECT NULL, id as dblp_id, dblp_key, crossref, url, title, NULL, NULL, NULL, NULL " \
+            "SELECT NULL, id as dblp_id, dblp_key, crossref, url, CONVERT(CONVERT(title USING ascii) USING utf8), NULL, NULL, NULL, NULL,NULL " \
             "FROM dblp.dblp_pub_new where type = 'inproceedings' " \
             "AND id NOT IN (SELECT dblp_id FROM dblp.aux_dblp_inproceedings_tracks) " \
             "AND year >= " + str(starting_year) + " " \

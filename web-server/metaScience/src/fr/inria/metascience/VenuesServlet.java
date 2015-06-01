@@ -38,13 +38,13 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		// This list contains the list of JSON object representing venues
 		JsonArray venues = new JsonArray();
 		
-		if(searchString != null) {
+		if(searchString != null && !searchString.isEmpty()) {
 			// TODO Ask the database to retrieve those venues LIKE searchString
 			venues = this.getAllVenues(searchString);
-		} else {
+		} /*else {
 			// TODO Ask the database to retrieve ALL the venues (no search param)
 			venues = this.getAllVenues();
-		}
+		}*/
 		
 		// Building the response
 		JsonObject response = new JsonObject();
