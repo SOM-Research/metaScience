@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 
 @WebServlet("/coAuthorConnection")
@@ -22,7 +23,9 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 	private static final long serialVersionUID = 1L;
 	
 	private int total_collaborations;
+	private int total_collaborators;
 	private int max_collaborations;
+	private int avg_collaborations;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,7 +35,9 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 		System.out.println(authorId);
 		
 		total_collaborations = 0;
+		total_collaborators = 0;
 		max_collaborations = 0;
+		avg_collaborations = 0;
 		
 		if(authorId == null) {
 			throw new ServletException("The id can not be null");
@@ -137,6 +142,8 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				author.addProperty("name", authorName);
 				author.addProperty("total_collaborations", total_collaborations);
 				author.addProperty("max_collaborations", max_collaborations);
+				author.addProperty("total_collaborators", total_collaborators);
+				author.addProperty("average_collaborations", (double)total_collaborations/(double)total_collaborators);
 			}
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving author information fields from ResultSet",e);
@@ -156,6 +163,7 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				String coAuthorName = rs.getString("author");
 				Integer numCollaborations = rs.getInt("relation_strength");
 				total_collaborations += numCollaborations;
+				total_collaborators++;
 				if(numCollaborations > max_collaborations) {
 					max_collaborations = numCollaborations;
 				}

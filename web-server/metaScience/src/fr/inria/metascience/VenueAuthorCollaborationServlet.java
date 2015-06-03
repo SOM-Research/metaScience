@@ -92,7 +92,7 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 	        venueAuthorCollaboration = prepareVenueAuthorCollaboration(rs);
 	        
 		} catch (SQLException e) {
-			throw new ServletException("Error accesing the database", e);
+			throw new ServletException("Error accessing the database", e);
 		} finally {
 			try {
 				if(stmt != null) stmt.close();
@@ -126,6 +126,8 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 				AuthorPair authorPair = new AuthorPair(sourceAuthorId, targetAuthorId);
 				if(!authorLinksMap.containsKey(new AuthorPair(targetAuthorId,sourceAuthorId))) {
 					authorLinksMap.put(authorPair, relationStrength);
+				} else {
+					System.out.println("lol");
 				}
 			}
 			

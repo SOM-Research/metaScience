@@ -24,6 +24,8 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 	private int max_attendance;
 	private int total_publications;
 	private int max_publications;
+	private int average_attendance;
+	private int average_publications;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -35,6 +37,8 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 		total_publications = 0;
 		max_attendance = 0;
 		max_publications = 0;
+		average_attendance = 0;
+		average_publications = 0;
 		
 		if(authorId == null) 
 			throw new ServletException("The id cannot be null");
