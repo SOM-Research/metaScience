@@ -125,3 +125,13 @@ join dblp_author_ref_new arn on pub.id = arn.id
 where airn.author_id = 636270 and pages is not null
 group by pub.id) as pub_info
 group by pub_info.year;
+
+/* number of co-authors per year */
+select author_id, author, sum(coauthors), year
+from (
+select pub.id, pub.year, title, airn.author_id, airn.author, if(max(author_num) + 1 = 1, 0, max(author_num)) as coauthors
+from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
+join dblp_author_ref_new arn on pub.id = arn.id
+where airn.author_id = 636270 and pages is not null
+group by pub.id) as pub_info
+group by pub_info.year;
