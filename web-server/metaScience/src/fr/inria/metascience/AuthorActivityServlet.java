@@ -56,7 +56,6 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		if(authorId == null) 
 			throw new ServletException("The id cannot be null");
 
-		//JsonObject response = testGetActivityForVenueId();
 		JsonObject response = getActivityForAuthorId(authorId);
 
 		resp.setContentType("text/x-json;charset=UTF-8");    
@@ -69,72 +68,19 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		
 		JsonObject publicationsInformation = getPublicationInformation(authorId);
 		JsonObject publicationsTotals = getPublicationsTotals();
-		//JsonObject collaborationInformation = getCollaborationInformation(authorId);
 		
 		result.add("pub", publicationsTotals);
-		//result.add("collaborations",collaborationInformation);
 		result.add("publications", publicationsInformation);
 		
 		return result;
 		
 	}
 	
-//	private JsonObject getCollaborationInformation(String authorId) throws ServletException {
-//		JsonObject answer = new JsonObject();
-//		
-//		Connection con = Pooling.getInstance().getConnection();
-//		Statement stmt = null;
-//		ResultSet rs = null;
-//		
-//		try {
-//			String query = "SELECT COUNT(*) AS collaborations, AVG(collaborators) AS average"
-//					+ " FROM ("
-//					+ " 	SELECT target_author_papers.id, COUNT(*) AS collaborators"
-//					+ " 	FROM ("
-//					+ "			SELECT id"
-//					+ "			FROM dblp_authorid_ref_new airn"
-//					+ "			WHERE airn.author_id = " + authorId
-//					+ " 	) AS target_author_papers"
-//					+ " 	JOIN ("
-//					+ " 		SELECT id, author_id, author"
-//					+ "			FROM dblp_authorid_ref_new airn"
-//					+ "			WHERE airn.author_id <> " + authorId
-//					+ " 	) AS connected_author_papers"
-//					+ " 	ON target_author_papers.id = connected_author_papers.id"
-//					+ " 	GROUP BY connected_author_papers.id"
-//					+ " ) AS collaborations;";
-//	
-//	        stmt = con.createStatement();
-//	        rs = stmt.executeQuery(query);
-//	        
-//	        int totalCollaborations = 0;
-//        	double avgCollaborations = 0;
-//	        if(rs.next()) {
-//	        	totalCollaborations = rs.getInt("collaborations");
-//	        	avgCollaborations = rs.getDouble("average");
-//	        }
-//	        
-//	        answer.addProperty("total", totalCollaborations);
-//	        answer.add("avg", new JsonPrimitive(avgCollaborations));
-//		} catch (SQLException e) {
-//			throw new ServletException("Error accesing the database", e);
-//		} finally {
-//			try {
-//				if(stmt != null) stmt.close();
-//				if(rs != null) rs.close();
-//				if(con != null) con.close();
-//			} catch (SQLException e) {
-//				throw new ServletException("Impossible to close the connection", e);	
-//			}
-//		}
-//		return answer;
-//	}
-	
 	private JsonObject getPublicationsTotals() {
 		JsonObject publicationsTotals = new JsonObject();
 		
 		int total = totalArticles + totalBooks + totalIncollections + totalInproceedings + totalMasterThesis + totalPHDThesis + totalProceedings + totalWebsites;
-		double avgPublication = total / numberOfYear;
+		double avgPublication = (double)total / (double)numberOfYear;
 		
 		publicationsTotals.addProperty("total", total);
 		publicationsTotals.addProperty("totalArticles", totalArticles);

@@ -25,7 +25,7 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 	private int total_collaborations;
 	private int total_collaborators;
 	private int max_collaborations;
-	private int avg_collaborations;
+	private double avg_collaborations;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -143,7 +143,7 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				author.addProperty("total_collaborations", total_collaborations);
 				author.addProperty("max_collaborations", max_collaborations);
 				author.addProperty("total_collaborators", total_collaborators);
-				author.addProperty("average_collaborations", (double)total_collaborations/(double)total_collaborators);
+				author.addProperty("average_collaborations", avg_collaborations);
 			}
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving author information fields from ResultSet",e);
@@ -174,6 +174,8 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				collaborations.add(coAuthorObject);
 				
 			}
+			
+			avg_collaborations =  (double)total_collaborations/(double)total_collaborators;
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving collaboration field from the ResultSet", e);
 		}

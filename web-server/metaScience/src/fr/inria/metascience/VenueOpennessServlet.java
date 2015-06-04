@@ -19,7 +19,10 @@ import java.util.Iterator;
  */
 @WebServlet("/venueOpenness")
 public class VenueOpennessServlet extends AbstractMetaScienceServlet {
-    @Override
+    
+	private static final long serialVersionUID = 1L;
+
+	@Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         addResponseOptions(resp);
 

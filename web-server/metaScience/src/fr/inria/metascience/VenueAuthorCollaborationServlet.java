@@ -17,12 +17,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fr.inria.metascience.elements.Author;
 import fr.inria.metascience.elements.AuthorPair;
 
 @WebServlet("/venueAuthorCollaboration")
 public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private int maxCollaborations;
+	private int maxPublications;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -34,7 +38,16 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 		if(venueId == null) 
 			throw new ServletException("The id cannot be null");
 		
+		maxCollaborations = 0;
+		maxPublications = 0;
+		
 		JsonObject response = getVenueAuthorCollaboration(venueId,subVenueId);
+		
+		JsonObject propJson = new JsonObject();
+		propJson.addProperty("maxCollaborations", maxCollaborations);
+		propJson.addProperty("maxPublications", maxPublications);
+		response.add("prop", propJson);
+		
 		//JsonObject response = test();
 		
 		resp.setContentType("text/x-json;charset=UTF-8");
@@ -53,38 +66,59 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 
         String source = subVenueId; // THIS FIXES EVERYTHING
         if(subVenueId == null) source = sourceId;
-        System.out.println("source : " + source);
+        //System.out.println("source : " + source);
 		
 		Connection con = Pooling.getInstance().getConnection();
 		Statement stmt = null;
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT source_author_name, source_author_id, target_author_name, target_author_id, relation_strength"
+			String query = "SELECT connections.*, source_authors.publications AS source_author_publications, target_authors.publications AS target_author_publications"
 					+ " FROM ("
-					+ " 	SELECT source_authors.author AS source_author_name, source_authors.author_id AS source_author_id,"
-					+ "				target_authors.author as target_author_name, target_authors.author_id as target_author_id,"
-					+ "				COUNT(*) AS relation_strength, source_authors.author_id * target_authors.author_id AS connection_id"
+					+ "		SELECT source_author_name, source_author_id, target_author_name, target_author_id, relation_strength"
 					+ "		FROM ("
-					+ "			SELECT pub.id as pub, author, author_id"
-					+ "			FROM dblp_pub_new pub"
-					+ "			JOIN dblp_authorid_ref_new airn"
-					+ "			ON pub.id = airn.id"
-					+ "			WHERE source = '" + source + "'" 
-					+ "		) AS source_authors"
-					+ "		JOIN ("
-					+ "			SELECT pub.id as pub, author, author_id"
-					+ "			FROM dblp_pub_new pub"
-					+ "			JOIN dblp_authorid_ref_new airn"
-					+ "			ON pub.id = airn.id"
-					+ "			WHERE source = '" + source + "'"
-					+ "		) AS target_authors"
-					+ "		ON source_authors.pub = target_authors.pub"
-					+ "		AND source_authors.author_id <> target_authors.author_id"
-					+ "		GROUP BY source_authors.author_id, target_authors.author_id"
-					+ " ) AS x"
-					+ "	WHERE relation_strength > 1"
-					+ " GROUP BY connection_id;";
+					+ "			SELECT source_authors.author AS source_author_name, source_authors.author_id AS source_author_id,"
+					+ "						target_authors.author AS target_author_name, target_authors.author_id AS target_author_id,"
+					+ "						COUNT(*) AS relation_strength, source_authors.author_id * target_authors.author_id AS connection_id"
+					+ "			FROM ("
+					+ "				SELECT pub.id AS pub, author, author_id"
+					+ "				FROM dblp_pub_new pub"
+					+ "				JOIN dblp_authorid_ref_new airn"
+					+ "				ON pub.id = airn.id"
+					+ "				WHERE source = '" + source + "'"
+					+ "			) AS source_authors"
+					+ "			JOIN ("
+					+ "				SELECT pub.id AS pub, author, author_id"
+					+ "				FROM dblp_pub_new pub"
+					+ "				JOIN dblp_authorid_ref_new airn"
+					+ "				ON pub.id = airn.id"
+					+ "				WHERE source = '" + source + "'"
+					+ "			) AS target_authors"
+					+ "			ON source_authors.pub = target_authors.pub "
+					+ "			AND source_authors.author_id <> target_authors.author_id"
+					+ "			GROUP BY source_authors.author_id, target_authors.author_id"
+					+ "		) AS x"
+					+ "		WHERE relation_strength > 1"
+					+ "		GROUP BY connection_id"
+					+ "	) AS connections"
+					+ "	JOIN ("
+					+ "		SELECT airn.author_id, airn.author, count(pub.id) AS publications"
+					+ "		FROM dblp_pub_new pub "
+					+ "		JOIN dblp_authorid_ref_new airn"
+					+ "		ON pub.id = airn.id"
+					+ "		WHERE source = '" + source + "'"
+					+ "		GROUP BY airn.author_id"
+					+ "	) AS source_authors"
+					+ "	ON connections.source_author_id = source_authors.author_id"
+					+ "	JOIN ("
+					+ "		SELECT airn.author_id, airn.author, count(pub.id) AS publications"
+					+ "		FROM dblp_pub_new pub "
+					+ "		JOIN dblp_authorid_ref_new airn"
+					+ "		ON pub.id = airn.id"
+					+ "		WHERE source = '" + source + "'"
+					+ "		GROUP BY airn.author_id"
+					+ "	) AS target_authors"
+					+ "	ON connections.target_author_id = target_authors.author_id;";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);
@@ -111,7 +145,7 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 		
 		try {
 			
-			Map<String,String> authorNodeMap = new HashMap<String,String>();
+			Map<String,Author> authorNodeMap = new HashMap<String,Author>();
 			Map<AuthorPair,Integer> authorLinksMap = new HashMap<AuthorPair,Integer>();
 			while(rs.next()) {
 				String sourceAuthorName = rs.getString("source_author_name");
@@ -119,23 +153,40 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 				String targetAuthorName = rs.getString("target_author_name");
 				String targetAuthorId = rs.getString("target_author_id");
 				int relationStrength = rs.getInt("relation_strength");
+				int sourceAuthorPublications = rs.getInt("source_author_publications");
+				int targetAuthorPublications = rs.getInt("target_author_publications");
 				
-				authorNodeMap.put(sourceAuthorId, sourceAuthorName);
-				authorNodeMap.put(targetAuthorId, targetAuthorName);
+				authorNodeMap.put(sourceAuthorId, new Author(sourceAuthorName,sourceAuthorPublications));
+				authorNodeMap.put(targetAuthorId, new Author(targetAuthorName,targetAuthorPublications));
 				
 				AuthorPair authorPair = new AuthorPair(sourceAuthorId, targetAuthorId);
 				if(!authorLinksMap.containsKey(new AuthorPair(targetAuthorId,sourceAuthorId))) {
 					authorLinksMap.put(authorPair, relationStrength);
 				} else {
-					System.out.println("lol");
+					System.out.println("already existing inverse pair");
+				}
+				
+				if( relationStrength > maxCollaborations) {
+					maxCollaborations = relationStrength;
+				}
+				
+				if(sourceAuthorPublications > maxPublications) {
+					maxPublications = sourceAuthorPublications;
+				}
+				
+				if(targetAuthorPublications > maxPublications) {
+					maxPublications = targetAuthorPublications;
 				}
 			}
 			
 			JsonArray authorNodes = new JsonArray();
 			for(String authorId : authorNodeMap.keySet()) {
+				Author author = authorNodeMap.get(authorId);
+				
 				JsonObject authorNode = new JsonObject();
 				authorNode.addProperty("id", authorId);
-				authorNode.addProperty("name", authorNodeMap.get(authorId));
+				authorNode.addProperty("name", author.getName());
+				authorNode.addProperty("publications", author.getNumberPublications());
 				
 				authorNodes.add(authorNode);
 			}

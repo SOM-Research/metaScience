@@ -171,7 +171,7 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 				
 			}
 		} catch(SQLException e) {
-			throw new ServletException("Error retrieving conferences field from the ResultSet", e);
+			throw new ServletException("Error retrieving author conferences field from the ResultSet", e);
 		}
 		return conferences;
 	}

@@ -32,8 +32,6 @@ public class AuthorNameServlet extends AbstractMetaScienceServlet {
 		
 		JsonObject response = new JsonObject();
 		response.addProperty("name", authorName);
-		
-		System.out.println("Name : " + authorName);
 
 		resp.setContentType("text/x-json;charset=UTF-8");    
 		PrintWriter pw = resp.getWriter();
