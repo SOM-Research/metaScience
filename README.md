@@ -16,11 +16,10 @@ The service is still under development and we are currently working on many othe
 
 * [Javier Canovas](http://github.com/jlcanovas/ "Javier Canovas")
 * [Valerio Cosentino](http://github.com/valeriocos/ "Valerio Cosentino")
+* [Robin Boncorps](https://github.com/rBoncorps "Robin Boncorps")
 * [Jordi Cabot](http://github.com/jcabot/ "Jordi Cabot")
-
-Javier, Valerio and Jordi are currently members of [Atlanmod](http://www.emn.fr/z-info/atlanmod), a research team of Inria.
 
 How can I follow the latest news about the project?
 ---------------------------------------------------
 
-All major announcements will be posted in the [modeling-languages.com](http://modeling-languages.com "modeling-languages.com") portal. You can also follow our [@softmodeling](https://twitter.com/softmodeling "@softmodeling") and [@jlcanovas](https://twitter.com/jlcanovas "@jlcanovas") twitter accounts for updates whenever you want). And check also the [AtlanMod](http://www.emn.fr/z-info/atlanmod/index.php/Main_Page "AtlanMod") team page.
+All major announcements will be posted in the [modeling-languages.com](http://modeling-languages.com "modeling-languages.com") portal. You can also follow our [@softmodeling](https://twitter.com/softmodeling "@softmodeling") and [@jlcanovas](https://twitter.com/jlcanovas "@jlcanovas") twitter accounts for updates whenever you want). 
