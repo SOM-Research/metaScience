@@ -14,7 +14,7 @@ where airn.author_id = 636270
 group by pub.year;
 
 /* total number of pages and average number of pages written per paper by a given author */
-select author_id, author, sum(pages) as total_pages, avg(pages/authors) as avg_owned_pages
+select author_id, author, sum(pages) as total_pages, round(avg(pages/authors),2) as avg_owned_pages
 from (
 select pub.id, title, airn.author_id, airn.author, calculate_num_of_pages(pages) as pages, max(author_num) + 1 as authors
 from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
@@ -77,25 +77,61 @@ order by publications desc
 limit 10;
 
 /* collaboration graph between authors of a given conference */
+select connections.*, source_authors.publications, target_authors.publications
+from (
 select source_author_name, source_author_id, target_author_name, target_author_id, relation_strength
 from
 (
-select source_authors.author as source_author_name, source_authors.author_id as source_author_id,
-target_authors.author as target_author_name, target_authors.author_id as target_author_id,
+select source_authors.author as source_author_name, source_authors.author_id as source_author_id, 
+target_authors.author as target_author_name, target_authors.author_id as target_author_id, 
 count(*) as relation_strength, source_authors.author_id * target_authors.author_id as connection_id
 from (
 select pub.id as pub, author, author_id
-from dblp_pub_new pub
-	join dblp_authorid_ref_new airn
-	on pub.id = airn.id
+from dblp_pub_new pub 
+	join dblp_authorid_ref_new airn 
+	on pub.id = airn.id 
 where source = 'icse') as source_authors
 join
 (select pub.id as pub, author, author_id
-from dblp_pub_new pub
-	join dblp_authorid_ref_new airn
-	on pub.id = airn.id
+from dblp_pub_new pub 
+	join dblp_authorid_ref_new airn 
+	on pub.id = airn.id 
 where source = 'icse') as target_authors
 on source_authors.pub = target_authors.pub and source_authors.author_id <> target_authors.author_id
 group by source_authors.author_id, target_authors.author_id) as x
 where relation_strength > 1
-group by connection_id;
+group by connection_id) as connections
+join
+(select airn.author_id, airn.author, count(pub.id) as publications
+from dblp_pub_new pub join dblp_authorid_ref_new airn 
+on pub.id = airn.id
+where source = 'icse'
+group by airn.author_id) as source_authors
+on connections.source_author_id = source_authors.author_id
+join
+(select airn.author_id, airn.author, count(pub.id) as publications
+from dblp_pub_new pub join dblp_authorid_ref_new airn 
+on pub.id = airn.id
+where source = 'icse'
+group by airn.author_id) as target_authors
+on connections.target_author_id = target_authors.author_id;
+
+/* number of pages and average of number of pages written by the author per year */
+select author_id, author, sum(pages) as total_pages, year, round(avg(pages/authors),2) as avg_owned_pages
+from (
+select pub.id, pub.year, title, airn.author_id, airn.author, calculate_num_of_pages(pages) as pages, max(author_num) + 1 as authors
+from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
+join dblp_author_ref_new arn on pub.id = arn.id
+where airn.author_id = 636270 and pages is not null
+group by pub.id) as pub_info
+group by pub_info.year;
+
+/* number of co-authors per year */
+select author_id, author, sum(coauthors), year
+from (
+select pub.id, pub.year, title, airn.author_id, airn.author, if(max(author_num) + 1 = 1, 0, max(author_num)) as coauthors
+from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
+join dblp_author_ref_new arn on pub.id = arn.id
+where airn.author_id = 636270 and pages is not null
+group by pub.id) as pub_info
+group by pub_info.year;

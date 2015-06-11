@@ -7,19 +7,24 @@ DELIMITER //
 CREATE FUNCTION calculate_num_of_pages(pages varchar(100)) RETURNS int(11) DETERMINISTIC
 BEGIN
 	DECLARE page_number INTEGER;
-	DECLARE occ_dash INTEGER DEFAULT (INSTR(pages, '-'));
-	DECLARE left_part VARCHAR(256) DEFAULT SUBSTRING(pages, 1, occ_dash - 1);
-	DECLARE right_part VARCHAR(256) DEFAULT SUBSTRING(pages, occ_dash + 1);
-	DECLARE left_part_int INTEGER DEFAULT CONVERT(SUBSTRING(pages, 1, occ_dash - 1), SIGNED INTEGER);
-	DECLARE right_part_int INTEGER DEFAULT CONVERT(SUBSTRING(pages, occ_dash + 1), SIGNED INTEGER);
 
+	DECLARE occ_dash INTEGER DEFAULT (INSTR(pages, '-'));
+	DECLARE left_part VARCHAR(256); 
+	DECLARE right_part VARCHAR(256); 
+	DECLARE left_part_int INTEGER; 
+	DECLARE right_part_int INTEGER;
+	
 	/* if a '-' is found */
 	IF occ_dash >= 1 THEN
+		SET left_part = SUBSTRING(pages, 1, occ_dash - 1);
+		SET right_part = SUBSTRING(pages, occ_dash + 1);
 		/* check that the two parts are not empty */
 		IF right_part = '' OR left_part = '' THEN
 			SET page_number = 1;
 		/* check that the two parts contain only digits */
-        ELSEIF right_part REGEXP '[[:digit:]]+' AND left_part REGEXP '[[:digit:]]+' THEN
+        ELSEIF right_part REGEXP '^[[:digit:]]+$' AND left_part REGEXP '^[[:digit:]]+$' THEN
+			SET left_part_int = CONVERT(SUBSTRING(pages, 1, occ_dash - 1), SIGNED INTEGER);
+			SET right_part_int =  CONVERT(SUBSTRING(pages, occ_dash + 1), SIGNED INTEGER);
 			IF right_part_int > left_part_int THEN
 				SET page_number = right_part_int - left_part_int;
 			ELSE
@@ -32,10 +37,10 @@ BEGIN
 		ELSE
 			IF UPPER(right_part) REGEXP '^(M{0,4})?(CM|CD|(D?C{0,3}))?(XC|XL|(L?X{0,3}))?(IX|IV|(V?I{0,3}))?$' AND
 				UPPER(left_part) REGEXP '^(M{0,4})?(CM|CD|(D?C{0,3}))?(XC|XL|(L?X{0,3}))?(IX|IV|(V?I{0,3}))?$' THEN
-				IF from_roman(right_part_int) > from_roman(left_part_int) THEN
-					SET page_number = from_roman(right_part_int) - from_roman(left_part_int);
+				IF from_roman(right_part) > from_roman(left_part) THEN
+					SET page_number = from_roman(right_part) - from_roman(left_part);
 				ELSE
-					SET page_number = from_roman(left_part_int) - from_roman(right_part_int);
+					SET page_number = from_roman(left_part) - from_roman(right_part);
 				END IF;
 			ELSE
 				SET page_number = NULL;
@@ -44,7 +49,7 @@ BEGIN
 	/* if a '-' is not found*/
     ELSE
 		/* check that pages contain only digits */
-		IF pages REGEXP '[[:digit:]]+' or UPPER(pages) REGEXP '^(M{0,4})?(CM|CD|D?C{0,3})?(XC|XL|L?X{0,3})?(IX|IV|V?I{0,3})?$' THEN
+		IF pages REGEXP '^[[:digit:]]+$' or UPPER(pages) REGEXP '^(M{0,4})?(CM|CD|D?C{0,3})?(XC|XL|L?X{0,3})?(IX|IV|V?I{0,3})?$' THEN
 			SET page_number = 1;
 		ELSE
 			SET page_number = NULL;
