@@ -98,7 +98,6 @@ public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet 
 					+ "			AND source_authors.author_id <> target_authors.author_id"
 					+ "			GROUP BY source_authors.author_id, target_authors.author_id"
 					+ "		) AS x"
-					+ "		WHERE relation_strength > 1"
 					+ "		GROUP BY connection_id"
 					+ "	) AS connections"
 					+ "	JOIN ("

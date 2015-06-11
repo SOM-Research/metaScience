@@ -32,7 +32,6 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 		addResponseOptions(resp);
 		
 		String authorId = req.getParameter(ID_PARAM);
-		System.out.println(authorId);
 		
 		total_collaborations = 0;
 		total_collaborators = 0;
