@@ -17,6 +17,7 @@ public class StatusServlet extends AbstractMetaScienceServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		addResponseOptions(resp);
 		PrintWriter pw = resp.getWriter();
 		
 		pw.println("allowsOrigin: " + allowOrigin);
