@@ -55,10 +55,9 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 	private JsonObject getCoAuthorConnectionsForAuthorId(String authorId) throws ServletException {
 		JsonObject result = new JsonObject();
 		
-		// get collaboration first to be able to calculate maximum collaboration number and total numbe rof collaborations
-		
+		// Get collaboration first to be able to calculate maximum
+		// collaboration number and total number of collaborations
 		JsonArray collaborations = getAuthorCollaborations(authorId);
-		
 		JsonObject author = getAuthorInformation(authorId);
 		
 		result.add("author",author);
@@ -115,7 +114,10 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 							+ " GROUP BY connected_author_papers.author_id;";
 
 			rs = stmt.executeQuery(query);
-			answer = prepareCollaborationJson(rs);
+			if (rs != null)
+				answer = prepareCollaborationJson(rs);
+			else
+				System.out.println("No CoAuthor connection info! This is strange...");
 		} catch( SQLException e) {
 			throw new ServletException("Error getting author collaborations", e);
 		} finally {
