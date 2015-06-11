@@ -56,6 +56,27 @@ where source = 'Sci. Comput. Program.'
 group by airn.author_id) as target_authors
 on connections.target_author_id = target_authors.author_id;
 
+/* number of papers per author per journal per year */
+create table _number_papers_per_author_per_journal_per_year as
+select auth.author_id as author_id, auth.author as author_name, 
+count(distinct pub.id) as num_paper_per_author, source, year
+from dblp_pub_new pub
+join
+dblp_authorid_ref_new auth
+on pub.id = auth.id
+where type = 'article'
+group by author_id, source, year;
+
+/* number of authors per journal per year*/
+create table _num_authors_per_journal_per_year as
+select count(auth.author_id) as num_authors, count(distinct auth.author_id) as num_unique_authors, source, year
+from dblp_pub_new pub
+join
+dblp_authorid_ref_new auth
+on pub.id = auth.id
+where type = 'article'
+group by source, year;
+
 /* avg number of authors per paper per journal per year */
 create table _avg_number_authors_per_paper_per_journal_per_year as
 select avg(author_per_paper) as avg_author_per_paper, source, source_id, year
