@@ -16,6 +16,7 @@ import database_connection_config as dbconnection
 
 LOG_FILENAME = 'logger_update_database.log'
 
+
 def create_auxiliary_tables(cnx):
     cursor = cnx.cursor()
     create_table_aux_program_committee = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_program_committee" \

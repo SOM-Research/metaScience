@@ -28,8 +28,20 @@ import sys
 #   Since the citations can change over time, the script stores also the month-year when the citations were collected
 
 SCHOLAR = 'http://scholar.google.com'
+    # 'http://www.proxybitcoin.com/browse.php?u=O7IiiS0m37iOlw6y3p9ixlhZjD69&b=5&f=norefer'
+    #'http://123abcproxy.ml/browse.php?u=Oi8vc2Nob2xhci5nb29nbGUuY29t&b=5&f=norefer'
+    #'http://www.webcamproxy.com/browse.php?u=http%3A%2F%2Fscholar.google.com&b=4&f=norefer'
+    #'http://000111.unblock4ever.info/browse.php?u=http%3A%2F%2Fscholar.google.com&b=4&f=norefer'
+    #'https://us-free-proxy.cyberghostvpn.com/go/browse.php?u=http://scholar.google.com&b=1&f=norefer'
+    #'http://anonymouse.org/cgi-bin/anon-www.cgi/http://scholar.google.com'
+
 LOG_FILENAME = 'logger_paper_citations.log'
-driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+
+#Build the chrome_options object specifying the locally running Privoxy as the proxy server
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--proxy-server=http://127.0.0.1:8118')
+
+driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe', chrome_options=chrome_options)
 UPDATE_CITATIONS = 0
 UPDATED_BEFORE = "0000-00-00"
 
@@ -242,7 +254,7 @@ def add_scholar_citations(cnx, title, key, paper_id):
     try:
         #wait
         scholar_hits = WebDriverWait(driver, WAIT_TIME).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "gs_ri")))
-        time.sleep(2)
+        time.sleep(10)
 
         flag = 0
         for hit in scholar_hits:
@@ -268,6 +280,7 @@ def add_scholar_citations(cnx, title, key, paper_id):
 
     except TimeoutException:
         logging.warning("result not found for " + title)
+        update_paper_citations_info(cnx, paper_id, -1)
 
 
 def update_paper_citations_info(cnx, paper_id, citations):
@@ -333,7 +346,7 @@ def main():
     cnx = mysql.connector.connect(**dbconnection.CONFIG)
 
     #update_citation_info(cnx)
-    update_citation_info_by_id_interval(cnx, 1900001, 2000000)
+    update_citation_info_by_id_interval(cnx, 2200000, 2300000)
     #update_citation_info_by_conference(cnx, "conf/icse/2006")
 
     driver.close()
@@ -341,3 +354,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

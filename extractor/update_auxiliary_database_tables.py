@@ -194,7 +194,7 @@ def main():
 
     if EXTRACT_PROGRAM_COMMITTEES:
         ##note that the script that updates the program committee can be executed separately,
-        ##since it mainly relies on the information contained into the program_committee_info.json
+        ##since it mainly relies on the information contained into the pc_info.json
         os.system("extracting_program_committee.py")
 
 if __name__ == "__main__":
