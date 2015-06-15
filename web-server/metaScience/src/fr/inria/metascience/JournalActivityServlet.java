@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,39 +16,43 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-@WebServlet("/venueActivity")
-public class VenueActivityServlet extends AbstractMetaScienceServlet {
-	private static final long serialVersionUID = 4L;
+@WebServlet("/journalActivity")
+public class JournalActivityServlet extends AbstractMetaScienceServlet {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		addResponseOptions(resp);
 
-		String venueId = req.getParameter(ID_PARAM);
-        String subVenueId = req.getParameter(SUBID_PARAM);
+		String journalId = req.getParameter(ID_PARAM);
+		String subJournalId = null;
+        //String subVenueId = req.getParameter(SUBID_PARAM);
 
-		if(venueId == null) 
+		if(journalId == null) 
 			throw new ServletException("The id cannot be null");
 
 		//JsonObject response = testGetActivityForVenueId();
-		JsonObject response = getActivityForVenueId(venueId, subVenueId);
+		//JsonObject response = getActivityForVenueId(venueId, subVenueId);
+		JsonObject response = getActivityForJournalId(journalId, subJournalId);
 
 		resp.setContentType("text/x-json;charset=UTF-8");
 		PrintWriter pw = resp.getWriter();
 		pw.append(response.toString());
 	}
 
-	private JsonObject getActivityForVenueId(String venue, String subvenue) throws ServletException {
+	private JsonObject getActivityForJournalId(String journal, String subJournal) throws ServletException {
 		Connection con = Pooling.getInstance().getConnection();
 		Statement stmt = null;
 		ResultSet rs = null;
 
         // Checking if we know the conference has different source / source_id
-        String sourceId = preCachedVenues.get(venue);
-        if(sourceId == null) sourceId = venue;
+        //String sourceId = preCachedVenues.get(journal);
+        String sourceId = null;
+        if(sourceId == null) sourceId = journal;
 
-        String source = subvenue; // THIS FIXES EVERYTHING
-        if(subvenue == null) source = sourceId;
+        String source = subJournal; // THIS FIXES EVERYTHING
+        if(subJournal == null) source = sourceId;
 
 		// Preparing the result
 		JsonObject authors = new JsonObject();
@@ -58,15 +61,14 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 		JsonObject papersPerAuthor = new JsonObject();
 		try {
 			// AUTHORS
-			// Getting avergae authors 
+			// Getting average authors 
 			String query1 = "SELECT ROUND(AVG(num_unique_authors), 2) as avg " +
-					"FROM _num_authors_per_conf_per_year " +
+					"FROM _num_authors_per_journal_per_year " +
                     "WHERE source = '" + source + "';";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query1);
-			
 
 			while(rs.next()) {
 				String avg = rs.getString("avg");
@@ -75,7 +77,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// Getting authors per year
 			String query2 = "SELECT ROUND(AVG(num_unique_authors), 2) as counter, year " +
-					"FROM _num_authors_per_conf_per_year " +
+					"FROM _num_authors_per_journal_per_year " +
                     "WHERE source = '" + source + "' GROUP BY year;";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
 
@@ -100,7 +102,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// PAPERS
 			// Getting average papers
 			String query3 = "SELECT ROUND(AVG(num_papers), 2) as avg " +
-					"FROM _num_of_papers_per_conference_per_year " +
+					"FROM _num_of_papers_per_journal_per_year " +
                     "WHERE source = '" + source + "';";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
 
@@ -114,7 +116,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// Getting papers per year
 			String query4 = "SELECT ROUND(AVG(num_papers), 2) as counter, year " +
-					"FROM _num_of_papers_per_conference_per_year " +
+					"FROM _num_of_papers_per_journal_per_year " +
                     "WHERE source = '" + source + "' GROUP BY year;";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
 
@@ -139,7 +141,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// AUTHORS PER PAPER
 			// Getting average value
 			String query5 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as avg " +
-					"FROM _avg_number_authors_per_paper_per_conf_per_year " +
+					"FROM _avg_number_authors_per_paper_per_journal_per_year " +
                     "WHERE source = '" + source + "';";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
 
@@ -153,7 +155,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// Getting papers per year
 			String query6 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as counter, year " +
-					"FROM _avg_number_authors_per_paper_per_conf_per_year " +
+					"FROM _avg_number_authors_per_paper_per_journal_per_year " +
                     "WHERE source = '" + source + "' GROUP BY year;";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
 
@@ -178,7 +180,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			// PAPERS PER AUTHOR
 			// Getting average value
 			String query7 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as avg " +
-					"FROM _avg_number_papers_per_author_per_conf_per_year " +
+					"FROM _avg_number_papers_per_author_per_journal_per_year " +
                     "WHERE source = '" + source + "';";
 					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
 
@@ -192,7 +194,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// Getting papers per year
 			String query8 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as counter, year " +
-					"FROM _avg_number_papers_per_author_per_conf_per_year " +
+					"FROM _avg_number_papers_per_author_per_journal_per_year " +
                     "WHERE source = '" + source + "' GROUP BY year;";
 					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
 
@@ -215,7 +217,7 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			papersPerAuthor.add("yearly", papersPerAuthorYearly);	
 
 		} catch (SQLException e) {
-			throw new ServletException("Error getting the Id for the venue", e);
+			throw new ServletException("Error getting the Id for the journal", e);
 		} finally {
 			try {
 				if(stmt != null) stmt.close();
@@ -231,51 +233,6 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 		result.add("papers", papers);
 		result.add("authorsPerPaper", authorsPerPaper);
 		result.add("papersPerAuthor", papersPerAuthor);
-		return result;
-	}
-
-
-
-	private JsonArray testGetActivityForVenueId() {
-		JsonArray authors = new JsonArray();
-		authors.add(new JsonPrimitive("Authors"));
-		authors.add(new JsonPrimitive(3));
-		authors.add(new JsonPrimitive(56));
-		authors.add(new JsonPrimitive(23));
-		authors.add(new JsonPrimitive(72));
-		authors.add(new JsonPrimitive(23));
-
-		JsonArray authorsYear = new JsonArray();
-		authorsYear.add(new JsonPrimitive("x1"));
-		authorsYear.add(new JsonPrimitive(2014));
-		authorsYear.add(new JsonPrimitive(2013));
-		authorsYear.add(new JsonPrimitive(2012));
-		authorsYear.add(new JsonPrimitive(2011));
-		authorsYear.add(new JsonPrimitive(2010));
-
-		JsonArray papers = new JsonArray();
-		papers.add(new JsonPrimitive("Papers"));
-		papers.add(new JsonPrimitive(12));
-		papers.add(new JsonPrimitive(32));
-		papers.add(new JsonPrimitive(23));
-		papers.add(new JsonPrimitive(22));
-		papers.add(new JsonPrimitive(16));
-
-		JsonArray papersYear = new JsonArray();
-		papersYear.add(new JsonPrimitive("x2"));
-		papersYear.add(new JsonPrimitive(2014));
-		papersYear.add(new JsonPrimitive(2013));
-		papersYear.add(new JsonPrimitive(2012));
-		papersYear.add(new JsonPrimitive(2011));
-		papersYear.add(new JsonPrimitive(2010));
-
-
-		JsonArray result = new JsonArray();
-		result.add(authors);
-		result.add(authorsYear);
-		result.add(papers);
-		result.add(papersYear);
-
 		return result;
 	}
 
