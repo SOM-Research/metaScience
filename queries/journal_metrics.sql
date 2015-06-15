@@ -56,6 +56,12 @@ where source = 'Sci. Comput. Program.'
 group by airn.author_id) as target_authors
 on connections.target_author_id = target_authors.author_id;
 
+/* number of papers per jounal per year */
+create table _num_of_papers_per_journal_per_year as
+select count(id) as num_papers, source, source_id, year
+from dblp_pub_new where type = 'article' and source_id is not null and source is not null
+group by source, source_id, year;
+
 /* number of papers per author per journal per year */
 create table _number_papers_per_author_per_journal_per_year as
 select auth.author_id as author_id, auth.author as author_name, 
