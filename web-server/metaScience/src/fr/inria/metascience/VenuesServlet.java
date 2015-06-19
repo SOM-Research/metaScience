@@ -67,9 +67,9 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		try {
 			stmt = con.createStatement();
 			String query = "SELECT DISTINCT source, title"
-							+ " FROM dblp_pub_new" // added in v0.2.0, before it was aux_dblp_proceedings
+							+ " FROM aux_dblp_proceedings"
 							+ " WHERE source IS NOT NULL AND "
-							+ " type = 'proceedings'"; // changed in v0.2.0, before it was conference
+							+ " type = 'conference'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
@@ -101,10 +101,11 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		try {
 			stmt = con.createStatement();
 			String query = "SELECT DISTINCT source, title"
-							+ " FROM dblp_pub_new" // changed in v0.2.0, before it was aux_dblp_proceedings
+							+ " FROM aux_dblp_proceedings"
 							+ " WHERE source IS NOT NULL AND "
-							+ " type = 'proceedings' AND " // changed in v0.2.0, before it was conference
-							+ " (source LIKE '%" + searchString + "%' OR title LIKE '%" + searchString + "%' ) ";
+							+ " type = 'conference' AND " // changed in v0.2.0, before it was conference
+							+ " (source LIKE '%" + searchString + "%' OR title LIKE '%" + searchString + "%' ) "
+							+ " GROUP BY title";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {

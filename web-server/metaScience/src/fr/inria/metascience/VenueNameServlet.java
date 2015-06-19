@@ -50,7 +50,7 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 		
 		try {
 			String query = "SELECT DISTINCT title"
-							+ " FROM dblp_pub_new" // added in v0.2.0, before it was aux_dblp_proceedings
+							+ " FROM aux_dblp_proceedings"
 							+ " WHERE source IS NOT NULL AND source = '" + venueId + "'";
 	
 	        stmt = con.createStatement();
