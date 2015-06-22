@@ -137,10 +137,10 @@ public class VenueTitleCloudServlet extends AbstractMetaScienceServlet {
 				}
 			}
 			
-			JsonArray globalTitleCloudJsonArray = prepareGlobalTitleCloud(globalTitleCloudMap);
+			JsonObject globalTitleCloudJson = prepareGlobalTitleCloud(globalTitleCloudMap);
 			JsonObject yearsTitleCloudJson = prepareYearsTitleCloud(yearTitleCloudMapContainer);
 			
-			titleCloudJson.add("global", globalTitleCloudJsonArray);
+			titleCloudJson.add("global", globalTitleCloudJson);
 			titleCloudJson.add("yearly", yearsTitleCloudJson);
 			
 			
@@ -157,17 +157,27 @@ public class VenueTitleCloudServlet extends AbstractMetaScienceServlet {
 		JsonArray yearsJson = new JsonArray();
 		for(Integer year : yearTitleMapContainer.keySet()) {
 			Map<String,Integer> yearTitleWordMap = yearTitleMapContainer.get(year);
+			int maxYearOccurence = 0;
 			
+			JsonObject yearJsonObject = new JsonObject();
 			JsonArray yearWordsJson = new JsonArray();
 			for(String word : yearTitleWordMap.keySet()) {
 				Integer occurence = yearTitleWordMap.get(word);
+				
+				if(occurence > maxYearOccurence) {
+					maxYearOccurence = occurence;
+				}
+				
 				JsonObject wordJson = new JsonObject();
 				wordJson.addProperty("text", word);
-				wordJson.addProperty("size", occurence);
+				wordJson.addProperty("occurence", occurence);
 				yearWordsJson.add(wordJson);
 			}
 			
-			yearsTitleCloudJson.add(year.toString(), yearWordsJson);
+			yearJsonObject.addProperty("max", maxYearOccurence);
+			yearJsonObject.add("words", yearWordsJson);
+			
+			yearsTitleCloudJson.add(year.toString(), yearJsonObject);
 			yearsJson.add(new JsonPrimitive(year));
 		}
 		yearsTitleCloudJson.add("years",yearsJson);
@@ -175,20 +185,28 @@ public class VenueTitleCloudServlet extends AbstractMetaScienceServlet {
 		return yearsTitleCloudJson;
 	}
 	
-	private JsonArray prepareGlobalTitleCloud(Map<String,Integer> globalTitleWordCloudMap) {
-		System.out.println(globalTitleWordCloudMap.size());
+	private JsonObject prepareGlobalTitleCloud(Map<String,Integer> globalTitleWordCloudMap) {
+		JsonObject globalJsonObject = new JsonObject();
 		JsonArray globalWordJsonArray = new JsonArray();
 		
+		int max_occurence = 0;
 		for(String word : globalTitleWordCloudMap.keySet()) {
 			Integer occurence = globalTitleWordCloudMap.get(word);
 			
+			if(occurence > max_occurence) {
+				max_occurence = occurence;
+			}
+			
 			JsonObject wordJson = new JsonObject();
 			wordJson.addProperty("text", word);
-			wordJson.addProperty("size", occurence);
+			wordJson.addProperty("occurence", occurence);
 			globalWordJsonArray.add(wordJson);
 		}
 		
-		return globalWordJsonArray;
+		globalJsonObject.addProperty("max", max_occurence);
+		globalJsonObject.add("words", globalWordJsonArray);
+		
+		return globalJsonObject;
 	}
 	
 	
