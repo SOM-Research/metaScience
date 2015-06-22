@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -80,7 +81,8 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		JsonObject publicationsTotals = new JsonObject();
 		
 		int total = totalArticles + totalBooks + totalIncollections + totalInproceedings + totalMasterThesis + totalPHDThesis + totalProceedings + totalWebsites;
-		double avgPublication = (double)total / (double)numberOfYear;
+		double avgPublication = (double) total / (double) numberOfYear;
+		String avgPublicationString = String.format(Locale.US, "%.2f", avgPublication); // Issue #8
 		
 		publicationsTotals.addProperty("total", total);
 		publicationsTotals.addProperty("totalArticles", totalArticles);
@@ -91,7 +93,7 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		publicationsTotals.addProperty("totalPHDThesis", totalPHDThesis);
 		publicationsTotals.addProperty("totalProceedings", totalProceedings);
 		publicationsTotals.addProperty("totalWebsites", totalWebsites);
-		publicationsTotals.addProperty("avgPublications", avgPublication);
+		publicationsTotals.addProperty("avgPublications", avgPublicationString);
 		
 		return publicationsTotals;
 	}
