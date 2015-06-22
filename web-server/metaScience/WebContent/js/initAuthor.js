@@ -75,13 +75,8 @@ function updateActivity(authorId) {
 	   	  	$("#totalPubIncollection").text(data.pub.totalIncollections);
 	   	  	$("#totalPubInproceedingLoading").css("visibility","hidden");
 	   	  	$("#totalPubInproceeding").text(data.pub.totalInproceedings);
-	   	  	$("#totalPubMasterThesisLoading").css("visibility","hidden");
-	   	  	$("#totalPubMasterThesis").text(data.pub.totalMasterThesis);
-	   	  	$("#totalPubPHDThesisLoading").css("visibility","hidden");
-	   	  	$("#totalPubPHDThesis").text(data.pub.totalPHDThesis);
-	   	  	$("#totalPubWebsiteLoading").css("visibility","hidden");
-	   	  	$("#totalPubWebsite").text(data.pub.totalWebsites);
-
+	   	  	$('#totalOthersLoading').css("visibility","hidden");
+			$('#totalOthers').text(data.pub.totalOthers); // Issue #15
 	   	  	$("#avgPublicationsLoading").css("visibility","hidden");
 	   	  	$("#avgPublications").text(data.pub.avgPublications);
 	   	  	
@@ -95,9 +90,7 @@ function updateActivity(authorId) {
 	   	  	$("#totalPubBook").text("Not available");
 	   	  	$("#totalPubIncollection").text("Not available");
 	   	  	$("#totalPubInproceeding").text("Not available");
-	   	  	$("#totalPubMasterThesis").text("Not available");
-	   	  	$("#totalPubPHDThesis").text("Not available");
-	   	  	$("#totalPubWebsite").text("Not available");
+			$("#totalOthers").text("Not available");
 	   	  	$("#avgPublications").text("Not available");
 	   	  	$("#activityChartRow").css("visibility", "hidden");
 		}
@@ -114,15 +107,13 @@ function generateActivityDiagram(activityData) {
 	        activityData.articles,
 	        activityData.books,
 	        activityData.inproceedings,
+			activityData.incollections,
 	        activityData.proceedings,
-	        activityData.masterThesis,
-	        activityData.phdThesis,
-	        activityData.proceedings,
-	        activityData.websites,
+	        activityData.others
 	      ],
 	      type: 'bar',
 	      groups: [
-	          ['Articles', 'Books','Incollections', 'Inproceedings','Master Thesis', 'Phd Thesis','Proceedings', 'Websites']
+	          ['Articles', 'Books','Inproceedings', 'Incollections', 'Proceedings', 'Others']
 	      ]
       },
       axis: {
