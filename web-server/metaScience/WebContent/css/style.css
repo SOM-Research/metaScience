@@ -1,0 +1,289 @@
+body {
+	background-color: #dbd7ce;
+}
+
+#error {
+    text-align: center;
+    background: #D44A31;
+    color: #FFFFFF;
+    font: 24px Helvetica, Sans-Serif;
+    border-radius: 8px;
+}
+#error a:hover, #error a:link, #error a:visited {
+    text-decoration: underline;
+    color: #ffffff;
+}
+
+.spanButtons {
+	float : right;
+	margin-top: 10px;
+}
+
+.jumbotron {
+	background-color: #2b5a70;
+	padding-top: 50px;
+}
+
+.jumbotron h1 a, .jumbotron h1 a:hover {
+	color: #ffffff;
+	text-decoration: none;
+	font-family: 'Anton', sans-serif;
+	font-size: 1.5em;
+}
+
+.jumbotron h2 {
+	color : #ffffff;
+	margin-bottom: 40px;
+}
+
+.selectionBox {
+	background-color: #c2a267;
+	padding: 10px 35px 30px 35px;
+	border-radius: 10px;
+	color : #ffffff;
+	margin-top: 50px;
+	margin-bottom: 20px;
+}
+
+.selectionBox h1 {
+	margin-top: 15px;
+	margin-bottom: 0px;
+	font-size: 2.3em;
+}
+
+.selectionBox h2 {
+	font-size: 1.5em;
+}
+
+.selectionBox button {
+	color : #c2a267;
+	background-color:  #ffffff;
+}
+
+.selectionBox button:hover {
+	color : #000000;
+	background-color: #ffffff;
+}
+
+.generalBox {
+	background-color: #c2a267;
+	border-radius: 10px;
+	color : #ffffff;
+	margin-top: 40px;
+	margin-bottom: 20px;
+	padding-top: 25px;
+	padding-bottom: 20px;
+	
+}
+
+.generalBox a, .generalBox a:hover, .generalBox a:visited, .generalBox a:link {
+	font-size: 2.3em;
+	color: #ffffff;
+}
+
+.venue {
+	background-color: #16667d;
+	padding: 10px 35px 10px 35px;
+	border-radius: 10px;
+	color : #ffffff;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 3em;
+}
+
+.resultBox {
+	background-color: #bfab93;
+	padding: 10px 35px 30px 35px;
+	border-radius: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.resultBox .chart {
+	background-color: #ffffff;
+	padding: 30px 10px 20px 10px;
+	border-radius: 10px;
+}
+
+.topBox {
+	background-color: #c2a267;
+	padding: 10px 20px 10px 20px;
+	border-radius: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	font-size: 26px;
+	color: #ffffff;
+}
+
+.topBox #satelliteCombobox {
+	margin-top: 5px;
+}
+
+
+.topLeftBox {
+	background-color: #bfab93;
+	padding: 10px 35px 30px 35px;
+	border-radius: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.topRightBox {
+	background-color: #bfab93;
+	padding: 10px 35px 30px 35px;
+	border-radius: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 20px;
+	width: 31.5%;
+}
+
+.topRightBox td a {
+	text-decoration: none;
+	color: #000000;
+}
+
+.resultBox h1, .topLeftBox h1, .topRightBox h1  {
+	margin-bottom: 10px;
+	font-size: 26px;
+	color: #ffffff;
+}
+
+.resultBox p {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+
+
+.person h4 {
+	font-size: 1.7em;
+}
+
+footer {
+	margin-top: 30px;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	background-color: #cbb68f;
+    width: 100%;
+    height: 146px;
+}
+
+footer p {
+  margin-bottom: 0px;
+}
+
+footer a:link, footer a:visited, footer a:hover, footer a:active {
+  color: #2b5a70;
+  text-decoration: underline;
+}
+
+.graphContainer {
+	width: 718px;
+	height: 600px;
+	border: 2px solid gray;
+	border-radius: 5px; 
+	background-color: #FFFFFF;
+}
+
+.minimapContainer {
+	border: 2px solid gray;
+	border-radius: 5px; 
+	background-color: #FFFFFF;
+}
+
+.coAuthorTooltip, .conferenceTooltip {
+  position: absolute;
+  width: 150px;
+  font-size: 12px;
+  background-color: #F0ECDD;
+  /*border: solid 2px #9C4590;*/
+  border-radius: 8px;
+  pointer-events: none;
+  padding-bottom: 5px;
+}
+
+.authorNodeTooltip {
+  position: absolute;
+  font-size: 12px;
+  background-color: #F0ECDD;
+  border: solid 2px #9C4590;
+  border-radius: 8px;
+  pointer-events: none;
+  padding: 0px 10px;
+}
+
+.coAuthorTooltip p, .conferenceTooltip p {
+	margin: 5px 0px 0px 10px;	
+}
+
+.authorNodeTooltip p {
+	margin:5px 0px 5px 0px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.tooltiptext span {
+	font-weight: bold;
+}
+
+/* Slider */
+.sliderLabelText {
+	float: left;
+}
+
+.sliderLabelRangeText {
+	float: right;
+}
+
+.sliderContainer {
+	padding: 10px 0px;
+}
+
+/* Minimap */
+.minimap {
+	background-color: #FFFFFF;
+}
+
+.frame {
+    stroke: #111111;
+    stroke-width: 4px;
+    fill-opacity: 0.4;
+    fill: #000000;
+    cursor: move;
+}
+
+.legend {
+	border: 2px solid gray;
+	border-radius: 5px;
+	margin:5px 0px 5px 0px;
+}
+
+.legenditem {
+	height: 16px;
+	width: 100%;
+	padding: 10px;	
+	display:inline-block;
+}
+
+.legenditem img {
+	float: left;
+	margin-right: 10px;
+	background-color: #FFFFFF;
+
+}
+
+.options {
+	border: 2px solid gray;
+	border-radius: 5px;
+	margin:5px 0px 5px 0px;
+}
+
+.option {
+	padding: 10px 20px;
+}
+
+
+
+
+

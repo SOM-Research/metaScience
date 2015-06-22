@@ -1,0 +1,262 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>metaScience</title>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="css/c3.css">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/jQWidgets/jqx.base.css" />
+    
+  	<script src="js/vendor/jquery.js"></script>
+  	<script src="js/bootstrap/bootstrap.min.js"></script>
+  	<script src="js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/c3.js" charset="utf-8"></script>
+    <script src="js/jQWidgets/jqxcore.js"></script>
+    <script src="js/jQWidgets/jqxdata.js"></script>
+    <script src="js/jQWidgets/jqxbuttons.js"></script>
+    <script src="js/jQWidgets/jqxscrollbar.js"></script>
+    <script src="js/jQWidgets/jqxlistbox.js"></script>
+    <script src="js/jQWidgets/jqxcombobox.js"></script>
+    <script src="js/jQWidgets/jqxslider.js"></script>
+    <script src="js/jQWidgets/jqxradiobutton.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-54150984-2', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 venue">
+          <div class="text-center" id="authorName"></div>
+        </div>
+      </div>
+
+    <div id="error" class="row middle" style="visibility:hidden">
+    </div>
+
+      <div class="row topBox">
+        <div class="col-md-3">
+          Showing results for 
+        </div>
+        <div class="col-md-9">
+          <div id='satelliteCombobox'></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-8 topLeftBox">
+          <h1>Main data</h1>
+          <table class="table table-condensed table-hover">
+            <thead>
+              <tr>
+                <th>Metric name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+           	  <tr>
+                <td>Total number of publications</td>
+                <td id="totalPub"><img id="totalPubLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of articles</td>
+                <td id="totalPubArticle"><img id="totalPubArticleLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of proceedings</td>
+                <td id="totalPubProceeding"><img id="totalPubProceedingLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of books</td>
+                <td id="totalPubBook"><img id="totalPubBookLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of incollections</td>
+                <td id="totalPubIncollection"><img id="totalPubIncollectionLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of inproceedings</td>
+                <td id="totalPubInproceeding"><img id="totalPubInproceedingLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of master thesis</td>
+                <td id="totalPubMasterThesis"><img id="totalPubMasterThesisLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of phd thesis</td>
+                <td id="totalPubPHDThesis"><img id="totalPubPHDThesisLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>		- Total number of websites</td>
+                <td id="totalPubWebsite"><img id="totalPubWebsiteLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Average number of publications per year</td>
+                <td id="avgPublications"><img id="avgPublicationsLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Total number of co-authors</td>
+                <td id="totalCollaborations"><img id="totalCollaborationsLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Average number of co-authors</td>
+                <td id="avgCollaborations"><img id="avgCollaborationsLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Total number of conferences</td>
+                <td id="totalConferences"><img id="totalConferencesLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+              	<td>Average number of conferences per year</td>
+              	<td id="avgConferences"><img id="avgConferencesLoading" src="imgs/loading.gif"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>  
+        <div class="col-md-4 topRightBox">
+          <h1>Activity along the years </h1>
+          <table class="table table-condensed table-hover">
+            <thead>
+              <tr>
+                <th>Click to Jump</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="#activityChartRow">Activity</a></td>
+              </tr>
+              <tr>
+                <td><a href="#coAuthorConnectionRow">Co-Author Connection</a></td>
+              </tr>
+              <tr>
+                <td><a href="#conferenceConnectionRow">Conference Connection</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div> 
+      </div>
+
+      <div class="row" id="activityChartRow">
+        <div class="col-md-12 resultBox">
+          <h1>Activity along the years</h1>
+          <p>We calculate the number of publications of different type along the years</p>
+          <div class="chart">
+            <div id="activityChart"></div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="row" id="pagesEvolutionRow">
+        <div class="col-md-12 resultBox">
+          <h1>Written pages evolution</h1>
+          <p>We calculate the number of pages written by the author along the years</p>
+          <div class="chart">
+            <div id="pagesEvolutionChart">
+          </div>
+        </div>
+      </div> 
+      
+      <div class="row" id="coAuthorConnectionRow">
+        <div class="col-md-12 resultBox">
+          <div class="col-md-4 leftcol">
+          <h1>Co-Author connection</h1>
+          <p>TODO</p>
+          <div class="legend">
+          	<div class="legenditem">
+          		<img src="imgs/circle.png" height="16" width="16"/>	
+          		<p>Author</p>
+          	</div>
+          	<div class="legenditem">
+          		<img src="imgs/line.png" height="16" width="16"/>	
+          		<p>Collaboration</p>
+          	</div>
+          	<div class="legenditem">
+          		<img src="imgs/lineThick.png" height="16" width="16"/>	
+          		<p>Number of collaborations</p>
+          	</div>
+          </div>
+          <div class="selector">
+              <p> Author Selection</p>
+              <p class="text-center"> <div id='coAuthorCombobox'></div> <div><button id="resetAuthorBtn" class="btn btn-block">Reset</button></div></p>
+              <div id="collabSlider"></div>
+            </div>
+        </div>
+        <div class="col-md-8 rightcol">
+          <div class="graphContainer" id="coAuthorConnectionGraphContainer"></div>
+		        <small id="info_coAuthorConnectionGraph" style="visibility:hidden">(Pass your mouse over the )</small>
+        </div>  
+      </div>
+    </div>
+
+    <div class="row" id="conferenceConnectionRow">
+        <div class="col-md-12 resultBox">
+          <div class="col-md-4 leftcol">
+          <h1>Conference connection</h1>
+          <p>TODO</p>
+          <div class="legend">
+            <div class="legenditem">
+              <p><img src="imgs/1f77b4.png" alt="1f77b4">
+                  <img src="imgs/aec7e8.png" alt="aec7e8">
+                  <img src="imgs/ff7f0e.png" alt="ff7f0e">
+                  <img src="imgs/ffbb78.png" alt="ffbb78">
+                  <img src="imgs/2ca02c.png" alt="2ca02c">
+                  <img src="imgs/98df8a.png" alt="98df8a">
+                  <img src="imgs/d62728.png" alt="d62728">
+                  <img src="imgs/ff9896.png" alt="ff9896">
+                  <img src="imgs/9467bd.png" alt="9467bd">
+                  <img src="imgs/c5b0d5.png" alt="c5b0d5">
+                  <img src="imgs/8c564b.png" alt="8c564b">
+                  <img src="imgs/c49c94.png" alt="c49c94">
+                  <img src="imgs/e377c2.png" alt="e377c2">
+                  <img src="imgs/f7b6d2.png" alt="f7b6d2">
+                  <img src="imgs/7f7f7f.png" alt="7f7f7f">
+                  <img src="imgs/c7c7c7.png" alt="c7c7c7">
+                  <img src="imgs/bcbd22.png" alt="bcbd22">
+                  <img src="imgs/dbdb8d.png" alt="dbdb8d">
+                  <img src="imgs/17becf.png" alt="17becf">
+                  <img src="imgs/9edae5.png" alt="9edae5"></p>
+            </div>
+            <div class="legenditem">
+              <img src="imgs/line.png" height="16" width="16"/> 
+              <p>Collaboration</p>
+            </div>
+            <div class="legenditem">
+              <img src="imgs/lineThick.png" height="16" width="16"/>  
+              <p>Number of collaborations</p>
+            </div>
+          </div>
+          <div class="selector">
+              <p> Conference Selection</p>
+              <p class="text-center"> <div id='conferenceCombobox'></div> <div><button id="resetConferenceCbxBtn" class="btn btn-block">Reset</button></div></p>
+              <div id="conferenceSlider"></div>
+              <p> Displayed information</p>
+              <p class="text-center">
+                  <p><div id='conferenceRadio1'>Attendance</div>
+                  <div id='conferenceRadio2'>Publication</div></p>
+              </p>
+            </div>
+        </div>
+        <div class="col-md-8 rightcol">
+          <div class="graphContainer" id="conferenceConnectionGraphContainer"></div>
+            <small id="info_conferenceConnectionGraph" style="visibility:hidden">(Pass your mouse over the conferences to see the author involvement informations)</small>
+        </div>  
+      </div>
+    </div>
+
+    <script src="js/initAuthor.js"></script>
+    <script src="js/coAuthorConnectionGraphBubble.js"></script>
+    <script src="js/conferenceConnectionGraphBubble.js"></script>
+  </body>
+</html>
+
