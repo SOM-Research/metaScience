@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -144,7 +145,8 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				author.addProperty("total_collaborations", total_collaborations);
 				author.addProperty("max_collaborations", max_collaborations);
 				author.addProperty("total_collaborators", total_collaborators);
-				author.addProperty("average_collaborations", avg_collaborations);
+				String avg_collaborationsString = String.format(Locale.US, "%.2f", avg_collaborations); // Issue #8
+				author.addProperty("average_collaborations", avg_collaborationsString);
 			}
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving author information fields from ResultSet",e);
@@ -175,7 +177,7 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				collaborations.add(coAuthorObject);
 				
 			}
-			
+
 			avg_collaborations =  (double)total_collaborations/(double)total_collaborators;
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving collaboration field from the ResultSet", e);
