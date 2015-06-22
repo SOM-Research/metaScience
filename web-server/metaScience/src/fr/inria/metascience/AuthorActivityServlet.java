@@ -90,6 +90,7 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		publicationsTotals.addProperty("totalIncollections", totalIncollections);
 		publicationsTotals.addProperty("totalInproceedings", totalInproceedings);
 		publicationsTotals.addProperty("totalMasterThesis", totalMasterThesis);
+		publicationsTotals.addProperty("totalOthers", totalPHDThesis+totalMasterThesis+totalWebsites); // Issue #15
 		publicationsTotals.addProperty("totalPHDThesis", totalPHDThesis);
 		publicationsTotals.addProperty("totalProceedings", totalProceedings);
 		publicationsTotals.addProperty("totalWebsites", totalWebsites);
@@ -177,14 +178,17 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		publicationIncollection.add(new JsonPrimitive("Incollections"));
 		JsonArray publicationInproceedings = new JsonArray();
 		publicationInproceedings.add(new JsonPrimitive("Inproceedings"));
-		JsonArray publicationMasterThesis = new JsonArray();
+		JsonArray publicationProceedings = new JsonArray();
+		publicationProceedings.add(new JsonPrimitive("Proceedings"));
+
+		JsonArray publicationOthers = new JsonArray(); // Issue #15
+		publicationOthers.add(new JsonPrimitive("Others"));
+		/*JsonArray publicationMasterThesis = new JsonArray();
 		publicationMasterThesis.add(new JsonPrimitive("Master Thesis"));
 		JsonArray publicationPHDThesis = new JsonArray();
 		publicationPHDThesis.add(new JsonPrimitive("Phd Thesis"));
-		JsonArray publicationProceedings = new JsonArray();
-		publicationProceedings.add(new JsonPrimitive("Proceedings"));
 		JsonArray publicationWebsites = new JsonArray();
-		publicationWebsites.add(new JsonPrimitive("Websites"));
+		publicationWebsites.add(new JsonPrimitive("Websites"));*/
 		
 		for(Integer year : publications.keySet()) {
 			Publications pub = publications.get(year);
@@ -194,10 +198,12 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 			publicationBook.add(new JsonPrimitive(pub.getBooks()));
 			publicationIncollection.add(new JsonPrimitive(pub.getIncollections()));
 			publicationInproceedings.add(new JsonPrimitive(pub.getInproceedings()));
-			publicationMasterThesis.add(new JsonPrimitive(pub.getMasterthesis()));
-			publicationPHDThesis.add(new JsonPrimitive(pub.getPhdthesis()));
 			publicationProceedings.add(new JsonPrimitive(pub.getProceedings()));
-			publicationWebsites.add(new JsonPrimitive(pub.getWebsites()));
+
+			publicationOthers.add(new JsonPrimitive(pub.getMasterthesis()+pub.getPhdthesis()+pub.getWebsites())); // Issue #15
+			/*publicationMasterThesis.add(new JsonPrimitive(pub.getMasterthesis()));
+			publicationPHDThesis.add(new JsonPrimitive(pub.getPhdthesis()));
+			publicationWebsites.add(new JsonPrimitive(pub.getWebsites()));*/
 			
 		}
 		
@@ -206,10 +212,11 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		publicationsJson.add("books",publicationBook);
 		publicationsJson.add("incollections",publicationIncollection);
 		publicationsJson.add("inproceedings",publicationInproceedings);
-		publicationsJson.add("masterThesis",publicationMasterThesis);
-		publicationsJson.add("phdThesis",publicationPHDThesis);
 		publicationsJson.add("proceedings",publicationProceedings);
-		publicationsJson.add("websites",publicationWebsites);
+		publicationsJson.add("others",publicationOthers);// Issue #15
+		/*publicationsJson.add("masterThesis",publicationMasterThesis);
+		publicationsJson.add("phdThesis",publicationPHDThesis);
+		publicationsJson.add("websites",publicationWebsites);*/
 		
 		return publicationsJson;
 	}
