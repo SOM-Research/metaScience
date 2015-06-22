@@ -90,14 +90,15 @@ window.onload = function() {
 	        beforeSend: function (jqxhr, settings) {
 	        	authorSearchstring = $("#acombobox").jqxComboBox('searchString');
 	            if (authorSearchstring != undefined) {
-                    console.log("author")
-	            		settings.url = settings.url + "&search=" + authorSearchstring +"&type=1";
+            		settings.url = settings.url + "&search=" + authorSearchstring +"&type=1";
 	            } else {
                     console.log("it WAS undefined");
                 }
 	        },
-	        loadComplete: function() {
-	        }
+            downloadComplete: function (edata, textStatus, jqXHR) {
+                console.log(edata);
+            },
+            contentType : "application/x-www-form-urlencoded; charset=UTF-8"
     	}
     );
 
