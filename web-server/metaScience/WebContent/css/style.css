@@ -303,6 +303,11 @@ footer a:link, footer a:visited, footer a:hover, footer a:active {
 	color: black;
 }
 
+.collapseIcon {
+	float: left;
+	padding-right: 10px;
+}
+
 
 
 

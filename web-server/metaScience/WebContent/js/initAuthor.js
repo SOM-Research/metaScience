@@ -46,6 +46,23 @@ window.onload = function() {
 	}
 
 	updateGraphs(authorId);
+	
+	
+	$(".pubSubCategory").on("show.bs.collapse", function() {
+		$(".collapseIcon").empty();
+		d3.select(".collapseIcon").append("img")
+			.attr("src","imgs/expanded.png");
+		
+	})
+	
+	$(".pubSubCategory").on("hidden.bs.collapse", function() {
+		$(".collapseIcon").empty();
+		d3.select(".collapseIcon").append("img")
+			.attr("src","imgs/collapsed.png");
+		
+	})
+	
+	
 }
 
 function updateGraphs(authorId) {
@@ -60,7 +77,7 @@ function updateActivity(authorId) {
 		url: metaScienceServlet + "/authorActivity?id=" + authorId,
 		success : function(data) {
 
-	        $("#activityChartRow").css("visibility", "visible");
+	        showRow("activityChartRow");
 	   
 	   		// Main data - Publications Update
 	   	  	$("#totalPubLoading").css("visibility","hidden");
@@ -92,14 +109,15 @@ function updateActivity(authorId) {
 	   	  	$("#totalPubInproceeding").text("Not available");
 			$("#totalOthers").text("Not available");
 	   	  	$("#avgPublications").text("Not available");
-	   	  	$("#activityChartRow").css("visibility", "hidden");
+	   	  	
+	   	  	hideRow("activityChartRow");
 		}
 	});
 }
 
 function generateActivityDiagram(activityData) {
-
-	$("#activityChartRow").css("visibility" ,"visible");
+	showRow("activityChartRow");
+	
   	activityChart = c3.generate({
 	    bindto : "#activityChart",
 	    data: {
@@ -135,12 +153,12 @@ function updatePaperEvolution(authorId) {
 	   	  	generatePaperEvolutionDiagram(data.coAuthors,data.pages);
 		},
 		error : function(xhr, status, error) {
-	   	  	$("#pagesEvolutionRow").css("visibility", "hidden");
+	   	  	hideRow("pagesEvolutionRow");
 		}
 	});
 }
 function generatePaperEvolutionDiagram(dataCoAuthors,dataPages) {
-	$("#pagesEvolutionRow").css("visibility" ,"visible");
+	showRow("pagesEvolutionRow");
 
   	activityChart = c3.generate({
     	bindto : "#pagesEvolutionChart",
