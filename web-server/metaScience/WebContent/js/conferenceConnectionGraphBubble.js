@@ -47,14 +47,9 @@ function getConferenceConnectionGraphBubble(authorId) {
               var totalConferences = jsonNodes.author.total_conferences;
               var averageConferences = jsonNodes.author.average_conferences;
 
-              $("#totalConferencesLoading").css("visibility","hidden");
-              $("#totalConferences").text(totalConferences);
-              $("#avgConferencesLoading").css("visibility","hidden");
-              $("#avgConferences").text(averageConferences);
-
               if(conferenceNodes.length > 0) {
                     var nodes = {
-                    children : conferenceNodes
+                    		children : conferenceNodes
                     };
 
                     graphNodes = nodes;
@@ -65,7 +60,7 @@ function getConferenceConnectionGraphBubble(authorId) {
                    loadGraph(true);
 
                    var comboboxNodes = new Array();
-                   comboboxNodes.push({source : " - All conferences - "});
+                   comboboxNodes.push({source : " - All Venues - "});
                    comboboxNodes = comboboxNodes.concat(conferenceNodes);
 
                    $("#conferenceCombobox").jqxComboBox(
@@ -231,6 +226,7 @@ function drawConferenceConnectionGraphBubble(nodes) {
                     .style("top",(d3.event.pageY-10) + "px");
 
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> name: <span>" + d.source);
+          nodeTooltip.append("p").attr("class","tooltiptext").html("<span> type: <span>" + d.type);
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> number of attendance: <span>" + d.attendance);
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> number of publication: <span>" + d.publications);
 

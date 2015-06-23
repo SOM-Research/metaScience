@@ -99,13 +99,14 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT airn.author_id, airn.author, source, COUNT(DISTINCT year) AS attendance, COUNT(*) AS publications" 
+			String query = "SELECT airn.author_id, airn.author, source, COUNT(DISTINCT year) AS attendance, COUNT(*) AS publications, type" 
 							+ " FROM dblp_pub_new pub"
 							+ " JOIN dblp_authorid_ref_new airn"
 							+ " ON pub.id = airn.id"
 							+ " WHERE source IS NOT NULL "
 							+ " AND airn.author_id = " + authorId
-							+ " AND type = 'inproceedings' AND title NOT LIKE '%workshop%'"
+							+ " AND type IN ('inproceedings','article')"
+							+ " AND title NOT LIKE '%workshop%'"
 							+ " GROUP BY airn.author_id, source;";
 			rs = stmt.executeQuery(query);
 			answer = prepareAuthorConferenceJSon(rs);
@@ -155,6 +156,7 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 				String conferenceSource = rs.getString("source");
 				Integer numAttendance = rs.getInt("attendance");
 				Integer numPublications = rs.getInt("publications");
+				String type = rs.getString("type");
 				total_attendance += numAttendance;
 				total_publications += numPublications;
 				if(numAttendance > max_attendance) {
@@ -167,6 +169,7 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 				conferenceObject.addProperty("source", conferenceSource);
 				conferenceObject.addProperty("attendance", numAttendance);
 				conferenceObject.addProperty("publications", numPublications);
+				conferenceObject.addProperty("type", type);
 				conferences.add(conferenceObject);
 				
 			}
