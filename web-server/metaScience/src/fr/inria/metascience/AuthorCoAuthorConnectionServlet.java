@@ -6,7 +6,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 
 @WebServlet("/coAuthorConnection")
@@ -158,6 +159,7 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 	private JsonArray prepareCollaborationJson(ResultSet rs) throws ServletException {
 		JsonArray collaborations = new JsonArray();
 		
+		Set<String> uniqueCoAuthors = new HashSet<String>();
 		try {
 			while(rs.next()) {
 				JsonObject coAuthorObject = new JsonObject();
@@ -165,8 +167,9 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				String coAuthorId = rs.getString("author_id");
 				String coAuthorName = rs.getString("author");
 				Integer numCollaborations = rs.getInt("relation_strength");
+				
+				uniqueCoAuthors.add(coAuthorId);
 				total_collaborations += numCollaborations;
-				total_collaborators++;
 				if(numCollaborations > max_collaborations) {
 					max_collaborations = numCollaborations;
 				}
@@ -178,6 +181,8 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 				
 			}
 
+			total_collaborators = uniqueCoAuthors.size();
+			
 			avg_collaborations =  (double)total_collaborations/(double)total_collaborators;
 		} catch(SQLException e) {
 			throw new ServletException("Error retrieving collaboration field from the ResultSet", e);

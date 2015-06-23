@@ -18,7 +18,7 @@ var d3nodes;
  	// remove previous graph if exists
  	if( $("#coAuthorConnectionGraph").children().size() > 0) {
  		$("#coAuthorConnectionGraph").empty();
-    $("collabSlider").empty();
+ 		$("collabSlider").empty();
  	}
 
  	getCoAuthorConnectionGraphBubble(authorId);
@@ -51,7 +51,7 @@ function getCoAuthorConnectionGraphBubble(authorId) {
               
               var authorNodes = jsonNodes.coAuthors;
               var maxCollaborations = jsonNodes.author.max_collaborations;
-              var totalCollaborations = jsonNodes.author.total_collaborations;
+              var totalCollaborations = jsonNodes.author.total_collaborators;
               var averageCollaborations = jsonNodes.author.average_collaborations;
 
               $("#totalCollaborationsLoading").css("visibility","hidden");
