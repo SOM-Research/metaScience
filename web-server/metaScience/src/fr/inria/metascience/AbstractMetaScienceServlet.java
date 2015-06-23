@@ -19,6 +19,7 @@ public class AbstractMetaScienceServlet extends HttpServlet {
     /** Params used in the servlets */
 	static final String ID_PARAM = "id";
     static final String SUBID_PARAM = "subid";
+    
 
     /** Some conference whose source/sourceId vary */
     HashMap<String, String> preCachedVenues = new HashMap();
@@ -27,6 +28,9 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 	 * String to be used for CORS
 	 */
 	String allowOrigin;
+	
+	/** DBLP schema name */
+	String dblpSchema;
 	
 	@Override
 	public void init() throws ServletException {
@@ -38,6 +42,10 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 			allowOrigin = properties.getProperty("allowOrigin");
 			if(allowOrigin == null)
 				throw new ServletException("No value for allowOrigin in config file");
+			
+			dblpSchema = properties.getProperty("dblpSchema");
+			if(dblpSchema == null)
+				throw new ServletException("No value for dblpSchema in config file");
 		} catch (IOException e) {
 			throw new ServletException("No configuration found");
 		}
