@@ -1,0 +1,87 @@
+total number of publications: 11
+total number of journals: 0
+total number of conferences: 11
+total number of books: 0
+total number of editors: 0
+average number of publications per year: 2.75
+total number of co-authors: 13
+average number of co-authors: 2.82
+
+Activity along the years:
+{
+    "2012": {
+        "conference": 2
+    }, 
+    "2013": {
+        "conference": 5
+    }, 
+    "2014": {}, 
+    "2015": {
+        "conference": 4
+    }
+}
+
+Written pages evolution
+{
+    "2012": {
+        "avg.pages": 5.25, 
+        "n.coll": 6
+    }, 
+    "2014": {
+        "avg.pages": 3.07, 
+        "n.coll": 14
+    }, 
+    "2015": {
+        "avg.pages": 2.58, 
+        "n.coll": 11
+    }
+}
+
+Co-author connection:
+{
+    "Adil El Ghali": 1, 
+    "Alexandre Bergel": 1, 
+    "Belen Rolandi": 2, 
+    "Fabian B\u00fcttner": 1, 
+    "Fr\u00e9d\u00e9ric Cuppens": 1, 
+    "Jacques Perronnet": 3, 
+    "Javier Luis C\u00e1novas Izquierdo": 4, 
+    "Jordi Cabot": 7, 
+    "Marcos Didonet Del Fabro": 1, 
+    "Massimo Tisi": 2, 
+    "Patrick Albert": 3, 
+    "Philippe Bauquel": 3, 
+    "Salvador Mart\u00ednez Perez": 2
+}
+
+Venue connection:
+{
+    "DEXA": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "OCL@MoDELS": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "RuleML": {
+        "attendance": 1, 
+        "publication": 2
+    }, 
+    "SANER": {
+        "attendance": 1, 
+        "publication": 3
+    }, 
+    "SOFSEM": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "TTC": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "WCRE": {
+        "attendance": 1, 
+        "publication": 2
+    }
+}
