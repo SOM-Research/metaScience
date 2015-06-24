@@ -108,7 +108,7 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT airn.author_id, airn.author, pub.year, pub.type, COUNT(pub.year) AS number"
+			String query = "SELECT airn.author_id, airn.author, pub.year, pub.type, COUNT(pub.year) AS number, SUM(calculate_num_of_pages(pages)) AS pages"
 							+ " FROM dblp_pub_new pub"
 							+ " JOIN dblp_authorid_ref_new airn"
 							+ " ON pub.id=airn.id"
@@ -144,6 +144,7 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 				String publicationType = rs.getString("type");
 				int publicationYear = rs.getInt("year");
 				int publicationNumber = rs.getInt("number");
+				int publicationPages = rs.getInt("pages");
 				
 				Publications yearPublications = yearPublicationsMap.get(publicationYear);
 				if(yearPublications == null) {
@@ -152,7 +153,7 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 					
 					yearPublicationsMap.put(publicationYear, yearPublications);
 				}
-				setPublicationsType(yearPublications, publicationType, publicationNumber);
+				setPublicationsType(yearPublications, publicationType, publicationNumber,publicationPages);
 				
 			}
 			
@@ -170,6 +171,8 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		JsonObject publicationsJson = new JsonObject();
 		
 		JsonArray publicationYears = new JsonArray();
+				
+		// Publication number
 		JsonArray publicationArticle = new JsonArray();
 		publicationArticle.add(new JsonPrimitive("Articles"));
 		JsonArray publicationBook = new JsonArray();
@@ -183,6 +186,22 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 
 		JsonArray publicationOthers = new JsonArray(); // Issue #15
 		publicationOthers.add(new JsonPrimitive("Others"));
+		
+		// publication pages
+		JsonArray publicationArticlePages = new JsonArray();
+		publicationArticlePages.add(new JsonPrimitive("Articles"));
+		JsonArray publicationBookPages = new JsonArray();
+		publicationBookPages.add(new JsonPrimitive("Books"));
+		JsonArray publicationIncollectionPages = new JsonArray();
+		publicationIncollectionPages.add(new JsonPrimitive("Incollections"));
+		JsonArray publicationInproceedingsPages = new JsonArray();
+		publicationInproceedingsPages.add(new JsonPrimitive("Inproceedings"));
+		JsonArray publicationProceedingsPages = new JsonArray();
+		publicationProceedingsPages.add(new JsonPrimitive("Proceedings"));
+
+		JsonArray publicationOthersPages = new JsonArray(); // Issue #15
+		publicationOthersPages.add(new JsonPrimitive("Others"));
+		
 		/*JsonArray publicationMasterThesis = new JsonArray();
 		publicationMasterThesis.add(new JsonPrimitive("Master Thesis"));
 		JsonArray publicationPHDThesis = new JsonArray();
@@ -195,25 +214,55 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 			publicationYears.add(new JsonPrimitive(year));
 			
 			publicationArticle.add(new JsonPrimitive(pub.getArticles()));
+			publicationArticlePages.add(new JsonPrimitive(pub.getArticlePages()));
 			publicationBook.add(new JsonPrimitive(pub.getBooks()));
+			publicationBookPages.add(new JsonPrimitive(pub.getBookPages()));
 			publicationIncollection.add(new JsonPrimitive(pub.getIncollections()));
+			publicationIncollectionPages.add(new JsonPrimitive(pub.getIncollectionPages()));
 			publicationInproceedings.add(new JsonPrimitive(pub.getInproceedings()));
+			publicationInproceedingsPages.add(new JsonPrimitive(pub.getInproceedingPages()));
 			publicationProceedings.add(new JsonPrimitive(pub.getProceedings()));
+			publicationProceedingsPages.add(new JsonPrimitive(pub.getProceedingPages()));
 
 			publicationOthers.add(new JsonPrimitive(pub.getMasterthesis()+pub.getPhdthesis()+pub.getWebsites())); // Issue #15
+			publicationOthersPages.add(new JsonPrimitive(pub.getMasterthesisPages()+pub.getPhdthesisPages()+pub.getWebsitesPages()));
 			/*publicationMasterThesis.add(new JsonPrimitive(pub.getMasterthesis()));
 			publicationPHDThesis.add(new JsonPrimitive(pub.getPhdthesis()));
 			publicationWebsites.add(new JsonPrimitive(pub.getWebsites()));*/
 			
 		}
 		
+		JsonObject articleObject = new JsonObject();
+		articleObject.add("publications", publicationArticle);
+		articleObject.add("pages",publicationArticlePages);
+		
+		JsonObject bookObject = new JsonObject();
+		bookObject.add("publications", publicationBook);
+		bookObject.add("pages",publicationBookPages);
+		
+		JsonObject incollectionObject = new JsonObject();
+		incollectionObject.add("publications", publicationIncollection);
+		incollectionObject.add("pages",publicationIncollectionPages);
+		
+		JsonObject inproceedingsObject = new JsonObject();
+		inproceedingsObject.add("publications", publicationInproceedings);
+		inproceedingsObject.add("pages",publicationInproceedingsPages);
+		
+		JsonObject proceedingsObject = new JsonObject();
+		proceedingsObject.add("publications", publicationProceedings);
+		proceedingsObject.add("pages",publicationProceedingsPages);
+		
+		JsonObject othersObject = new JsonObject();
+		othersObject.add("publications", publicationOthers);
+		othersObject.add("pages",publicationOthersPages);
+		
 		publicationsJson.add("years", publicationYears);
-		publicationsJson.add("articles",publicationArticle);
-		publicationsJson.add("books",publicationBook);
-		publicationsJson.add("incollections",publicationIncollection);
-		publicationsJson.add("inproceedings",publicationInproceedings);
-		publicationsJson.add("proceedings",publicationProceedings);
-		publicationsJson.add("others",publicationOthers);// Issue #15
+		publicationsJson.add("articles",articleObject);
+		publicationsJson.add("books",bookObject);
+		publicationsJson.add("incollections",incollectionObject);
+		publicationsJson.add("inproceedings",inproceedingsObject);
+		publicationsJson.add("proceedings",proceedingsObject);
+		publicationsJson.add("others",othersObject);// Issue #15
 		/*publicationsJson.add("masterThesis",publicationMasterThesis);
 		publicationsJson.add("phdThesis",publicationPHDThesis);
 		publicationsJson.add("websites",publicationWebsites);*/
@@ -221,30 +270,30 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		return publicationsJson;
 	}
 	
-	private void setPublicationsType(Publications yearPublications, String publicationType, int publicationCount) {
+	private void setPublicationsType(Publications yearPublications, String publicationType, int publicationCount, int publicationPages) {
 		if(publicationType.equals("article")) {
-			yearPublications.setArticles(publicationCount);
+			yearPublications.setArticles(publicationCount,publicationPages);
 			totalArticles += publicationCount;
 		} else if(publicationType.equals("book")) {
-			yearPublications.setBooks(publicationCount);
+			yearPublications.setBooks(publicationCount,publicationPages);
 			totalBooks += publicationCount;
 		} else if(publicationType.equals("incollection")) {
-			yearPublications.setIncollections(publicationCount);
+			yearPublications.setIncollections(publicationCount,publicationPages);
 			totalIncollections += publicationCount;
 		} else if(publicationType.equals("inproceedings")) {
-			yearPublications.setInproceedings(publicationCount);
+			yearPublications.setInproceedings(publicationCount,publicationPages);
 			totalInproceedings += publicationCount;
 		} else if(publicationType.equals("masterthesis")) {
-			yearPublications.setMasterthesis(publicationCount);
+			yearPublications.setMasterthesis(publicationCount,publicationPages);
 			totalMasterThesis += publicationCount;
 		} else if(publicationType.equals("phdthesis")) {
-			yearPublications.setPhdthesis(publicationCount);
+			yearPublications.setPhdthesis(publicationCount,publicationPages);
 			totalPHDThesis += publicationCount;
 		} else if(publicationType.equals("proceedings")) {
-			yearPublications.setProceedings(publicationCount);
+			yearPublications.setProceedings(publicationCount,publicationPages);
 			totalProceedings += publicationCount;
 		} else if(publicationType.equals("www")) {
-			yearPublications.setWebsites(publicationCount);
+			yearPublications.setWebsites(publicationCount,publicationPages);
 			totalWebsites += publicationCount;
 		} else {
 			//No corresponding type

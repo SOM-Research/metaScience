@@ -6,7 +6,7 @@ var venueName = "";
 var venueId = "";
 var authorName ="";
 var authorId = ""
-var searchstring="";
+var searchstring= "";
 var authorSearchstring = "";
 
 window.onload = function() {
@@ -30,11 +30,16 @@ window.onload = function() {
         {
             beforeSend: function (jqxhr, settings) {
                 searchstring = $("#vcombobox").jqxComboBox('searchString');
-                if (searchstring != undefined) {
+                if (searchstring != undefined || searchstring != '') {
                     settings.url = settings.url + "&search=" + searchstring + "&type=1";
                 } else {
                     console.log("venue WAS undefined");
                 }
+            },
+            formatData: function(data) {
+            	if($("#vcombobox").jqxComboBox('searchString') != undefined) {
+            		return data;
+            	}
             },
             loadComplete: function() {
             }
@@ -53,6 +58,8 @@ window.onload = function() {
             minLength: 3,
             placeHolder: "Conference Name (enter at least three letters to search)",
             showArrow : false,
+            autoOpen: false,
+            autoDropDownHeight: true,
             search: function (searchString) {
             	venueId = '';
             	venueName = '';

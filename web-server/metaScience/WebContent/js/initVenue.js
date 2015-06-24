@@ -1,5 +1,5 @@
-//var metaScienceServlet = 'http://localhost:8080/metaScience';
-var metaScienceServlet = 'http://som.uoc.es/metaScience';
+var metaScienceServlet = 'http://localhost:8080/metaScience';
+//var metaScienceServlet = 'http://som.uoc.es/metaScience';
 //var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 // Venue/subvenue ids
@@ -141,11 +141,12 @@ function updateBasic(venueId, subvenueId) {
 	$.ajax({
 		url: metaScienceServlet + "/venueActivity?id=" + venueId + ((venueId != subvenueId && subvenueId != undefined) ? "&subid=" + subvenueId : ""),
 		success : function(data) {
-	        $("#activityChartRow").css("visibility", "visible");
-	        $("#ratiosChartRow").css("visibility", "visible");
-      $("#avgAuthorsLoading").css("visibility", "hidden");
+			showRow("activityChartRow");
+			showRow("ratiosChartRow");
+			
+			$("#avgAuthorsLoading").css("visibility", "hidden");
 			$("#avgAuthors").text(data.authors.avg);
-      $("#avgPapersLoading").css("visibility", "hidden");
+			$("#avgPapersLoading").css("visibility", "hidden");
 			$("#avgPapers").text(data.papers.avg);
 			var activityChart = c3.generate({		
 			    bindto: '#activityChart',
@@ -163,9 +164,9 @@ function updateBasic(venueId, subvenueId) {
 			    }
 			});
 
-      $("#avgAuthorsPerPaperLoading").css("visibility", "hidden");
+			$("#avgAuthorsPerPaperLoading").css("visibility", "hidden");
 			$("#avgAuthorsPerPaper").text(data.authorsPerPaper.avg);
-      $("#avgPapersPerAuthorLoading").css("visibility", "hidden");
+			$("#avgPapersPerAuthorLoading").css("visibility", "hidden");
 			$("#avgPapersPerAuthor").text(data.papersPerAuthor.avg);
 			var ratiosChart = c3.generate({		
 			    bindto: '#ratiosChart',
@@ -195,8 +196,8 @@ function updateBasic(venueId, subvenueId) {
 			$("#avgPapers").text("Not available");
 			$("#avgAuthorsPerPaper").text("Not available");
 			$("#avgPapersPerAuthor").text("Not available");
-	        $("#activityChartRow").css("visibility", "hidden");
-	        $("#ratiosChartRow").css("visibility", "hidden");
+			hideRow("activityChartRow");
+			hideRow("ratiosChartRow");
 		}
 	});
 }
@@ -205,7 +206,7 @@ function updateRank(venueId,subvenueId) {
   $.ajax( {
     url: metaScienceServlet + "/venueAuthorRank?id=" + venueId + ((venueId != subvenueId && subvenueId != undefined) ? "&subid=" + subvenueId : ""),
     success: function(data) {
-      $("#topAuthor1").text(data.top["1"].name);
+      $("#topAuthor1").text(data.top[1].name);
       $("#topAuthor2").text(data.top[2].name);
       $("#topAuthor3").text(data.top[3].name);
       $("#topAuthor4").text(data.top[4].name);
@@ -230,6 +231,7 @@ function updateTurnover(venueId, subvenueId, span) {
   if(venueId != subvenueId && subvenueId != undefined) {
     $("#avgPerishingRate").text("Not available");
     $("#perishingChartRow").css("visibility", "hidden");
+    hideRow("perishingChartRow");
   } else {
     if(turnover1 == undefined || turnover3 == undefined) {
       $.ajax({
@@ -247,13 +249,13 @@ function updateTurnover(venueId, subvenueId, span) {
             },
             error : function(xhr, status, error) {
               $("#avgPerishingRate").text("Not available");
-              $("#perishingChartRow").css("visibility", "hidden");
+              hideRow("perishingChartRow");
             }
           });
         },
         error : function(xhr, status, error) {
           $("#avgPerishingRate").text("Not available");
-          $("#perishingChartRow").css("visibility", "hidden");
+          hideRow("perishingChartRow");
         }
       });
     } else if (span == 1 && turnover1 != undefined) {
@@ -268,7 +270,8 @@ function updateTurnoverGraph(turnoverData) {
   if(perishingChart != undefined)
     perishingChart.unload();
 
-  $("#perishingChartRow").css("visibility" ,"visible");
+  showRow("perishingChartRow");
+  
   perishingChart = c3.generate({
     bindto : "#turnoverChart",
     data: {
@@ -324,20 +327,21 @@ function updateTurnoverGraph(turnoverData) {
 function updateOpenness(venueId, subvenueId) {
 	if (venueId != subvenueId && subvenueId != undefined) {
 		$("#avgOpenness").text("Not available");
-        $("#opChartRow").css("visibility", "hidden");
+        hideRow("opChartRow");
 	} else {
-    $("#opChartRow").css("visibility", "visible");
+		showRow("opChartRow");
+		
 		$.ajax( {
 			url: metaScienceServlet + "/venueOpenness?id=" + venueId + ((venueId != subvenueId && subvenueId != undefined) ? "&subid=" + subvenueId : ""),
 			success : function(data) {
-        $("#avgOpennessLoading").css("visibility", "hidden");
+				$("#avgOpennessLoading").css("visibility", "hidden");
 				$("#avgOpenness").text(data.papers.avg + "% / " + data.authors.avg + "%");
 				var pcChart = c3.generate({
 					bindto : "#opChart",
 					data: {
 						xs: {
 							'PapersFromNewcomers' : 'x1',
-              'PapersFromCommunity' : 'x2'
+							'PapersFromCommunity' : 'x2'
 						},
             columns: [
               data.papers.yearly[0],
@@ -364,7 +368,7 @@ function updateOpenness(venueId, subvenueId) {
 			},
 			error : function(xhr, status, error) {
 				$("#avgOpenness").text("Not available");
-		        $("#opChartRow").css("visibility", "hidden");
+		        hideRow("opChartRow");
 			}
 		});
 	}
@@ -373,9 +377,9 @@ function updateOpenness(venueId, subvenueId) {
 function updatePC(venueId, subvenueId) {
 	if (venueId != subvenueId && subvenueId != undefined) {
 		$("#avgPC").text("Not available");
-        $("#pcChartRow").css("visibility", "hidden");
+        hideRow("pcChartRow");
 	} else {
-        $("#pcChartRow").css("visibility", "visible");
+        showRow("pcChartRow");
 		$.ajax( {
 			url: metaScienceServlet + "/venuePC?id=" + venueId + ((venueId != subvenueId && subvenueId != undefined) ? "&subid=" + subvenueId : ""),
 			success : function(data) {
@@ -416,50 +420,4 @@ function updatePC(venueId, subvenueId) {
 		});
 	}
 }
-
-function onLoadingGraph(svgIdContainer, loaderId, svgHeight, svgWidth) {
-  svgIdContainer
-  .append("svg:image")
-  .attr("id", loaderId)
-  .attr("xlink:href", "imgs/ajax-loader.gif")
-  .attr("width", "5%")
-  .attr("height", "5%")
-  .attr("x", function(){ return svgWidth/2;})
-  .attr("y", function(){ return svgHeight/2;});
-}
- 
-function removeLoadingImage(loaderId) {
-     d3.select('#' + loaderId).remove();
-}
- 
-function creatingWarningMessage(svgIdContainer, posX, posY, text) {
-     svgIdContainer.append("svg:image")
-     .attr("xlink:href", "imgs/warningimage.png")
-     .attr("width", "98%")
-     .attr("height", "98%");
-                              
-     svgIdContainer.append("text")
-     .attr("x", posX)
-     .attr("y", posY)
-     .attr("font-family", "sans-serif")
-     .attr("font-size", "28px")
-     .attr("text-anchor", "middle")
-     .attr("fill", "red")
-     .text(text);
-}
-
-
-function addZoomMoveIcon(visId) {
-     
-     d3.select(visId)
-     .append("svg:image")
-     .attr("xlink:href", "imgs/move_zoom.svg")
-     .attr("width","72")
-     .attr("height","72")
-     .attr("x","10")
-     .attr("y","10")
-     .append("svg:title")
-     .text("Scroll to zoom, drag to move");
-}
-
 

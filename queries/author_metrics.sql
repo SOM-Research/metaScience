@@ -113,3 +113,11 @@ from dblp_pub_new pub join dblp_authorid_ref_new airn
 on pub.id = airn.id
 where source IS NOT NULL and airn.author_id = 636270 and type IN ('inproceedings', 'article') and title NOT LIKE '%workshop%'
 group by airn.author_id, source;
+
+/* number of publications per year per type & total number of pages */
+SELECT airn.author_id, airn.author, pub.year, pub.type, COUNT(pub.year) AS number, SUM(calculate_num_of_pages(pages)) as pages
+ FROM dblp_pub_new pub
+JOIN dblp_authorid_ref_new airn
+ON pub.id=airn.id
+WHERE airn.author_id = 684483
+GROUP BY pub.year, pub.type;

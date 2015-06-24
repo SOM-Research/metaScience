@@ -122,12 +122,12 @@ function generateActivityDiagram(activityData) {
 	    bindto : "#activityChart",
 	    data: {
 	      columns: [
-	        activityData.articles,
-	        activityData.books,
-	        activityData.inproceedings,
-			activityData.incollections,
-	        activityData.proceedings,
-	        activityData.others
+	        activityData.articles.publications,
+	        activityData.books.publications,
+	        activityData.inproceedings.publications,
+			activityData.incollections.publications,
+	        activityData.proceedings.publications,
+	        activityData.others.publications
 	      ],
 	      type: 'bar',
 	      groups: [
@@ -141,6 +141,27 @@ function generateActivityDiagram(activityData) {
       	}
       }
  	});
+  	
+  	pagesChart = c3.generate({
+  		bindto: "#pagePublishedChart",
+  		data: {
+  			columns: [
+				activityData.articles.pages,
+				activityData.books.pages,
+				activityData.inproceedings.pages,
+				activityData.incollections.pages,
+				activityData.proceedings.pages,
+				activityData.others.pages
+  			]
+  		},
+  		axis: {
+  			x: {
+  				type: 'categories',
+  				categories: activityData.years
+  			}
+  		}
+  		
+  	});
 
 }
 

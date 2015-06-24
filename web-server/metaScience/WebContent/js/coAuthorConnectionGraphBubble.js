@@ -26,15 +26,6 @@ var d3nodes;
 
 function getCoAuthorConnectionGraphBubble(authorId) {
 
-    /*$("#totalCollaborationsLoading").css("visibility","hidden");
-          $("#totalCollaborations").text(data.collaborations.total);
-          $("#avgCollaborationsLoading").css("visibility","hidden");
-          $("#avgCollaborations").text(data.collaborations.avg);
-
-    $("#totalCollaborations").text("Not available");
-          $("#avgCollaborations").text("Not available");*/
-
-
      onLoadingGraph(d3.select("#coAuthorConnectionGraph"), "loaderCoAuthorConnectionGraph", heightCoAuthorGraph, widthCoAuthorGraph);
 
      d3.json(metaScienceServlet + "/coAuthorConnection?id="+authorId, function(errorJson,jsonNodes) {

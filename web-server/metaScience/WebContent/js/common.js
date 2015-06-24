@@ -9,12 +9,10 @@ function onLoadingGraph(svgIdContainer, loaderId, svgHeight, svgWidth) {
 	.attr("height", "5%")
 	.attr("x", function(){ return svgWidth/2;})
 	.attr("y", function(){ return svgHeight/2;});
-    console.log("loading");
 }
  
 function removeLoadingImage(loaderId) {
      d3.select('#' + loaderId).remove();
-     console.log("unloading");
 }
 
 function hideRow(rowId) {
