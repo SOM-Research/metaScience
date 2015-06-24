@@ -26,7 +26,7 @@ group by pub.id) as pub_info;
 select airn.author_id, airn.author, source, count(distinct year) as presence
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings' and title NOT LIKE '%workshop%'
+where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings'
 group by airn.author_id, source;
 
 /* 5. journal attendance for a given author */
@@ -40,7 +40,7 @@ group by airn.author_id, source;
 select airn.author_id, airn.author, source, count(*) as presence
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings' and title NOT LIKE '%workshop%'
+where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings'
 group by airn.author_id, source;
 
 /* 7. publications in journal for a given author */
@@ -50,7 +50,7 @@ on pub.id = airn.id
 where source IS NOT NULL and airn.author_id = 636270 and type = 'article'
 group by airn.author_id, source;
 
-/* 8. collaboration graph for a given author (it includes collaborations in conferences and journals)  */
+/* 8. collaboration graph for a given author (it includes collaborations in conferences, journals, informal reports, etc.)  */
 select connected_author_papers.author_id, connected_author_papers.author, count(*) as relation_strength
 from (
 select id
@@ -104,14 +104,14 @@ from (
 select airn.author_id, airn.author, year, count(year) as number_of_conferences
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings' and title NOT LIKE '%workshop%'
+where source IS NOT NULL and airn.author_id = 636270 and type = 'inproceedings'
 group by year) as conferences;
 
 /* 13. publications in venue for a given author */
 select airn.author_id, airn.author, source, count(*) as presence, type
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source IS NOT NULL and airn.author_id = 636270 and type IN ('inproceedings', 'article') and title NOT LIKE '%workshop%'
+where source IS NOT NULL and airn.author_id = 636270 and type IN ('inproceedings', 'article')
 group by airn.author_id, source;
 
 /* 14. number of publications per year per type & total number of pages */
