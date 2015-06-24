@@ -10,9 +10,9 @@ driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/c/Cosentino:Valerio'
+MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/i/Izquierdo:Javier_Luis_C=aacute=novas'
 
-#type must be defined either for manual or random selection
+#type must be defined both for manual and random selection
 type = 'person' #article, inproceedings
 
 OUTPUT = './dblp-data.txt'
@@ -84,6 +84,13 @@ def calculate_activity_along_the_years():
                 else:
                     pubs.update({'editor': 1})
 
+            elif class_name.startswith('entry'):
+                pubs = entries_per_year.get(current_year)
+                if pubs.get('other'):
+                    pubs.update({'other': pubs.get('other')+1})
+                else:
+                    pubs.update({'other': 1})
+
         except:
             continue
 
@@ -122,7 +129,7 @@ def calculate_average_number_of_coauthors():
     for e in entries:
         try:
             class_name = e.get_attribute('class')
-            if class_name in ('entry inproceedings', 'entry article', 'entry editor'):
+            if class_name.startswith('entry'):
                 number_of_coauthors = 0
                 spans = e.find_elements_by_tag_name('span')
                 for span in spans:
@@ -158,7 +165,7 @@ def calculate_coauthor_connection():
         try:
             class_name = e.get_attribute('class')
 
-            if class_name in ('entry inproceedings', 'entry article', 'entry editor'):
+            if class_name.startswith('entry'):
                 spans = e.find_elements_by_tag_name('span')
                 for span in spans:
                     item_prop = span.get_attribute('itemprop')
@@ -233,7 +240,7 @@ def calculate_number_of_pages(interval):
             splitted = interval.split('-')
             pages = int(splitted[1]) - int(splitted[0])
         else:
-            pages = int(interval)
+            pages = 1
     except:
         pages = 0
 
@@ -246,10 +253,11 @@ def update_page_evolution_map(page_evolution_per_year, page_evolution, current_y
     for value in page_evolution.values():
         pages = value.get('pages')
         coll = value.get('coll')
-        contributed_pages.append(float(pages)/coll)
+        if pages > 0:
+            contributed_pages.append(float(pages)/(coll+1))
         total_coll += coll
 
-    page_evolution_per_year.update({current_year: {'avg.pages': round(sum(contributed_pages)/len(contributed_pages),2), 'n.coll': total_coll}})
+    page_evolution_per_year.update({current_year: {'avg.pages': round(sum(contributed_pages)/len(contributed_pages), 2), 'n.coll': total_coll}})
 
 
 def calculate_page_evolution():
@@ -270,10 +278,11 @@ def calculate_page_evolution():
 
                 current_year = e.text
                 page_evolution = {}
-            elif class_name in ('entry inproceedings', 'entry article'):
+            elif class_name.startswith('entry'):
                 paper_counter += 1
                 spans = e.find_elements_by_tag_name('span')
                 collaborations = 0
+                pages = 0
                 for span in spans:
                     item_prop = span.get_attribute('itemprop')
                     if item_prop == 'pagination':
@@ -310,10 +319,11 @@ def calculate_statistics_for_person():
 
     entries_per_year = calculate_activity_along_the_years()
     total_publications = calculate_total_publications(entries_per_year)
-    total_journals = calculate_number_of_type(entries_per_year, 'article')
+    total_journals = calculate_number_of_type(entries_per_year, 'journal')
     total_conferences = calculate_number_of_type(entries_per_year, 'conference')
     total_books = calculate_number_of_type(entries_per_year, 'book')
     total_editors = calculate_number_of_type(entries_per_year, 'editor')
+    total_others = calculate_number_of_type(entries_per_year, 'other')
     average_publications_year = calculate_average_publications_per_year(entries_per_year)
 
     write_to_output('total number of publications: ' + str(total_publications))
@@ -325,6 +335,8 @@ def calculate_statistics_for_person():
     write_to_output('total number of books: ' + str(total_books))
     write_to_output('\n')
     write_to_output('total number of editors: ' + str(total_editors))
+    write_to_output('\n')
+    write_to_output('total number of other pubs: ' + str(total_others))
     write_to_output('\n')
     write_to_output('average number of publications per year: ' + str(average_publications_year))
     write_to_output('\n')
@@ -354,7 +366,7 @@ def calculate_statistics_for_person():
     write_to_output('\n')
     write_to_output('Co-author connection:')
     write_to_output('\n')
-    write_to_output(json.dumps(coauthor_connection, indent=4, sort_keys=True))
+    write_to_output(json.dumps(coauthor_connection, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
     write_to_output('\n')
     write_to_output('\n')
     write_to_output('Venue connection:')

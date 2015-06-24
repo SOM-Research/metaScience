@@ -1,72 +1,143 @@
-total number of publications: 11
-total number of journals: 0
-total number of conferences: 11
+total number of publications: 21
+total number of journals: 5
+total number of conferences: 14
 total number of books: 0
 total number of editors: 0
-average number of publications per year: 2.75
-total number of co-authors: 13
-average number of co-authors: 2.82
+total number of other pubs: 2
+average number of publications per year: 3.0
+total number of co-authors: 26
+average number of co-authors: 2.48
 
 Activity along the years:
 {
-    "2012": {
+    "2007": {
+        "conference": 1
+    }, 
+    "2009": {
         "conference": 2
     }, 
-    "2013": {
-        "conference": 5
+    "2010": {
+        "conference": 1, 
+        "journal": 1
     }, 
-    "2014": {}, 
+    "2012": {
+        "conference": 1, 
+        "journal": 1
+    }, 
+    "2013": {
+        "conference": 4, 
+        "journal": 1
+    }, 
+    "2014": {
+        "conference": 1, 
+        "journal": 2, 
+        "other": 1
+    }, 
     "2015": {
-        "conference": 4
+        "conference": 4, 
+        "other": 1
     }
 }
 
 Written pages evolution
 {
+    "2007": {
+        "avg.pages": 2.25, 
+        "n.coll": 3
+    }, 
+    "2009": {
+        "avg.pages": 4.5, 
+        "n.coll": 2
+    }, 
+    "2010": {
+        "avg.pages": 1.75, 
+        "n.coll": 2
+    }, 
     "2012": {
-        "avg.pages": 5.25, 
-        "n.coll": 6
+        "avg.pages": 3.5, 
+        "n.coll": 4
+    }, 
+    "2013": {
+        "avg.pages": 4.3, 
+        "n.coll": 20
     }, 
     "2014": {
-        "avg.pages": 3.07, 
-        "n.coll": 14
+        "avg.pages": 7.44, 
+        "n.coll": 6
     }, 
     "2015": {
-        "avg.pages": 2.58, 
-        "n.coll": 11
+        "avg.pages": 1.78, 
+        "n.coll": 15
     }
 }
 
 Co-author connection:
 {
-    "Adil El Ghali": 1, 
+    "Abel Gómez": 1, 
+    "Alexander Bergmayr": 1, 
     "Alexandre Bergel": 1, 
+    "Andreas Menychtas": 1, 
     "Belen Rolandi": 2, 
-    "Fabian B\u00fcttner": 1, 
-    "Fr\u00e9d\u00e9ric Cuppens": 1, 
-    "Jacques Perronnet": 3, 
-    "Javier Luis C\u00e1novas Izquierdo": 4, 
-    "Jordi Cabot": 7, 
-    "Marcos Didonet Del Fabro": 1, 
+    "Clara Pezuela": 1, 
+    "Dimosthenis Kyriazis": 1, 
+    "Esther Guerra": 1, 
+    "Frédéric Jouault": 1, 
+    "George Kousiouris": 1, 
+    "Gorka Puente": 1, 
+    "Hamza Ed-Douibi": 1, 
+    "Hugo Bruneliere": 1, 
+    "Jesús García Molina": 9, 
+    "Jesús Gorroñogoitia": 1, 
+    "Jesús J. López-Fernández": 1, 
+    "Jesús Sánchez Cuadrado": 3, 
+    "Jordi Cabot": 11, 
+    "Juan de Lara": 1, 
+    "Leire Orue-Echevarria Arrieta": 1, 
+    "Manuel Wimmer": 1, 
     "Massimo Tisi": 2, 
-    "Patrick Albert": 3, 
-    "Philippe Bauquel": 3, 
-    "Salvador Mart\u00ednez Perez": 2
+    "Oscar Díaz": 1, 
+    "Philip Langer": 1, 
+    "Valerio Cosentino": 5, 
+    "Óscar Sánchez Ramón": 1
 }
 
 Venue connection:
 {
-    "DEXA": {
+    "CAiSE": {
         "attendance": 1, 
         "publication": 1
     }, 
-    "OCL@MoDELS": {
+    "CDVE": {
         "attendance": 1, 
         "publication": 1
     }, 
-    "RuleML": {
+    "CSMR": {
         "attendance": 1, 
+        "publication": 1
+    }, 
+    "ECMDA-FA": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ICWE": {
+        "attendance": 2, 
         "publication": 2
+    }, 
+    "IEEE Software": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Information & Software Technology": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "JISBD": {
+        "attendance": 3, 
+        "publication": 3
+    }, 
+    "MiSE": {
+        "attendance": 1, 
+        "publication": 1
     }, 
     "SANER": {
         "attendance": 1, 
@@ -76,12 +147,12 @@ Venue connection:
         "attendance": 1, 
         "publication": 1
     }, 
-    "TTC": {
+    "Sci. Comput. Program.": {
         "attendance": 1, 
         "publication": 1
     }, 
-    "WCRE": {
-        "attendance": 1, 
+    "Software and System Modeling": {
+        "attendance": 2, 
         "publication": 2
     }
 }
