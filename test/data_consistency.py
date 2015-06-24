@@ -7,13 +7,14 @@ import json
 import re
 
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+driver_edition = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
+MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
 
 #type must be defined both for manual and random selection
-type = 'person' #article, inproceedings
+type = 'inproceedings' #person, article, inproceedings
 
 OUTPUT = './dblp-data.txt'
 
@@ -41,7 +42,7 @@ def rest_a_bit():
     time.sleep(5)
 
 
-def calculate_activity_along_the_years():
+def calculate_researcher_activity_along_the_years():
     publ_section = driver.find_element_by_id('publ-section')
     entries = publ_section.find_elements_by_tag_name('li')
 
@@ -97,7 +98,7 @@ def calculate_activity_along_the_years():
     return entries_per_year
 
 
-def calculate_average_publications_per_year(entries_per_year):
+def calculate_average_researcher_publications_per_year(entries_per_year):
     sum_pubs_per_year = 0
     for year in entries_per_year.keys():
         pubs_per_year = entries_per_year.get(year)
@@ -106,7 +107,7 @@ def calculate_average_publications_per_year(entries_per_year):
     return round(float(sum_pubs_per_year)/len(entries_per_year.keys()), 2)
 
 
-def calculate_total_publications(entries_per_year):
+def calculate_researcher_total_publications(entries_per_year):
     sum_pubs_per_year = 0
     for year in entries_per_year.keys():
         pubs_per_year = entries_per_year.get(year)
@@ -115,11 +116,11 @@ def calculate_total_publications(entries_per_year):
     return sum_pubs_per_year
 
 
-def calculate_total_number_of_coauthors(coauthor_connection):
+def calculate_researcher_total_number_of_coauthors(coauthor_connection):
     return len(coauthor_connection.keys())
 
 
-def calculate_average_number_of_coauthors():
+def calculate_researcher_average_number_of_coauthors():
     author_name = driver.find_element_by_id('headline').find_element_by_tag_name('h1').text
 
     publ_section = driver.find_element_by_id('publ-section')
@@ -145,7 +146,7 @@ def calculate_average_number_of_coauthors():
     return round(sum(coauthors)/float(len(coauthors)),2)
 
 
-def calculate_number_of_type(entries_per_year, type):
+def calculate_number_of_publication_type_for_researcher(entries_per_year, type):
     sum_type = 0
     for year in entries_per_year.keys():
         pubs_per_year = entries_per_year.get(year)
@@ -155,7 +156,7 @@ def calculate_number_of_type(entries_per_year, type):
     return sum_type
 
 
-def calculate_coauthor_connection():
+def calculate_researcher_coauthor_connection():
     author_name = driver.find_element_by_id('headline').find_element_by_tag_name('h1').text
 
     publ_section = driver.find_element_by_id('publ-section')
@@ -197,7 +198,7 @@ def digest_venue_name(name):
     return re.sub('\(.*\)', '', name).strip()
 
 
-def calculate_venue_connection():
+def calculate_researcher_venue_connection():
     publ_section = driver.find_element_by_id('publ-section')
     entries = publ_section.find_elements_by_tag_name('li')
     connections = {}
@@ -317,14 +318,14 @@ def write_to_output(text):
 def calculate_statistics_for_person():
     init_output()
 
-    entries_per_year = calculate_activity_along_the_years()
-    total_publications = calculate_total_publications(entries_per_year)
-    total_journals = calculate_number_of_type(entries_per_year, 'journal')
-    total_conferences = calculate_number_of_type(entries_per_year, 'conference')
-    total_books = calculate_number_of_type(entries_per_year, 'book')
-    total_editors = calculate_number_of_type(entries_per_year, 'editor')
-    total_others = calculate_number_of_type(entries_per_year, 'other')
-    average_publications_year = calculate_average_publications_per_year(entries_per_year)
+    entries_per_year = calculate_researcher_activity_along_the_years()
+    total_publications = calculate_researcher_total_publications(entries_per_year)
+    total_journals = calculate_number_of_publication_type_for_researcher(entries_per_year, 'journal')
+    total_conferences = calculate_number_of_publication_type_for_researcher(entries_per_year, 'conference')
+    total_books = calculate_number_of_publication_type_for_researcher(entries_per_year, 'book')
+    total_editors = calculate_number_of_publication_type_for_researcher(entries_per_year, 'editor')
+    total_others = calculate_number_of_publication_type_for_researcher(entries_per_year, 'other')
+    average_publications_year = calculate_average_researcher_publications_per_year(entries_per_year)
 
     write_to_output('total number of publications: ' + str(total_publications))
     write_to_output('\n')
@@ -341,16 +342,16 @@ def calculate_statistics_for_person():
     write_to_output('average number of publications per year: ' + str(average_publications_year))
     write_to_output('\n')
 
-    coauthor_connection = calculate_coauthor_connection()
-    number_of_coauthors = calculate_total_number_of_coauthors(coauthor_connection)
-    average_number_of_coauthors = calculate_average_number_of_coauthors()
+    coauthor_connection = calculate_researcher_coauthor_connection()
+    number_of_coauthors = calculate_researcher_total_number_of_coauthors(coauthor_connection)
+    average_number_of_coauthors = calculate_researcher_average_number_of_coauthors()
 
     write_to_output('total number of co-authors: ' + str(number_of_coauthors))
     write_to_output('\n')
     write_to_output('average number of co-authors: ' + str(average_number_of_coauthors))
     write_to_output('\n')
 
-    venue_connection = calculate_venue_connection()
+    venue_connection = calculate_researcher_venue_connection()
 
     write_to_output('\n')
     write_to_output('Activity along the years:')
@@ -374,12 +375,83 @@ def calculate_statistics_for_person():
     write_to_output(json.dumps(venue_connection, indent=4, sort_keys=True))
     write_to_output('\n')
 
+
 def calculate_statistics_for_journal():
     None
 
 
-def calculate_statistics_for_conference():
+def get_year(edition):
+    year = None
+    spans = edition.find_elements_by_tag_name('span')
+    for span in spans:
+        item_prop = span.get_attribute('itemprop')
+        if item_prop == 'datePublished':
+            year = span.text
+            break
+
+    return year
+
+
+def get_papers_in_edition(driver):
+    lis = driver.find_elements_by_tag_name('li')
+
+    papers = []
+    for li in lis:
+        if li.get_attribute('class') == "entry inproceedings":
+            papers.append(li)
+
+    return papers
+
+
+def analyse_edition(year, href_edition):
+    driver_edition.get(href_edition)
+
+    authors_in_papers = []
+    authors_in_edition = {}
+
+    papers = get_papers_in_edition(driver_edition)
+    for paper in papers:
+        spans = paper.find_elements_by_tag_name('span')
+        authors = []
+        for span in spans:
+            if span.get_attribute('itemprop') == 'author':
+                authors.append(span.text)
+        authors_in_papers.append(authors)
+
+    authors_in_edition.update({year: authors_in_papers})
+
+    return authors_in_edition
+
+
+def get_info_editions():
+    editions = driver.find_elements_by_class_name('publ-list')
+    editions_info = {}
+    for edition in editions:
+        year = get_year(edition)
+        contents = edition.find_element_by_link_text('[contents]')
+        href_edition = contents.get_attribute('href')
+        editions_info.update(analyse_edition(year, href_edition))
+
+    return editions_info
+
+
+def calculate_conference_average_number_of_papers(editions):
+    papers = 0
+    for e in editions.keys():
+        papers += len(editions.get(e))
+
+    return round(float(papers)/len(editions.keys()), 2)
+
+
+def calculate_conference_average_number_of_authors(editions):
     None
+
+
+def calculate_statistics_for_conference():
+    editions = get_info_editions()
+    average_number_of_papers = calculate_conference_average_number_of_papers(editions)
+    average_number_of_authors = calculate_conference_average_number_of_authors(editions)
+    print "here"
 
 
 def calculate_statistics(type):
@@ -409,11 +481,14 @@ def browse(type):
 
 def main():
     if MANUAL_SELECTION:
-       driver.get(MANUAL_SELECTION_URL)
-       calculate_statistics(type)
+        driver.get(MANUAL_SELECTION_URL)
+        calculate_statistics(type)
     else:
         driver.get(URL)
         browse(type)
+
+    driver.close()
+    driver_edition.close()
 
 if __name__ == "__main__":
     main()
