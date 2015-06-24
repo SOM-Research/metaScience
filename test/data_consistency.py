@@ -10,7 +10,7 @@ driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/i/Izquierdo:Javier_Luis_C=aacute=novas'
+MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
 
 #type must be defined both for manual and random selection
 type = 'person' #article, inproceedings
@@ -79,7 +79,7 @@ def calculate_activity_along_the_years():
 
             elif class_name == 'entry editor':
                 pubs = entries_per_year.get(current_year)
-                if pubs.get('book'):
+                if pubs.get('editor'):
                     pubs.update({'editor': pubs.get('editor')+1})
                 else:
                     pubs.update({'editor': 1})
