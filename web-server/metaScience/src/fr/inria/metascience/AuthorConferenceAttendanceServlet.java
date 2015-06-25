@@ -106,7 +106,6 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 							+ " WHERE source IS NOT NULL "
 							+ " AND airn.author_id = " + authorId
 							+ " AND type IN ('inproceedings','article')"
-							+ " AND title NOT LIKE '%workshop%'"
 							+ " GROUP BY airn.author_id, source;";
 			rs = stmt.executeQuery(query);
 			answer = prepareAuthorConferenceJSon(rs);

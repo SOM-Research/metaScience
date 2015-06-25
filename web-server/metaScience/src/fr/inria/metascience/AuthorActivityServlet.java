@@ -189,18 +189,18 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 		
 		// publication pages
 		JsonArray publicationArticlePages = new JsonArray();
-		publicationArticlePages.add(new JsonPrimitive("Articles"));
+		publicationArticlePages.add(new JsonPrimitive("ArticlesPages"));
 		JsonArray publicationBookPages = new JsonArray();
-		publicationBookPages.add(new JsonPrimitive("Books"));
+		publicationBookPages.add(new JsonPrimitive("BooksPages"));
 		JsonArray publicationIncollectionPages = new JsonArray();
-		publicationIncollectionPages.add(new JsonPrimitive("Incollections"));
+		publicationIncollectionPages.add(new JsonPrimitive("IncollectionsPages"));
 		JsonArray publicationInproceedingsPages = new JsonArray();
-		publicationInproceedingsPages.add(new JsonPrimitive("Inproceedings"));
+		publicationInproceedingsPages.add(new JsonPrimitive("InproceedingsPages"));
 		JsonArray publicationProceedingsPages = new JsonArray();
-		publicationProceedingsPages.add(new JsonPrimitive("Proceedings"));
+		publicationProceedingsPages.add(new JsonPrimitive("ProceedingsPages"));
 
 		JsonArray publicationOthersPages = new JsonArray(); // Issue #15
-		publicationOthersPages.add(new JsonPrimitive("Others"));
+		publicationOthersPages.add(new JsonPrimitive("OthersPages"));
 		
 		/*JsonArray publicationMasterThesis = new JsonArray();
 		publicationMasterThesis.add(new JsonPrimitive("Master Thesis"));
@@ -299,5 +299,15 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 			//No corresponding type
 		}
 	}
+	
+	private JsonObject test() {
+		JsonObject publicationsJson = new JsonObject();
+		
+		
+		
+		return publicationsJson;
+	}
+	
+	
 	
 }

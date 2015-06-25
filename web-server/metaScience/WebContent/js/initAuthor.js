@@ -116,6 +116,19 @@ function updateActivity(authorId) {
 }
 
 function generateActivityDiagram(activityData) {
+	var pages = ['Pages'];
+	for(var i = 1; i < activityData.years.length + 1; i++) {
+		var artP = activityData.articles.pages[i];
+		var bookP = activityData.books.pages[i];
+		var incollectionP = activityData.incollections.pages[i];
+		var inproceedingsP = activityData.inproceedings.pages[i];
+		var othersP = activityData.others.pages[i];
+		var proceedingsP = activityData.proceedings.pages[i];
+		
+		var sumP = artP + bookP + incollectionP + inproceedingsP + othersP + proceedingsP;
+		pages.push(sumP);
+	}
+	
 	showRow("activityChartRow");
 	
   	activityChart = c3.generate({
@@ -127,41 +140,51 @@ function generateActivityDiagram(activityData) {
 	        activityData.inproceedings.publications,
 			activityData.incollections.publications,
 	        activityData.proceedings.publications,
-	        activityData.others.publications
+	        activityData.others.publications,
+	        pages
 	      ],
 	      type: 'bar',
+	      types: {
+	    	  'Articles': 'bar',
+	    	  'Books': 'bar',
+	    	  'Inproceedings': 'bar',
+	    	  'Incollections': 'bar',
+	    	  'Proceedings': 'bar',
+	    	  'Others': 'bar',
+	    	  'Pages': 'line'
+	    	  
+	      },
+	      axes: {
+	    	  'Articles': 'y',
+	    	  'Books': 'y',
+	    	  'Inproceedings': 'y',
+	    	  'Incollections': 'y',
+	    	  'Proceedings': 'y',
+	    	  'Others': 'y',
+	    	  'Pages': 'y2'
+	      },
 	      groups: [
-	          ['Articles', 'Books','Inproceedings', 'Incollections', 'Proceedings', 'Others']
+	          ['Articles', 'Books','Inproceedings', 'Incollections', 'Proceedings', 'Others'],
+	          ['Pages']
 	      ]
       },
       axis: {
       	x: {
       		type: 'category',
       		categories: activityData.years
+      	},
+      	y: {
+      		label: "publications"
+      	},
+      	y2: {
+      		show: true,
+      		label: "pages",
+      		min:0,
+      		center: 0
       	}
       }
  	});
-  	
-  	pagesChart = c3.generate({
-  		bindto: "#pagePublishedChart",
-  		data: {
-  			columns: [
-				activityData.articles.pages,
-				activityData.books.pages,
-				activityData.inproceedings.pages,
-				activityData.incollections.pages,
-				activityData.proceedings.pages,
-				activityData.others.pages
-  			]
-  		},
-  		axis: {
-  			x: {
-  				type: 'categories',
-  				categories: activityData.years
-  			}
-  		}
-  		
-  	});
+
 
 }
 
