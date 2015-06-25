@@ -69,14 +69,7 @@ function authorNotFound() {
 	hideRow("activityChartRow");
 	hideRow("mainRow");
 	$("#authorName").text('Author not found');
-	showRow("notFoundRow");
-//	$("#conferenceConnectionRow").css("visibility","hidden");
-//	$("#coAuthorConnectionRow").css("visibility","hidden");
-//	$("#pagesEvolutionRow").css("visibility","hidden");
-//	$("#activityChartRow").css("visibility","hidden");
-//	$("#mainRow").css("visibility","hidden");
-//	$("#authorName").text('Author not found');
-//	$("#notFoundRow").css("visibility", "visible");
+	$("#notFoundRow").css("display", "block");
 }
 
 function updateGraphs(authorId) {

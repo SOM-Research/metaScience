@@ -139,7 +139,7 @@ function venueNotFound() {
   $("#opChartRow").css("visibility","hidden");
   $("#venueAuthorConnectionRow").css("visibility","hidden");
   $("#opChartRow").css("visibility","hidden");
-  $("#notFoundRow").css("visibility", "visible");
+  $("#notFoundRow").css("display", "block");
 }
 
 function updateGraphs(venueId, subvenueId) {
