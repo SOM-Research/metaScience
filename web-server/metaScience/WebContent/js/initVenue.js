@@ -1,5 +1,5 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://som.uoc.es/metaScience';
+//var metaScienceServlet = 'http://localhost:8080/metaScience';
+var metaScienceServlet = 'http://som.uoc.es/metaScience';
 //var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 // Venue/subvenue ids
@@ -40,93 +40,106 @@ window.onload = function() {
 		$.ajax({
 			url : metaScienceServlet + "/venueName?id=" + params.id,
 			success : function(data) {
-				venueName = data.name;
-				$("#venueName").text(venueName);
+              venueName = data.name;
+			  $("#venueName").text(venueName);// Searching for satellite events
+
+              var subvenues =
+              {
+                datatype: "json",
+                datafields: [
+                  { name: 'name', type : 'string' },
+                  { name: 'id', type : 'string' },
+                ],
+                url: metaScienceServlet + "/subvenues"
+              };
+
+              var dataAdapter = new $.jqx.dataAdapter(subvenues,
+                  {
+                    beforeSend: function (jqxhr, settings) {
+                      searchstring = $("#satelliteCombobox").jqxComboBox('searchString');
+                      if (searchstring != undefined) {
+                        settings.url = settings.url + "&id=" + params.id + "&search=" + searchstring;
+                      } else {
+                        settings.url = settings.url + "&id=" + params.id
+                      }
+                    },
+
+                    loadComplete: function() {
+                    }
+                  }
+              );
+
+              $("#satelliteCombobox").jqxComboBox(
+                  {
+                    width: "100%",
+                    height: 25,
+                    source: dataAdapter,
+                    displayMember: "name",
+                    valueMember: "id",
+                    remoteAutoComplete: true,
+                    remoteAutoCompleteDelay: 500,
+                    minLength: 1,
+                    placeHolder: "Main Conference track",
+                    showArrow : true,
+                    search: function (searchString) {
+                      $(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                      dataAdapter.dataBind();
+                    }
+                  });
+
+              dataAdapter.dataBind();
+              updateGraphs(venueId, venueId);
+              subvenueId = venueId;
+
+              $("#satelliteCombobox").on('bindingComplete', function (event) {
+                $(".jqx-combobox-input, .jqx-combobox-content").css({ "background-image": "none" });
+              });
+
+              $("#satelliteCombobox").on('select', function (event) {
+                if (typeof event.args != 'undefined') {
+                  var selecteditem = event.args.item;
+                  subvenueId = selecteditem;
+                  if (selecteditem) {
+                    $("#avgAuthorsLoading").css("visibility", "visible");
+                    $("#avgPapersLoading").css("visibility", "visible");
+                    $("#avgAuthorsPerPaperLoading").css("visibility", "visible");
+                    $("#avgPapersPerAuthorLoading").css("visibility", "visible");
+                    $("#avgPerishingRateLoading").css("visibility", "visible");
+                    $("#avgOpennessLoading").css("visibility", "visible");
+                    updateGraphs(venueId, selecteditem.originalItem.id);
+                  }
+                }
+              });
+
+              $("#turnover1").on('click', function(event) {
+                updateTurnover(venueId, subvenueId, "1");
+              });
+
+              $("#turnover3").on('click', function(event) {
+                updateTurnover(venueId, subvenueId, "3");
+              });
 			},
 			error : function(data) {
-				$("#venueName").text(params.id);
+              venueNotFound();
 			}
 		});
 	} else {
-		$("#venueName").text('No venue found');
+      venueNotFound();
 	}
+}
 
-	// Searching for satellite events
-	var subvenues =
-    {
-        datatype: "json",
-        datafields: [
-            { name: 'name', type : 'string' },
-            { name: 'id', type : 'string' },
-        ],
-        url: metaScienceServlet + "/subvenues"
-    };
-        
-  var dataAdapter = new $.jqx.dataAdapter(subvenues,
-    {
-        beforeSend: function (jqxhr, settings) {
-          searchstring = $("#satelliteCombobox").jqxComboBox('searchString');
-            if (searchstring != undefined) {
-              settings.url = settings.url + "&id=" + params.id + "&search=" + searchstring;
-            } else {
-                  settings.url = settings.url + "&id=" + params.id
-              }
-        },
-
-        loadComplete: function() {
-        }
-    }
-  );
-
- 	$("#satelliteCombobox").jqxComboBox(
-    {
-        width: "100%",
-        height: 25,
-        source: dataAdapter,
-        displayMember: "name",
-        valueMember: "id",
-        remoteAutoComplete: true,
-        remoteAutoCompleteDelay: 500,
-        minLength: 1,
-        placeHolder: "Main Conference track",
-        showArrow : true,
-        search: function (searchString) {
-        	$(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
-            dataAdapter.dataBind();
-        }
-    });
-
- 	dataAdapter.dataBind();
- 	updateGraphs(venueId, venueId);
- 	subvenueId = venueId;
-	
-	$("#satelliteCombobox").on('bindingComplete', function (event) {
-    	$(".jqx-combobox-input, .jqx-combobox-content").css({ "background-image": "none" });
-    });
-
-    $("#satelliteCombobox").on('select', function (event) {
-    	if (typeof event.args != 'undefined') {
-        var selecteditem = event.args.item;
-        subvenueId = selecteditem;
-        if (selecteditem) {
-          $("#avgAuthorsLoading").css("visibility", "visible");
-          $("#avgPapersLoading").css("visibility", "visible");
-          $("#avgAuthorsPerPaperLoading").css("visibility", "visible");
-          $("#avgPapersPerAuthorLoading").css("visibility", "visible");
-          $("#avgPerishingRateLoading").css("visibility", "visible");
-          $("#avgOpennessLoading").css("visibility", "visible");
-          updateGraphs(venueId, selecteditem.originalItem.id);
-        }
-    	}
-    });
-
-    $("#turnover1").on('click', function(event) {
-    	updateTurnover(venueId, subvenueId, "1");
-    });
-
-    $("#turnover3").on('click', function(event) {
-    	updateTurnover(venueId, subvenueId, "3");
-    });
+function venueNotFound() {
+  $("#venueName").text('Venue not found');
+  $(".topBox").css("visibility", "hidden");
+  $("#mainRow").css("visibility","hidden");
+  $("#rankAuthorsRow").css("visibility","hidden");
+  $("#activityChartRow").css("visibility","hidden");
+  $("#ratiosChartRow").css("visibility","hidden");
+  $("#perishingChartRow").css("visibility","hidden");
+  $("#opChartRow").css("visibility","hidden");
+  $("#venueAuthorConnectionRow").css("visibility","hidden");
+  $("#opChartRow").css("visibility","hidden");
+  $("#notFoundRow").css("visibility", "visible");
 }
 
 function updateGraphs(venueId, subvenueId) {
