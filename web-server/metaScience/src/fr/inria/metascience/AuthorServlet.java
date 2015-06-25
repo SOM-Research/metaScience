@@ -49,6 +49,7 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		}
 		
 		//Building the response
+		resp.setContentType("application/json");
 		PrintWriter pw = resp.getWriter();
 		pw.append(response.toString());
 		
