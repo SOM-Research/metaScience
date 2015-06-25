@@ -21,6 +21,18 @@ import com.google.gson.JsonPrimitive;
 
 import fr.inria.metascience.elements.Publications;
 
+/**
+ * This servlet returns the activity for an author
+ *
+ * The current mapping between DBLP paper types and metaScience is:
+ *   article -> journal paper
+ *   proceedings -> editor
+ *   book -> book
+ *   incollection -> part of book or collection
+ *   inproceeding -> conference paper
+ *   phd thesis, master thesis and website -> others
+ *
+ */
 @WebServlet("/authorActivity")
 public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 
@@ -174,30 +186,30 @@ public class AuthorActivityServlet extends AbstractMetaScienceServlet {
 				
 		// Publication number
 		JsonArray publicationArticle = new JsonArray();
-		publicationArticle.add(new JsonPrimitive("Articles"));
+		publicationArticle.add(new JsonPrimitive("Journal papers"));
 		JsonArray publicationBook = new JsonArray();
 		publicationBook.add(new JsonPrimitive("Books"));
 		JsonArray publicationIncollection = new JsonArray();
-		publicationIncollection.add(new JsonPrimitive("Incollections"));
+		publicationIncollection.add(new JsonPrimitive("Part of book or collection"));
 		JsonArray publicationInproceedings = new JsonArray();
-		publicationInproceedings.add(new JsonPrimitive("Inproceedings"));
+		publicationInproceedings.add(new JsonPrimitive("Conference papers"));
 		JsonArray publicationProceedings = new JsonArray();
-		publicationProceedings.add(new JsonPrimitive("Proceedings"));
+		publicationProceedings.add(new JsonPrimitive("Editor"));
 
 		JsonArray publicationOthers = new JsonArray(); // Issue #15
 		publicationOthers.add(new JsonPrimitive("Others"));
 		
 		// publication pages
 		JsonArray publicationArticlePages = new JsonArray();
-		publicationArticlePages.add(new JsonPrimitive("Articles"));
+		publicationArticlePages.add(new JsonPrimitive("Journal papers"));
 		JsonArray publicationBookPages = new JsonArray();
 		publicationBookPages.add(new JsonPrimitive("Books"));
 		JsonArray publicationIncollectionPages = new JsonArray();
-		publicationIncollectionPages.add(new JsonPrimitive("Incollections"));
+		publicationIncollectionPages.add(new JsonPrimitive("Part of book or collection"));
 		JsonArray publicationInproceedingsPages = new JsonArray();
-		publicationInproceedingsPages.add(new JsonPrimitive("Inproceedings"));
+		publicationInproceedingsPages.add(new JsonPrimitive("Conference papers"));
 		JsonArray publicationProceedingsPages = new JsonArray();
-		publicationProceedingsPages.add(new JsonPrimitive("Proceedings"));
+		publicationProceedingsPages.add(new JsonPrimitive("Editor"));
 
 		JsonArray publicationOthersPages = new JsonArray(); // Issue #15
 		publicationOthersPages.add(new JsonPrimitive("Others"));
