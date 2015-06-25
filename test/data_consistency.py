@@ -5,6 +5,9 @@ from random import randint
 import time
 import json
 import re
+from itertools import chain
+from collections import Counter
+import operator
 
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 driver_edition = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
@@ -12,6 +15,8 @@ URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
 MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
+ACTIVATE_CONFERENCE_FILTER = True
+CONFERENCE_FILTER = 'ECMFA'
 
 #type must be defined both for manual and random selection
 type = 'inproceedings' #person, article, inproceedings
@@ -84,6 +89,13 @@ def calculate_researcher_activity_along_the_years():
                     pubs.update({'editor': pubs.get('editor')+1})
                 else:
                     pubs.update({'editor': 1})
+
+            elif class_name == 'entry incollection':
+                pubs = entries_per_year.get(current_year)
+                if pubs.get('incollection'):
+                    pubs.update({'incollection': pubs.get('incollection')+1})
+                else:
+                    pubs.update({'incollection': 1})
 
             elif class_name.startswith('entry'):
                 pubs = entries_per_year.get(current_year)
@@ -316,8 +328,6 @@ def write_to_output(text):
 
 
 def calculate_statistics_for_person():
-    init_output()
-
     entries_per_year = calculate_researcher_activity_along_the_years()
     total_publications = calculate_researcher_total_publications(entries_per_year)
     total_journals = calculate_number_of_publication_type_for_researcher(entries_per_year, 'journal')
@@ -380,16 +390,16 @@ def calculate_statistics_for_journal():
     None
 
 
-def get_year(edition):
-    year = None
+def get_attribute(edition, attribute_name, attribute_value):
+    attribute = None
     spans = edition.find_elements_by_tag_name('span')
     for span in spans:
-        item_prop = span.get_attribute('itemprop')
-        if item_prop == 'datePublished':
-            year = span.text
+        item_prop = span.get_attribute(attribute_name)
+        if item_prop == attribute_value:
+            attribute = span.text
             break
 
-    return year
+    return attribute
 
 
 def get_papers_in_edition(driver):
@@ -408,7 +418,6 @@ def analyse_edition(year, href_edition):
 
     authors_in_papers = []
     authors_in_edition = {}
-
     papers = get_papers_in_edition(driver_edition)
     for paper in papers:
         spans = paper.find_elements_by_tag_name('span')
@@ -427,34 +436,200 @@ def get_info_editions():
     editions = driver.find_elements_by_class_name('publ-list')
     editions_info = {}
     for edition in editions:
-        year = get_year(edition)
-        contents = edition.find_element_by_link_text('[contents]')
-        href_edition = contents.get_attribute('href')
-        editions_info.update(analyse_edition(year, href_edition))
+        year = get_attribute(edition, 'itemprop', 'datePublished')
+
+        if ACTIVATE_CONFERENCE_FILTER:
+            name = get_attribute(edition, 'class', 'title')
+            if CONFERENCE_FILTER in name.split(' '):
+                contents = edition.find_element_by_link_text('[contents]')
+                href_edition = contents.get_attribute('href')
+                editions_info.update(analyse_edition(year, href_edition))
+        else:
+            contents = edition.find_element_by_link_text('[contents]')
+            href_edition = contents.get_attribute('href')
+            editions_info.update(analyse_edition(year, href_edition))
 
     return editions_info
 
 
-def calculate_conference_average_number_of_papers(editions):
-    papers = 0
+def calculate_conference_number_of_papers(editions):
+    papers = {}
     for e in editions.keys():
-        papers += len(editions.get(e))
+        papers.update({e: len(editions.get(e))})
 
-    return round(float(papers)/len(editions.keys()), 2)
+    return papers
 
 
-def calculate_conference_average_number_of_authors(editions):
-    None
+def calculate_conference_average_number_of_papers(editions):
+    papers = calculate_conference_number_of_papers(editions).values()
+    return round((float(sum(papers))/len(editions.keys())), 2)
+
+
+def calculate_conference_number_of_distinct_authors(editions):
+    authors_in_editions = {}
+    for e in editions.keys():
+        distinct_authors = list(set(list(chain.from_iterable(editions.get(e)))))
+        authors_in_editions.update({e: len(distinct_authors)})
+
+    return authors_in_editions
+
+
+def calculate_conference_average_number_of_distinct_authors(editions):
+    authors_in_editions = calculate_conference_number_of_distinct_authors(editions).values()
+    return round(float(sum(authors_in_editions))/len(authors_in_editions), 2)
+
+
+def calculate_conference_number_of_authors_per_paper(editions):
+    authors_per_papers = {}
+    for e in editions.keys():
+        papers = editions.get(e)
+        authors_in_papers = []
+        for p in papers:
+            authors_in_papers.append(len(p))
+        authors_per_papers.update({e: round(sum(authors_in_papers)/float(len(authors_in_papers)),2)})
+
+    return authors_per_papers
+
+
+def calculate_conference_average_number_of_authors_per_paper(editions):
+    authors_in_papers = calculate_conference_number_of_authors_per_paper(editions).values()
+    return round(float(sum(authors_in_papers))/len(authors_in_papers), 2)
+
+
+def calculate_conference_number_of_papers_per_author(editions):
+    papers_per_authors = {}
+    for e in editions.keys():
+        authors = [val for sublist in editions.get(e) for val in sublist]
+        author_frequency = Counter(authors).values()
+        papers_per_authors.update({e: round(float(sum(author_frequency))/len(author_frequency), 2)})
+
+    return papers_per_authors
+
+
+def calculate_conference_average_number_of_papers_per_author(editions):
+    papers_per_authors = calculate_conference_number_of_papers_per_author(editions).values()
+    return round(float(sum(papers_per_authors))/len(papers_per_authors), 2)
+
+
+def calculate_conference_perishing_rate(editions):
+    perishing_rates = {}
+
+    sorted_keys = sorted(editions.keys())
+
+    distinct_authors_in_previous_edition = set(list(chain.from_iterable(editions.get(sorted_keys[0]))))
+    for e in sorted_keys[1:]:
+        distinct_authors = set(list(chain.from_iterable(editions.get(e))))
+        survived = len(list(distinct_authors_in_previous_edition.intersection(distinct_authors)))
+        perished = len(list(distinct_authors)) - survived
+        perishing_rate = round((float(perished) / (perished + survived)) * 100, 2)
+        perishing_rates.update({e: perishing_rate})
+        distinct_authors_in_previous_edition = distinct_authors
+
+    return perishing_rates
+
+
+def calculate_conference_average_perishing_rate(editions):
+    perishing_rates = calculate_conference_perishing_rate(editions).values()
+    return round(sum(perishing_rates)/float(len(perishing_rates)), 2)
+
+
+def calculate_conference_openness_rate(editions):
+    openness_rates = {}
+
+    sorted_keys = sorted(editions.keys())
+
+    community_authors = set(list(chain.from_iterable(editions.get(sorted_keys[0]))))
+    for e in sorted_keys:
+        papers = editions.get(e)
+        papers_from_new_comers = 0
+        papers_from_community = 0
+        for paper in papers:
+            if all(authors in community_authors for authors in paper):
+                papers_from_community += 1
+            elif not all(authors in community_authors for authors in paper):
+                papers_from_new_comers += 1
+
+        openness_rates.update({e: (round((papers_from_community/float(len(papers)))*100, 2), round((papers_from_new_comers/float(len(papers)))*100, 2))})
+        distinct_authors = set(list(chain.from_iterable(editions.get(e))))
+        new_authors = distinct_authors - community_authors
+        community_authors = set(list(community_authors) + list(new_authors))
+
+    return openness_rates
+
+
+def calculate_average_openness_rate(editions):
+    openness_rates = calculate_conference_openness_rate(editions).values()
+
+    return ({'from_new_comers': round(sum([x[1] for x in openness_rates])/float(len(openness_rates)), 2),
+            'from_community': round(sum([x[0] for x in openness_rates])/float(len(openness_rates)), 2)})
+
+
+def calculate_top_authors(editions):
+    top_authors = {}
+    for e in editions.keys():
+        authors = [val for sublist in editions.get(e) for val in sublist]
+        author_frequency = Counter(authors)
+        top_authors = dict(Counter(top_authors)+author_frequency)
+
+    sorted_by_value = sorted(top_authors.items(), key=operator.itemgetter(1), reverse=True)[:10]
+
+    return sorted_by_value
+
+
+def calculate_top_regular_authors(editions):
+    regular_authors = {}
+    for e in editions.keys():
+        distinct_authors = set(list(chain.from_iterable(editions.get(e))))
+        author_frequency = Counter(distinct_authors)
+        regular_authors = dict(Counter(regular_authors)+author_frequency)
+
+    sorted_by_value = sorted(regular_authors.items(), key=operator.itemgetter(1), reverse=True)[:10]
+
+    return sorted_by_value
 
 
 def calculate_statistics_for_conference():
     editions = get_info_editions()
+
     average_number_of_papers = calculate_conference_average_number_of_papers(editions)
-    average_number_of_authors = calculate_conference_average_number_of_authors(editions)
-    print "here"
+    average_number_of_authors = calculate_conference_average_number_of_distinct_authors(editions)
+    average_number_of_authors_per_paper = calculate_conference_average_number_of_authors_per_paper(editions)
+    average_number_of_papers_per_author = calculate_conference_average_number_of_papers_per_author(editions)
+    average_perishing_rate = calculate_conference_average_perishing_rate(editions)
+    average_openness_rate = calculate_average_openness_rate(editions)
+    top_authors = calculate_top_authors(editions)
+    top_regular_authors = calculate_top_regular_authors(editions)
+
+    write_to_output('average number of papers: ' + str(average_number_of_papers))
+    write_to_output('\n')
+    write_to_output('average number of authors: ' + str(average_number_of_authors))
+    write_to_output('\n')
+    write_to_output('average number of authors per paper: ' + str(average_number_of_authors_per_paper))
+    write_to_output('\n')
+    write_to_output('average number of papers per author: ' + str(average_number_of_papers_per_author))
+    write_to_output('\n')
+    write_to_output('average perishing rate: ' + str(average_perishing_rate))
+    write_to_output('\n')
+    write_to_output('average openness rate: ' + str(average_openness_rate))
+    write_to_output('\n')
+    write_to_output('top authors: ' + json.dumps(top_authors, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
+    write_to_output('\n')
+    write_to_output('top regular authors: ' + json.dumps(top_regular_authors, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
+    write_to_output('\n')
+    write_to_output('activity along the years: ' + json.dumps(({'papers': calculate_conference_number_of_papers(editions),
+                                                                'authors': calculate_conference_number_of_distinct_authors(editions)}), indent=4, sort_keys=True))
+    write_to_output('\n')
+    write_to_output('ratios along the years: ' + json.dumps(({'authors_per_paper': calculate_conference_number_of_authors_per_paper(editions),
+                                                                'papers_per_author': calculate_conference_number_of_papers_per_author(editions)}), indent=4, sort_keys=True))
+    write_to_output('\n')
+    write_to_output('turnover information: ' + json.dumps({'perished_rate': calculate_conference_perishing_rate(editions)}, indent=4, sort_keys=True))
+    write_to_output('\n')
+    write_to_output('openness information: ' + json.dumps({'from_community/from_new_comers': calculate_conference_openness_rate(editions)}, indent=4, sort_keys=True))
+    write_to_output('\n')
 
 
 def calculate_statistics(type):
+    init_output()
     if type == 'person':
         calculate_statistics_for_person()
     elif type == 'article':

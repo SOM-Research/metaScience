@@ -1,484 +1,154 @@
-total number of publications: 134
-total number of journals: 28
-total number of conferences: 95
-total number of books: 1
-total number of editors: 5
-total number of other pubs: 5
-average number of publications per year: 10.31
-total number of co-authors: 109
-average number of co-authors: 2.37
-
-Activity along the years:
-{
-    "2003": {
-        "conference": 4
+average number of papers: 25.0
+average number of authors: 79.2
+average number of authors per paper: 3.41
+average number of papers per author: 1.07
+average perishing rate: 81.03
+average openness rate: {'from_community': 33.79, 'from_new_comers': 66.22}
+top authors: [
+    [
+        "Dimitrios S. Kolovos", 
+        7
+    ], 
+    [
+        "Lionel C. Briand", 
+        7
+    ], 
+    [
+        "Richard F. Paige", 
+        7
+    ], 
+    [
+        "Louis M. Rose", 
+        6
+    ], 
+    [
+        "Tao Yue", 
+        6
+    ], 
+    [
+        "Martin Gogolla", 
+        4
+    ], 
+    [
+        "Jordi Cabot", 
+        4
+    ], 
+    [
+        "Benoît Combemale", 
+        4
+    ], 
+    [
+        "Yvan Labiche", 
+        4
+    ], 
+    [
+        "Marcos Didonet Del Fabro", 
+        4
+    ]
+]
+top regular authors: [
+    [
+        "Dimitrios S. Kolovos", 
+        4
+    ], 
+    [
+        "Benoît Combemale", 
+        4
+    ], 
+    [
+        "Lionel C. Briand", 
+        4
+    ], 
+    [
+        "Tao Yue", 
+        4
+    ], 
+    [
+        "Franck Barbier", 
+        3
+    ], 
+    [
+        "Colin Atkinson", 
+        3
+    ], 
+    [
+        "Martin Gogolla", 
+        3
+    ], 
+    [
+        "Jordi Cabot", 
+        3
+    ], 
+    [
+        "Esther Guerra", 
+        3
+    ], 
+    [
+        "Sébastien Mosser", 
+        3
+    ]
+]
+activity along the years: {
+    "authors": {
+        "2010": 93, 
+        "2011": 113, 
+        "2012": 83, 
+        "2013": 55, 
+        "2014": 52
     }, 
-    "2004": {
-        "conference": 4
-    }, 
-    "2005": {
-        "conference": 2
-    }, 
-    "2006": {
-        "conference": 4, 
-        "journal": 1
-    }, 
-    "2007": {
-        "conference": 9, 
-        "journal": 1
-    }, 
-    "2008": {
-        "conference": 8, 
-        "journal": 1
-    }, 
-    "2009": {
-        "conference": 6, 
-        "journal": 3
-    }, 
-    "2010": {
-        "conference": 13, 
-        "journal": 7
-    }, 
-    "2011": {
-        "conference": 9, 
-        "editor": 1, 
-        "journal": 3, 
-        "other": 1
-    }, 
-    "2012": {
-        "book": 1, 
-        "conference": 14, 
-        "editor": 1, 
-        "journal": 5, 
-        "other": 1
-    }, 
-    "2013": {
-        "conference": 11, 
-        "editor": 1, 
-        "journal": 2
-    }, 
-    "2014": {
-        "conference": 6, 
-        "editor": 2, 
-        "journal": 3, 
-        "other": 2
-    }, 
-    "2015": {
-        "conference": 5, 
-        "journal": 2, 
-        "other": 1
+    "papers": {
+        "2010": 26, 
+        "2011": 34, 
+        "2012": 32, 
+        "2013": 16, 
+        "2014": 17
     }
 }
-
-Written pages evolution
-{
-    "2003": {
-        "avg.pages": 5.71, 
-        "n.coll": 5
+ratios along the years: {
+    "authors_per_paper": {
+        "2010": 3.88, 
+        "2011": 3.59, 
+        "2012": 3.09, 
+        "2013": 3.44, 
+        "2014": 3.06
     }, 
-    "2004": {
-        "avg.pages": 5.38, 
-        "n.coll": 6
-    }, 
-    "2005": {
-        "avg.pages": 7.0, 
-        "n.coll": 2
-    }, 
-    "2006": {
-        "avg.pages": 6.3, 
-        "n.coll": 5
-    }, 
-    "2007": {
-        "avg.pages": 4.44, 
-        "n.coll": 16
-    }, 
-    "2008": {
-        "avg.pages": 2.94, 
-        "n.coll": 21
-    }, 
-    "2009": {
-        "avg.pages": 3.39, 
-        "n.coll": 24
-    }, 
-    "2010": {
-        "avg.pages": 3.56, 
-        "n.coll": 53
-    }, 
-    "2011": {
-        "avg.pages": 3.72, 
-        "n.coll": 39
-    }, 
-    "2012": {
-        "avg.pages": 4.0, 
-        "n.coll": 56
-    }, 
-    "2013": {
-        "avg.pages": 3.08, 
-        "n.coll": 45
-    }, 
-    "2014": {
-        "avg.pages": 5.69, 
-        "n.coll": 23
-    }, 
-    "2015": {
-        "avg.pages": 3.48, 
-        "n.coll": 22
+    "papers_per_author": {
+        "2010": 1.09, 
+        "2011": 1.08, 
+        "2012": 1.19, 
+        "2013": 1.0, 
+        "2014": 1.0
     }
 }
-
-Co-author connection:
-{
-    "Abel Gómez": 2, 
-    "Alexander Knapp": 2, 
-    "Alexandre Bergel": 1, 
-    "Antoni Olivé": 2, 
-    "Antonio Vallecillo": 2, 
-    "Belen Rolandi": 2, 
-    "Burkhart Wolff": 1, 
-    "Carlos A. González": 4, 
-    "Cauê Clasen": 2, 
-    "Claas Wilke": 2, 
-    "Claudia P. Ayala": 3, 
-    "Cristina Gómez": 11, 
-    "Daniel Riera": 5, 
-    "David Ameller": 4, 
-    "David Sanchez-Mendoza": 1, 
-    "Dennis Wagelaar": 2, 
-    "Duc-Hanh Dang": 2, 
-    "Edward D. Willink": 1, 
-    "Eelco Visser": 2, 
-    "Elena Planas": 5, 
-    "Eric S. K. Yu": 2, 
-    "Ernest Teniente": 11, 
-    "Esteban Robles Luna": 1, 
-    "Esther Guerra": 7, 
-    "Fabian Büttner": 6, 
-    "Flavien Somda": 1, 
-    "Francisco Durán": 1, 
-    "Frank Buschmann": 1, 
-    "Frédéric Cuppens": 6, 
-    "Frédéric Jouault": 11, 
-    "Frédéric Madiot": 2, 
-    "Gabriel Barbier": 1, 
-    "Gerson Sunyé": 1, 
-    "Grégoire Dupé": 3, 
-    "Guillaume Doux": 2, 
-    "Hamza Ed-Douibi": 1, 
-    "Hesam Chiniforooshan Esfahani": 2, 
-    "Hugo Bruneliere": 7, 
-    "István Ráth": 1, 
-    "Jacques Perronnet": 3, 
-    "James H. Hill": 1, 
-    "Javier Luis Cánovas Izquierdo": 11, 
-    "Javier Muñoz": 1, 
-    "Jean Bézivin": 1, 
-    "Jean-Christophe Lafaurie": 1, 
-    "Jean-Marie Mottu": 2, 
-    "Jennifer Horkoff": 1, 
-    "Jesús García Molina": 1, 
-    "Jesús J. López-Fernández": 1, 
-    "Jesús Pardillo": 1, 
-    "Jesús Sánchez Cuadrado": 1, 
-    "Joanna Chimiak-Opoka": 2, 
-    "Joaquín García-Alfaro": 5, 
-    "Jokin García": 1, 
-    "Jordi Ceballos": 1, 
-    "Jordi Conesa": 1, 
-    "Jose-Norberto Mazón": 2, 
-    "José Matías Rivero": 1, 
-    "José Raúl Romero": 2, 
-    "José Sáez": 1, 
-    "Juan David Villa Calle": 1, 
-    "Juan Trujillo": 1, 
-    "Juan de Lara": 7, 
-    "Julia Rubin": 1, 
-    "Konrad Wieland": 2, 
-    "Louis M. Rose": 1, 
-    "Lysanne Lessard": 1, 
-    "M. Elena Rodríguez": 1, 
-    "Manoli Albert": 2, 
-    "Manuel Clavel": 2, 
-    "Manuel Wimmer": 4, 
-    "Marco Brambilla": 10, 
-    "Marcos Didonet Del Fabro": 2, 
-    "Marcus Alanen": 1, 
-    "Marina Egea": 2, 
-    "Martin Gogolla": 13, 
-    "Massimo Tisi": 8, 
-    "Matias Urbieta": 1, 
-    "Michael Grossniklaus": 2, 
-    "Miguel Goulão": 1, 
-    "Mira Balaban": 2, 
-    "Nathalie Moreno": 2, 
-    "Nora Cuppens-Boulahia": 5, 
-    "Orlando Avila-García": 1, 
-    "Oscar Díaz": 1, 
-    "Patricia de la Fuente": 1, 
-    "Patrick Albert": 5, 
-    "Philip Langer": 2, 
-    "Philippe Bauquel": 3, 
-    "Pieter Van Gorp": 2, 
-    "Raquel Pau": 5, 
-    "Richard F. Paige": 1, 
-    "Robert Clarisó": 13, 
-    "Robert Tairas": 2, 
-    "Ruth Raventós": 7, 
-    "Sagar Sen": 2, 
-    "Salvador Martínez Perez": 9, 
-    "Sara Comai": 3, 
-    "Scott Uk-Jin Lee": 2, 
-    "Sotirios Liaskos": 1, 
-    "Stephane Drapeau": 1, 
-    "Steve M. Easterbrook": 1, 
-    "Tony Clark": 2, 
-    "Valerio Cosentino": 8, 
-    "Vicente Pelechano": 2, 
-    "Vincent Mahé": 1, 
-    "William Piers": 1, 
-    "Wolfgang Kling": 1, 
-    "Xavier Franch": 4
+turnover information: {
+    "perished_rate": {
+        "2011": 80.53, 
+        "2012": 69.88, 
+        "2013": 89.09, 
+        "2014": 84.62
+    }
 }
-
-Venue connection:
-{
-    "APSEC": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ASE": {
-        "attendance": 2, 
-        "publication": 2
-    }, 
-    "Adv. Software Engineering": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "CAiSE": {
-        "attendance": 6, 
-        "publication": 6
-    }, 
-    "CDVE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Computer Science Education": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Computers & Security": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "DEXA": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "DSDM": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Data Knowl. Eng.": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ECEASST": {
-        "attendance": 4, 
-        "publication": 4
-    }, 
-    "ECMDA-FA": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ECMFA": {
-        "attendance": 3, 
-        "publication": 4
-    }, 
-    "ER": {
-        "attendance": 6, 
-        "publication": 7
-    }, 
-    "ER Workshops": {
-        "attendance": 2, 
-        "publication": 2
-    }, 
-    "FASE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "FormSERA@ICSE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "GEMOC+AMINO@MoDELS": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ICFEM": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ICMT": {
-        "attendance": 4, 
-        "publication": 5
-    }, 
-    "ICSE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ICSE Companion": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ICST Workshops": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ICWE": {
-        "attendance": 6, 
-        "publication": 8
-    }, 
-    "ICWE Workshops": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "IEEE Software": {
-        "attendance": 2, 
-        "publication": 2
-    }, 
-    "IFM": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "IJISMD": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "ISSRE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Inf. Syst.": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Information & Software Technology": {
-        "attendance": 2, 
-        "publication": 3
-    }, 
-    "JISBD": {
-        "attendance": 5, 
-        "publication": 8
-    }, 
-    "Journal of Object Technology": {
-        "attendance": 1, 
-        "publication": 3
-    }, 
-    "Journal of Systems and Software": {
-        "attendance": 3, 
-        "publication": 3
-    }, 
-    "KSE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "MDsec": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "MiSE": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "MoDELS": {
-        "attendance": 5, 
-        "publication": 8
-    }, 
-    "MoDELS Workshops": {
-        "attendance": 3, 
-        "publication": 3
-    }, 
-    "NLDB": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "OCL and Textual Modelling": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "OSS4MDE@MoDELS": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "RCIS": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "RE": {
-        "attendance": 2, 
-        "publication": 2
-    }, 
-    "RITA": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "RuleML": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "SAC": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "SANER": {
-        "attendance": 1, 
-        "publication": 3
-    }, 
-    "SEBD": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "SEC": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "SFM": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "SLE": {
-        "attendance": 1, 
-        "publication": 2
-    }, 
-    "Sci. Comput. Program.": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "Software and System Modeling": {
-        "attendance": 2, 
-        "publication": 4
-    }, 
-    "TAP": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "TOOLS": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "UML": {
-        "attendance": 2, 
-        "publication": 2
-    }, 
-    "UML Satellite Activities": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "VL/HCC": {
-        "attendance": 1, 
-        "publication": 1
-    }, 
-    "WCRE": {
-        "attendance": 1, 
-        "publication": 2
+openness information: {
+    "from_community/from_new_comers": {
+        "2010": [
+            100.0, 
+            0.0
+        ], 
+        "2011": [
+            11.76, 
+            88.24
+        ], 
+        "2012": [
+            15.63, 
+            84.38
+        ], 
+        "2013": [
+            6.25, 
+            93.75
+        ], 
+        "2014": [
+            35.29, 
+            64.71
+        ]
     }
 }
