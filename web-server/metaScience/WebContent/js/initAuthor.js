@@ -54,18 +54,22 @@ window.onload = function() {
 				})
 			},
 			error : function(data) {
-				$("#conferenceConnectionRow").css("visibility","hidden");
-				$("#coAuthorConnectionRow").css("visibility","hidden");
-				$("#pagesEvolutionRow").css("visibility","hidden");
-				$("#activityChartRow").css("visibility","hidden");
-				$("#mainRow").css("visibility","hidden");
-				$("#authorName").text('Author not found');
-				$("#notFoundRow").css("visibility", "visible");
+				authorNotFound();
 			}
 		});
 	} else {
-		$("#authorName").text('No author found');
+		authorNotFound();
 	}
+}
+
+function authorNotFound() {
+	$("#conferenceConnectionRow").css("visibility","hidden");
+	$("#coAuthorConnectionRow").css("visibility","hidden");
+	$("#pagesEvolutionRow").css("visibility","hidden");
+	$("#activityChartRow").css("visibility","hidden");
+	$("#mainRow").css("visibility","hidden");
+	$("#authorName").text('Author not found');
+	$("#notFoundRow").css("visibility", "visible");
 }
 
 function updateGraphs(authorId) {
