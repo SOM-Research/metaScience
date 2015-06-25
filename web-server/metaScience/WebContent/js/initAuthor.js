@@ -36,33 +36,47 @@ window.onload = function() {
 			success : function(data) {
 				authorName = data.name;
 				$("#authorName").text(authorName);
+
+				updateGraphs(authorId);
+
+				$(".pubSubCategory").on("show.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/expanded.png");
+
+				})
+
+				$(".pubSubCategory").on("hidden.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/collapsed.png");
+
+				})
 			},
 			error : function(data) {
-				$("#authorName").text(params.id);
+				authorNotFound();
 			}
 		});
 	} else {
-		$("#authorName").text('No author found');
+		authorNotFound();
 	}
+}
 
-	updateGraphs(authorId);
-	
-	
-	$(".pubSubCategory").on("show.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/expanded.png");
-		
-	})
-	
-	$(".pubSubCategory").on("hidden.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/collapsed.png");
-		
-	})
-	
-	
+function authorNotFound() {
+	hideRow("conferenceConnectionRow");
+	hideRow("coAuthorConnectionRow");
+	hideRow("pagesEvolutionRow");
+	hideRow("activityChartRow");
+	hideRow("mainRow");
+	$("#authorName").text('Author not found');
+	showRow("notFoundRow");
+//	$("#conferenceConnectionRow").css("visibility","hidden");
+//	$("#coAuthorConnectionRow").css("visibility","hidden");
+//	$("#pagesEvolutionRow").css("visibility","hidden");
+//	$("#activityChartRow").css("visibility","hidden");
+//	$("#mainRow").css("visibility","hidden");
+//	$("#authorName").text('Author not found');
+//	$("#notFoundRow").css("visibility", "visible");
 }
 
 function updateGraphs(authorId) {
@@ -145,27 +159,26 @@ function generateActivityDiagram(activityData) {
 	      ],
 	      type: 'bar',
 	      types: {
-	    	  'Articles': 'bar',
-	    	  'Books': 'bar',
-	    	  'Inproceedings': 'bar',
-	    	  'Incollections': 'bar',
-	    	  'Proceedings': 'bar',
-	    	  'Others': 'bar',
-	    	  'Pages': 'line'
+	    	  "Journal papers": 'bar',
+	    	  "Books": 'bar',
+	    	  "Conference papers": 'bar',
+	    	  "Part of book or collection": 'bar',
+	    	  "Editor": 'bar',
+	    	  "Others": 'bar',
+	    	  "Pages": 'line'
 	    	  
 	      },
 	      axes: {
-	    	  'Articles': 'y',
-	    	  'Books': 'y',
-	    	  'Inproceedings': 'y',
-	    	  'Incollections': 'y',
-	    	  'Proceedings': 'y',
-	    	  'Others': 'y',
-	    	  'Pages': 'y2'
+	    	  "Journal papers": 'y',
+	    	  "Books": 'y',
+	    	  "Conference papers": 'y',
+	    	  "Part of book or collection": 'y',
+	    	  "Editor": 'y',
+	    	  "Others": 'y',
+	    	  "Pages": 'y2'
 	      },
 	      groups: [
-	          ['Articles', 'Books','Inproceedings', 'Incollections', 'Proceedings', 'Others'],
-	          ['Pages']
+	          ["Journal papers", "Books","Conference papers", "Part of book or collection", "Editor", "Others"]
 	      ]
       },
       axis: {

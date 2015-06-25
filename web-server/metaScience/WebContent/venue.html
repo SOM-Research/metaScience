@@ -44,6 +44,14 @@
 
       <div id="error" class="row middle" style="visibility:hidden"></div>
 
+
+      <div class="row" id="notFoundRow" style="visibility : hidden;">
+        <div class="col-md-12 resultBox">
+          <h2 class="text-center"> Oppps, we could not find any venue with that ID</h2>
+          <h3 class="text-center">Please, <a href="http://som.uoc.es/metaScience">try again</a></h3>
+        </div>
+      </div>
+
       <div class="row topBox">
         <div class="col-md-3">
           Showing results for 
@@ -53,7 +61,7 @@
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" id="mainRow">
         <div class="col-md-8 topLeftBox">
           <h1>Main data</h1>
           <table class="table table-condensed table-hover">
