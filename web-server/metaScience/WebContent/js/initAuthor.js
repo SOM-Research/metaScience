@@ -36,33 +36,36 @@ window.onload = function() {
 			success : function(data) {
 				authorName = data.name;
 				$("#authorName").text(authorName);
+
+				updateGraphs(authorId);
+
+				$(".pubSubCategory").on("show.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/expanded.png");
+
+				})
+
+				$(".pubSubCategory").on("hidden.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/collapsed.png");
+
+				})
 			},
 			error : function(data) {
-				$("#authorName").text(params.id);
+				$("#conferenceConnectionRow").css("visibility","hidden");
+				$("#coAuthorConnectionRow").css("visibility","hidden");
+				$("#pagesEvolutionRow").css("visibility","hidden");
+				$("#activityChartRow").css("visibility","hidden");
+				$("#mainRow").css("visibility","hidden");
+				$("#authorName").text('Author not found');
+				$("#notFoundRow").css("visibility", "visible");
 			}
 		});
 	} else {
 		$("#authorName").text('No author found');
 	}
-
-	updateGraphs(authorId);
-	
-	
-	$(".pubSubCategory").on("show.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/expanded.png");
-		
-	})
-	
-	$(".pubSubCategory").on("hidden.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/collapsed.png");
-		
-	})
-	
-	
 }
 
 function updateGraphs(authorId) {
