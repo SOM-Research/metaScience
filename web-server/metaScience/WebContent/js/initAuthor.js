@@ -69,7 +69,7 @@ function authorNotFound() {
 	$("#activityChartRow").css("visibility","hidden");
 	$("#mainRow").css("visibility","hidden");
 	$("#authorName").text('Author not found');
-	$("#notFoundRow").css("visibility", "visible");
+	$("#notFoundRow").css("display", "block");
 }
 
 function updateGraphs(authorId) {
