@@ -58,7 +58,7 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 					"   FROM dblp_pub_new pub " +
 					"      JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
 					"      JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
-					"   WHERE airn.author_id = 636270 AND pages IS NOT NULL" +
+					"   WHERE airn.author_id = " + authorId + " AND pages IS NOT NULL" +
 					"   GROUP BY pub.id) AS pub_info\n" +
 					" GROUP BY pub_info.year;";
 

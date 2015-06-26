@@ -1,5 +1,5 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://som.uoc.es/metaScience';
+//var metaScienceServlet = 'http://localhost:8080/metaScience';
+var metaScienceServlet = 'http://som.uoc.es/metaScience';
 //var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 // Author/subauthor ids
@@ -219,7 +219,7 @@ function generatePaperEvolutionDiagram(data) {
       		],
       		names: {
       			coAuthors: "Average number of coauthors",
-				participation: "Number of papers"
+				participation: "Number of co-authored papers"
       		},
       		type: 'bar',
       	},
