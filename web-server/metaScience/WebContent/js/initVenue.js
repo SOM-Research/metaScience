@@ -221,11 +221,23 @@ function updateRank(venueId,subvenueId) {
       $("#topAuthor4").text(data.top[4].name);
       $("#topAuthor5").text(data.top[5].name);
 
+      $("#numAuthor1").text(data.top[1].publications);
+      $("#numAuthor2").text(data.top[2].publications);
+      $("#numAuthor3").text(data.top[3].publications);
+      $("#numAuthor4").text(data.top[4].publications);
+      $("#numAuthor5").text(data.top[5].publications);
+
       $("#regularAuthor1").text(data.regular[1].name);
       $("#regularAuthor2").text(data.regular[2].name);
       $("#regularAuthor3").text(data.regular[3].name);
       $("#regularAuthor4").text(data.regular[4].name);
       $("#regularAuthor5").text(data.regular[5].name);
+
+      $("#presenceAuthor1").text(data.regular[1].presence);
+      $("#presenceAuthor2").text(data.regular[2].presence);
+      $("#presenceAuthor3").text(data.regular[3].presence);
+      $("#presenceAuthor4").text(data.regular[4].presence);
+      $("#presenceAuthor5").text(data.regular[5].presence);
     },
     error: function(xhr, status, error) {
 
