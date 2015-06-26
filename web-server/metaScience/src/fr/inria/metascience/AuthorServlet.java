@@ -34,8 +34,6 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		String searchString = req.getParameter(SEARCH_PARAM);
 		String requestType = req.getParameter(REQUEST_TYPE);
 		
-		System.out.println("search param : " + searchString);
-		
 		JsonObject response = new JsonObject();
 		
 		if(searchString != null && !searchString.isEmpty()) {

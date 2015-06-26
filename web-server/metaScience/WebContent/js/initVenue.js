@@ -1,7 +1,3 @@
-//var metaScienceServlet = 'http://localhost:8080/metaScience';
-var metaScienceServlet = 'http://som.uoc.es/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
-
 // Venue/subvenue ids
 var venueId;
 var subvenueId;

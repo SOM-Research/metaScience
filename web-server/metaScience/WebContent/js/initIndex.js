@@ -1,7 +1,3 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://som.uoc.es/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
-
 var venueName = "";
 var venueId = "";
 var authorName ="";
@@ -103,7 +99,6 @@ window.onload = function() {
                 }
 	        },
             downloadComplete: function (edata, textStatus, jqXHR) {
-                console.log(edata);
             },
             contentType : "application/x-www-form-urlencoded; charset=UTF-8"
     	}

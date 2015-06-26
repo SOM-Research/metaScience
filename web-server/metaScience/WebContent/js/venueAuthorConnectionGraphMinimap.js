@@ -141,7 +141,6 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 									return 'gray';
 							});
 							d3links.style('opacity', function(o) {
-								console.log(o.source.id == node.id);
 								return o.source.id == node.id || o.target.id == node.id ? 1 : 0;
 							});
 							d3nodes.style('opacity', function(o) {
@@ -398,9 +397,6 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 		scaleToContent(container,zoom,venueAuthorConnectionGraph,graphForce);
 		removeLoadingImage("loaderVenueAuthorConnectionGraph");
 		container.style("visibility","visible");
-		console.log(container);
-
-		console.log(graphForce.links());
 
 		//Remove existing minimap
 		$("#minimap").empty();
@@ -528,7 +524,6 @@ venueGraph.minimap = function() {
 		var drag = d3.behavior.drag()
 			.on("drag.minimap", function() {
 				d3.event.sourceEvent.stopImmediatePropagation();
-				console.log("drag");
 				frameTranslationX += d3.event.dx;
 				frameTranslationY += d3.event.dy;
 				frame.attr("transform","translate("+frameTranslationX + "," + frameTranslationY + ")scale(" + frameScale + ")");

@@ -1,6 +1,3 @@
-//var metaScienceServlet = 'http://localhost:8080/metaScience';
-var metaScienceServlet = 'http://som.uoc.es/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 // Author/subauthor ids
 var authorId;
@@ -27,7 +24,6 @@ window.onload = function() {
 	    }
 	}
 	
-	console.log(params.id)
 	// Getting the full name of the author
 	if(params.id) {
 		authorId = params.id;	
