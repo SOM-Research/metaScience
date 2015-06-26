@@ -65,7 +65,7 @@ window.onload = function() {
 function authorNotFound() {
 	hideRow("conferenceConnectionRow");
 	hideRow("coAuthorConnectionRow");
-	hideRow("collaborationsEvolutionRow");
+	hideRow("collaborationEvolutionRow");
 	hideRow("activityChartRow");
 	hideRow("mainRow");
 	$("#authorName").text('Author not found');
