@@ -65,7 +65,7 @@ window.onload = function() {
 function authorNotFound() {
 	hideRow("conferenceConnectionRow");
 	hideRow("coAuthorConnectionRow");
-	hideRow("pagesEvolutionRow");
+	hideRow("collaborationsEvolutionRow");
 	hideRow("activityChartRow");
 	hideRow("mainRow");
 	$("#authorName").text('Author not found');
@@ -196,37 +196,37 @@ function generateActivityDiagram(activityData) {
 
 function updatePaperEvolution(authorId) {
 	$.ajax({
-		url: metaScienceServlet + "/paperEvolution?id=" + authorId,
+		url: metaScienceServlet + "/collaborationEvolution?id=" + authorId,
 		success : function(data) {
 	   	  	
 	   	  	// Publication Chart update
-	   	  	generatePaperEvolutionDiagram(data.coAuthors,data.pages);
+	   	  	generatePaperEvolutionDiagram(data);
 		},
 		error : function(xhr, status, error) {
-	   	  	hideRow("pagesEvolutionRow");
+	   	  	hideRow("collaborationEvolutionRow");
 		}
 	});
 }
-function generatePaperEvolutionDiagram(dataCoAuthors,dataPages) {
-	showRow("pagesEvolutionRow");
+function generatePaperEvolutionDiagram(data) {
+	showRow("collaborationEvolutionRow");
 
   	activityChart = c3.generate({
-    	bindto : "#pagesEvolutionChart",
+    	bindto : "#collaborationEvolutionChart",
     	data: {
       		columns: [
-        		dataCoAuthors.num_coAuthors,
-        		dataPages.averagePages
+        		data.coauthors,
+				data.participation
       		],
       		names: {
-      			num_coAuthors: "Collaborations",
-      			average: "Average number of pages"
+      			coAuthors: "Average number of coauthors",
+				participation: "Number of papers"
       		},
       		type: 'bar',
       	},
       	axis: {
       		x: {
       			type: 'category',
-      			categories: dataCoAuthors.years
+      			categories: data.years
       		}
       	}
   	});

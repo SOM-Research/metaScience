@@ -16,8 +16,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-@WebServlet("/paperEvolution")
-public class AuthorEvolutionPaperServlet extends AbstractMetaScienceServlet {
+@WebServlet("/collaborationEvolution")
+public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServlet {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -38,17 +38,83 @@ public class AuthorEvolutionPaperServlet extends AbstractMetaScienceServlet {
 	}
 	
 	private JsonObject getPaperEvolutionInformation(String authorId) throws ServletException {
-		JsonObject paperInformationJson = new JsonObject();
-		
-		JsonObject pagesInformationJson = getPagesInformation(authorId);
-		JsonObject coAuthorInformationJson = getCoAuthorInformation(authorId);
-		
-		paperInformationJson.add("coAuthors", coAuthorInformationJson);
-		paperInformationJson.add("pages",pagesInformationJson);
-		
-		return paperInformationJson;
+		JsonObject collaborationInformationJson = getCollaborationInformation(authorId);
+		return collaborationInformationJson;
 	}
-	
+
+	private JsonObject getCollaborationInformation(String authorId) throws ServletException {
+		JsonObject collaborationInformationJson = new JsonObject();
+
+		Connection con = Pooling.getInstance().getConnection();
+		Statement stmt = null;
+		ResultSet rs = null;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT author_id, author, year, round(AVG(authors),2) AS avg_coauthors," +
+					" SUM(authors-1) AS sum_coauthors, round(SUM(participation),2) AS participation" +
+					" FROM (" +
+					"   SELECT pub.id, pub.year, title, airn.author_id, airn.author, MAX(author_num) + 1 AS authors, " +
+					"          1/(MAX(author_num) + 1) AS participation" +
+					"   FROM dblp_pub_new pub " +
+					"      JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
+					"      JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
+					"   WHERE airn.author_id = 636270 AND pages IS NOT NULL" +
+					"   GROUP BY pub.id) AS pub_info\n" +
+					" GROUP BY pub_info.year;";
+
+			rs = stmt.executeQuery(query);
+			collaborationInformationJson = prepareCollaborationInformationJson(rs);
+		} catch( SQLException e) {
+			throw new ServletException("Error getting collaboration evolution", e);
+		} finally {
+			try {
+				if(stmt != null) stmt.close();
+				if(rs != null) rs.close();
+				if(con != null) con.close();
+			} catch (SQLException e) {
+				throw new ServletException("Impossible to close the connection", e);
+			}
+		}
+		return collaborationInformationJson;
+	}
+
+	private JsonObject prepareCollaborationInformationJson(ResultSet rs) throws ServletException {
+		JsonObject collaboration = new JsonObject();
+
+		try {
+			JsonArray years = new JsonArray();
+			JsonArray coAuthors = new JsonArray();
+			coAuthors.add(new JsonPrimitive("coAuthors"));
+			JsonArray participations = new JsonArray();
+			participations.add(new JsonPrimitive("participation"));
+
+			while(rs.next()) {
+				int year = rs.getInt("year");
+				double avgCoAuthors = rs.getDouble("avg_coauthors");
+				double participation = rs.getDouble("participation");
+
+				years.add(new JsonPrimitive(year));
+				coAuthors.add(new JsonPrimitive(avgCoAuthors));
+				participations.add(new JsonPrimitive(participation));
+			}
+
+			collaboration.add("years", years);
+			collaboration.add("coauthors", coAuthors);
+			collaboration.add("participation", participations);
+		} catch(SQLException e) {
+			throw new ServletException("Error retrieving author information fields from ResultSet",e);
+		}
+		return collaboration;
+	}
+
+	/**
+	 * Previous version
+	 *
+	 * @deprecated
+	 * @param authorId
+	 * @return
+	 * @throws ServletException
+	 */
 	private JsonObject getPagesInformation(String authorId) throws ServletException {
 		JsonObject pagesInformationJson = new JsonObject();
 		
@@ -86,7 +152,15 @@ public class AuthorEvolutionPaperServlet extends AbstractMetaScienceServlet {
 		return pagesInformationJson;
 		
 	}
-	
+
+	/**
+	 * Previous version
+	 *
+	 * @deprecated
+	 * @param authorId
+	 * @return
+	 * @throws ServletException
+	 */
 	private JsonObject getCoAuthorInformation(String authorId) throws ServletException {
 		JsonObject coAuthorInformationJson = new JsonObject();
 		
@@ -123,7 +197,15 @@ public class AuthorEvolutionPaperServlet extends AbstractMetaScienceServlet {
 		}
 		return coAuthorInformationJson;
 	}
-	
+
+	/**
+	 * Previous version
+	 *
+	 * @deprecated
+	 * @param rs
+	 * @return
+	 * @throws ServletException
+	 */
 	private JsonObject preparePagesInformation(ResultSet rs) throws ServletException {
 		JsonObject pages = new JsonObject();
 		
@@ -150,7 +232,14 @@ public class AuthorEvolutionPaperServlet extends AbstractMetaScienceServlet {
 		}
 		return pages;
 	}
-	
+
+	/**
+	 * Previous version
+	 * @deprecated
+	 * @param rs
+	 * @return
+	 * @throws ServletException
+	 */
 	private JsonObject prepareCoAuthorInformation(ResultSet rs) throws ServletException {
 		JsonObject coAuthors = new JsonObject();
 		
