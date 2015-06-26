@@ -17,6 +17,7 @@ MANUAL_SELECTION = True
 MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
 ACTIVATE_CONFERENCE_FILTER = True
 CONFERENCE_FILTER = 'ECMFA'
+MINIMUM_COAUTHOR_CONNECTION_STRENGTH = 5
 
 #type must be defined both for manual and random selection
 type = 'inproceedings' #person, article, inproceedings
@@ -520,7 +521,7 @@ def calculate_conference_perishing_rate(editions):
     for e in sorted_keys[1:]:
         distinct_authors = set(list(chain.from_iterable(editions.get(e))))
         survived = len(list(distinct_authors_in_previous_edition.intersection(distinct_authors)))
-        perished = len(list(distinct_authors)) - survived
+        perished = len(list(distinct_authors_in_previous_edition)) - survived
         perishing_rate = round((float(perished) / (perished + survived)) * 100, 2)
         perishing_rates.update({e: perishing_rate})
         distinct_authors_in_previous_edition = distinct_authors
@@ -539,14 +540,16 @@ def calculate_conference_openness_rate(editions):
     sorted_keys = sorted(editions.keys())
 
     community_authors = set(list(chain.from_iterable(editions.get(sorted_keys[0]))))
-    for e in sorted_keys:
+    openness_rates.update({sorted_keys[0]: (0.0, 100.0)})
+    for e in sorted_keys[1:]:
         papers = editions.get(e)
         papers_from_new_comers = 0
         papers_from_community = 0
-        for paper in papers:
-            if all(authors in community_authors for authors in paper):
+        for paper_authors in papers:
+            intersection = list(set(paper_authors).intersection(community_authors))
+            if len(intersection) == len(paper_authors):
                 papers_from_community += 1
-            elif not all(authors in community_authors for authors in paper):
+            elif len(intersection) == 0:
                 papers_from_new_comers += 1
 
         openness_rates.update({e: (round((papers_from_community/float(len(papers)))*100, 2), round((papers_from_new_comers/float(len(papers)))*100, 2))})
@@ -588,6 +591,41 @@ def calculate_top_regular_authors(editions):
     return sorted_by_value
 
 
+def calculate_strength_between_authors(author_a, author_b, editions):
+    strength = 0
+    for e in editions.keys():
+        papers = editions.get(e)
+        for paper in papers:
+            if author_a in paper and author_b in paper:
+                strength += 1
+
+    return strength
+
+
+def flatten(*args):
+    for x in args:
+        if hasattr(x, '__iter__'):
+            for y in flatten(*x):
+                yield y
+        else:
+            yield x
+
+
+def calculate_co_author_connections(editions, minimum_strength):
+    author_connections = {}
+    distinct_authors_in_conference = list(set(flatten([editions.values()])))
+    for i in range(0, len(distinct_authors_in_conference)-2):
+        author_i = distinct_authors_in_conference[i]
+        for j in range(i+1, len(distinct_authors_in_conference)-1):
+            author_j = distinct_authors_in_conference[j]
+            strength = calculate_strength_between_authors(author_i, author_j, editions)
+
+            if strength >= minimum_strength:
+                author_connections.update({author_i + '-' + author_j: str(strength)})
+
+    return author_connections
+
+
 def calculate_statistics_for_conference():
     editions = get_info_editions()
 
@@ -599,33 +637,47 @@ def calculate_statistics_for_conference():
     average_openness_rate = calculate_average_openness_rate(editions)
     top_authors = calculate_top_authors(editions)
     top_regular_authors = calculate_top_regular_authors(editions)
+    co_author_connections = calculate_co_author_connections(editions, MINIMUM_COAUTHOR_CONNECTION_STRENGTH)
 
     write_to_output('average number of papers: ' + str(average_number_of_papers))
     write_to_output('\n')
+    write_to_output('\n')
     write_to_output('average number of authors: ' + str(average_number_of_authors))
+    write_to_output('\n')
     write_to_output('\n')
     write_to_output('average number of authors per paper: ' + str(average_number_of_authors_per_paper))
     write_to_output('\n')
+    write_to_output('\n')
     write_to_output('average number of papers per author: ' + str(average_number_of_papers_per_author))
+    write_to_output('\n')
     write_to_output('\n')
     write_to_output('average perishing rate: ' + str(average_perishing_rate))
     write_to_output('\n')
+    write_to_output('\n')
     write_to_output('average openness rate: ' + str(average_openness_rate))
+    write_to_output('\n')
     write_to_output('\n')
     write_to_output('top authors: ' + json.dumps(top_authors, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
     write_to_output('\n')
+    write_to_output('\n')
     write_to_output('top regular authors: ' + json.dumps(top_regular_authors, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
+    write_to_output('\n')
     write_to_output('\n')
     write_to_output('activity along the years: ' + json.dumps(({'papers': calculate_conference_number_of_papers(editions),
                                                                 'authors': calculate_conference_number_of_distinct_authors(editions)}), indent=4, sort_keys=True))
     write_to_output('\n')
+    write_to_output('\n')
     write_to_output('ratios along the years: ' + json.dumps(({'authors_per_paper': calculate_conference_number_of_authors_per_paper(editions),
                                                                 'papers_per_author': calculate_conference_number_of_papers_per_author(editions)}), indent=4, sort_keys=True))
     write_to_output('\n')
-    write_to_output('turnover information: ' + json.dumps({'perished_rate': calculate_conference_perishing_rate(editions)}, indent=4, sort_keys=True))
+    write_to_output('\n')
+    write_to_output('turnover information: ' + json.dumps({'perishing_rate': calculate_conference_perishing_rate(editions)}, indent=4, sort_keys=True))
+    write_to_output('\n')
     write_to_output('\n')
     write_to_output('openness information: ' + json.dumps({'from_community/from_new_comers': calculate_conference_openness_rate(editions)}, indent=4, sort_keys=True))
     write_to_output('\n')
+    write_to_output('\n')
+    write_to_output('co-author connections: ' + json.dumps(co_author_connections, indent=4, sort_keys=True, ensure_ascii=False).encode('utf-8'))
 
 
 def calculate_statistics(type):
