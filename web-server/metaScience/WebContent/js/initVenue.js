@@ -189,7 +189,11 @@ function updateBasic(venueId, subvenueId) {
 			        	data.authorsPerPaper.yearly[1],
 			        	data.papersPerAuthor.yearly[0],
 			        	data.papersPerAuthor.yearly[1]
-			      ]
+                    ],
+                    names: {
+                      AuthorsPerPaper: "Authors per paper",
+                      PapersPerAuthor: "Papers per author"
+                    },
 			    },
 		        axis : {
 		        	y : {
@@ -364,13 +368,17 @@ function updateOpenness(venueId, subvenueId) {
 							'PapersFromNewcomers' : 'x1',
 							'PapersFromCommunity' : 'x2'
 						},
-            columns: [
-              data.papers.yearly[0],
-              data.papers.yearly[1],
-              data.papersCommunity.yearly[0],
-              data.papersCommunity.yearly[1]
-            ],
-            type: 'bar'
+                    columns: [
+                      data.papers.yearly[0],
+                      data.papers.yearly[1],
+                      data.papersCommunity.yearly[0],
+                      data.papersCommunity.yearly[1]
+                    ],
+                    names: {
+                      PapersFromNewcomers: "Papers from newcomers",
+                      PapersFromCommunity: "Papers from community"
+                    },
+                    type: 'bar'
           },
           axis : {
             y : {
