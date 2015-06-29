@@ -31,10 +31,13 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 	
 	/** DBLP schema name */
 	String dblpSchema;
+
+	/** Version deployed */
+	String metascienceVersion;
 	
 	@Override
 	public void init() throws ServletException {
-        preCachedVenues.put("ecmfa", "ecmdafa");
+        //preCachedVenues.put("ecmfa", "ecmdafa");
 
 		try {
 			Properties properties = new Properties();
@@ -44,6 +47,7 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 				throw new ServletException("No value for allowOrigin in config file");
 			
 			dblpSchema = properties.getProperty("dblpSchema");
+			metascienceVersion = properties.getProperty("version");
 			if(dblpSchema == null)
 				throw new ServletException("No value for dblpSchema in config file");
 		} catch (IOException e) {
