@@ -73,7 +73,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query3 = "SELECT ROUND((o.from_outsiders/o.number_of_papers), 2) as ratio, o.year as year " +
+            String query3 = "SELECT ROUND((o.from_outsiders/o.number_of_papers), 4) as ratio, o.year as year " +
                     "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query3);
@@ -149,7 +149,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query7 = "SELECT ROUND((o.from_community/o.number_of_papers), 2) as ratio, o.year as year " +
+            String query7 = "SELECT ROUND((o.from_community/o.number_of_papers), 4) as ratio, o.year as year " +
                     "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query7);
