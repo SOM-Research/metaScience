@@ -360,7 +360,7 @@ function updateOpenness(venueId, subvenueId) {
 			url: metaScienceServlet + "/venueOpenness?id=" + venueId + ((venueId != subvenueId && subvenueId != undefined) ? "&subid=" + subvenueId : ""),
 			success : function(data) {
 				$("#avgOpennessLoading").css("visibility", "hidden");
-				$("#avgOpenness").text(data.papers.avg + "% / " + data.authors.avg + "%");
+				$("#avgOpenness").text(data.papers.avg + "% / " + data.papersCommunity.avg + "%");
 				var pcChart = c3.generate({
 					bindto : "#opChart",
 					data: {
