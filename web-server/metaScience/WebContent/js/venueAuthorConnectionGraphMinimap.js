@@ -17,6 +17,10 @@ var JsonNodesMap;
 var maxCollaborations,maxPublications;
 var minimap;
 
+var authorSelected = false;
+var selectedNodes = new Array();
+var selectedLinks = new Array();
+
 var graphForce = d3.layout.force()
 		.gravity(0.2)
 		.charge(-1500)
@@ -133,9 +137,11 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 			        	node = node[0][0];
 
 			        	if(selectedIndex != 0) {
+			        		authorSelected = true;
 
 				        	d3links.style("stroke", function(l) {
 								if(node.id == l.source.id || node.id == l.target.id){
+									selectedLinks.push(l);
 									return d3.rgb('#9E00D9');
 								} else
 									return 'gray';
@@ -144,10 +150,25 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 								return o.source.id == node.id || o.target.id == node.id ? 1 : 0;
 							});
 							d3nodes.style('opacity', function(o) {
-								if(o.id != node.id)
-									return neighboring(node.id,o.id) ? 1 : 0;
+								if(o.id != node.id) {
+									if(neighboring(node.id,o.id)) {
+										selectedNodes.push(o);
+										return 1;
+									} else {
+										return 0;
+									}
+								} else {
+									selectedNodes.push(o);
+								}
+									
 							});
+							
 						} else {
+							
+							authorSelected = false;
+							selectedNodes.splice(0,selectedNodes.length);
+							selectedLinks.splice(0,selectedLinks.length);
+							
 							d3links.style("stroke", function(l) {
 								return 'gray';
 							});
@@ -167,10 +188,14 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 
 		$("#resetCoAuthorCombobox").on('click', function(event) {
         	$("#coAuthorCombobox").jqxComboBox('selectIndex',0);
+        	authorSelected = false;
+        	selectedNodes.splice(0,selectedNodes.length);
+			selectedLinks.splice(0,selectedLinks.length);
        	});
 
        	$("#coAuthorCombobox").on('click', function (event) {
             $("#coAuthorCombobox").jqxComboBox({selectedIndex: -1});
+            
        	});
 
        	createSlider("coAuthorCollaborationSlider","Number of collaborations",1,maxCollaborations,sliderChangeFunction);
@@ -256,6 +281,9 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 	var linkTooltip = d3.select("body").append("div")
 		.attr("class","authorNodeTooltip")
 		.style("opacity",1e-6);
+	
+	linksTooltip = linkTooltip;
+	authorsTooltip = authorNodeTooltip;
 
 	// Zoom behavior 
 	var zoom = d3.behavior.zoom()
@@ -329,72 +357,128 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 	// Mouse Event Handling
 	// Links
 	link.on("mousemove", function(d, index, element) {
-		linkTooltip.selectAll("p").remove();
-		linkTooltip.style("left", (d3.event.pageX+15) +"px")
-			.style("top", (d3.event.pageY-10) + "px");
-		linkTooltip.append("p")
-			.attr("class","tooltiptext")
-			.html("<span>Collaborations: </span>" + d.value);
+		if(authorSelected) {
+			if(selectedLinks.indexOf(d) != -1 ) {
+				linkTooltip.selectAll("p").remove();
+				linkTooltip.style("left", (d3.event.pageX+15) +"px")
+					.style("top", (d3.event.pageY-10) + "px");
+				linkTooltip.append("p")
+					.attr("class","tooltiptext")
+					.html("<span>Collaborations: </span>" + d.value);
+			}
+		} else {
+			linkTooltip.selectAll("p").remove();
+			linkTooltip.style("left", (d3.event.pageX+15) +"px")
+				.style("top", (d3.event.pageY-10) + "px");
+			linkTooltip.append("p")
+				.attr("class","tooltiptext")
+				.html("<span>Collaborations: </span>" + d.value);
+		}
 
 	});
 
 	link.on("mouseover", function(d) {
-		linkTooltip.transition()
-			.duration(500)
-			.style("opacity",1);
-		link.style("stroke", function(l) {
-			if(d.source === l.source && d.target === l.target)
-				return d3.rgb('#9E00D9');
-			else
-				return 'gray';
-		});
+		if(authorSelected) {
+			if(selectedLinks.indexOf(d) != -1 ) {
+				linkTooltip.transition()
+					.duration(500)
+					.style("opacity",1);
+			}
+		} else {
+			linkTooltip.transition()
+				.duration(500)
+				.style("opacity",1);
+			link.style("stroke", function(l) {
+				if(d.source === l.source && d.target === l.target)
+					return d3.rgb('#9E00D9');
+				else
+					return 'gray';
+			});
+		}
 	});
 
 	link.on("mouseout", function(d) {
-		linkTooltip.transition()
+		if(!authorSelected) {
+			linkTooltip.transition()
+				.duration(500)
+				.style("opacity",1e-6);
+			link.style("stroke","gray")
+				.style("opacity",1);
+		} else {
+			linkTooltip.transition()
 			.duration(500)
 			.style("opacity",1e-6);
-		link.style("stroke","gray")
-			.style("opacity",1);
+		}
 	});
 
 	// Authors
 	authorNodeCircle.on("mousemove", function(d, index, element) {
-		authorNodeTooltip.selectAll("p").remove();
-		authorNodeTooltip.style("left", (d3.event.pageX+15) +"px")
-			.style("top", (d3.event.pageY-10) + "px");
-		authorNodeTooltip.append("p")
+		if(authorSelected) {
+			if(selectedNodes.indexOf(d) != -1) {
+				authorNodeTooltip.selectAll("p").remove();
+				authorNodeTooltip.style("left", (d3.event.pageX+15) +"px")
+					.style("top", (d3.event.pageY-10) + "px");
+				authorNodeTooltip.append("p")
+					.attr("class","tooltiptext")
+					.html("<span>name: </span>" + d.name);
+				authorNodeTooltip.append("p")
+				.attr("class","tooltiptext")
+				.html("<span>publications: </span>" + d.publications);
+			}
+		} else {
+			authorNodeTooltip.selectAll("p").remove();
+			authorNodeTooltip.style("left", (d3.event.pageX+15) +"px")
+				.style("top", (d3.event.pageY-10) + "px");
+			authorNodeTooltip.append("p")
+				.attr("class","tooltiptext")
+				.html("<span>name: </span>" + d.name);
+			authorNodeTooltip.append("p")
 			.attr("class","tooltiptext")
-			.html("<span>name: </span>" + d.name);
-
+			.html("<span>publications: </span>" + d.publications);
+		}
 	});
 
 	authorNodeCircle.on("mouseover", function(d) {
-		authorNodeTooltip.transition()
-			.duration(500)
-			.style("opacity",1);
-		link.style("stroke", function(l) {
-			if(d === l.source || d === l.target)
-				return d3.rgb('#9E00D9');
-			else
-				return 'gray';
-		});
-		link.style('opacity', function(o) {
-			return o.source === d || o.target === d ? 1 : 0;
-		});
-		authorNode.style('opacity', function(o) {
-			if(o.id != d.id)
-				return neighboring(d.id,o.id) ? 1 : 0;
-		});
+		if(authorSelected) {
+			if(selectedNodes.indexOf(d) != -1) {
+				authorNodeTooltip.transition()
+					.duration(500)
+					.style("opacity",1);
+			}
+		} else {
+			authorNodeTooltip.transition()
+				.duration(500)
+				.style("opacity",1);
+			link.style("stroke", function(l) {
+				if(d === l.source || d === l.target)
+					return d3.rgb('#9E00D9');
+				else
+					return 'gray';
+			});
+			link.style('opacity', function(o) {
+				return o.source === d || o.target === d ? 1 : 0;
+			});
+			authorNode.style('opacity', function(o) {
+				if(o.id != d.id)
+					return neighboring(d.id,o.id) ? 1 : 0;
+			});
+		}
 	});
 
 	authorNodeCircle.on("mouseout", function(d) {
-		authorNodeTooltip.transition()
+		if(authorSelected) {
+			authorNodeTooltip.transition()
+				.duration(500)
+				.style("opacity",1e-6);
+			
+		} else {
+			authorNodeTooltip.transition()
 			.duration(500)
 			.style("opacity",1e-6);
 		link.style("stroke","gray")
 			.style("opacity",1);
 		authorNode.style("opacity",1);
+		}
 	}); 
 	
 	d3links = link;
