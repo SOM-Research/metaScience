@@ -2,7 +2,7 @@
 select airn.author_id, airn.author, count(distinct year) as presence
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source = 'icse'
+where source = 'icse' and pub.type = 'inproceedings'
 group by airn.author_id
 order by presence desc
 limit 10;
@@ -11,7 +11,7 @@ limit 10;
 select airn.author_id, airn.author, count(pub.id) as publications
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source = 'icse'
+where source = 'icse' and pub.type = 'inproceedings'
 group by airn.author_id
 order by publications desc
 limit 10;
@@ -30,13 +30,13 @@ select pub.id as pub, author, author_id
 from dblp_pub_new pub 
 	join dblp_authorid_ref_new airn 
 	on pub.id = airn.id 
-where source = 'icse') as source_authors
+where source = 'icse' and pub.type = 'inproceedings') as source_authors
 join
 (select pub.id as pub, author, author_id
 from dblp_pub_new pub 
 	join dblp_authorid_ref_new airn 
 	on pub.id = airn.id 
-where source = 'icse') as target_authors
+where source = 'icse' and pub.type = 'inproceedings') as target_authors
 on source_authors.pub = target_authors.pub and source_authors.author_id <> target_authors.author_id
 group by source_authors.author_id, target_authors.author_id) as x
 where relation_strength > 1
@@ -45,14 +45,14 @@ join
 (select airn.author_id, airn.author, count(pub.id) as publications
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source = 'icse'
+where source = 'icse' and pub.type = 'inproceedings'
 group by airn.author_id) as source_authors
 on connections.source_author_id = source_authors.author_id
 join
 (select airn.author_id, airn.author, count(pub.id) as publications
 from dblp_pub_new pub join dblp_authorid_ref_new airn 
 on pub.id = airn.id
-where source = 'icse'
+where source = 'icse' and pub.type = 'inproceedings'
 group by airn.author_id) as target_authors
 on connections.target_author_id = target_authors.author_id;
 
