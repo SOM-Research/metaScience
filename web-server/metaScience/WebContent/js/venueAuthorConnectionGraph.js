@@ -122,7 +122,6 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 									return 'gray';
 							});
 							d3links.style('opacity', function(o) {
-								console.log(o.source.id == node.id);
 								return o.source.id == node.id || o.target.id == node.id ? 1 : 0;
 							});
 							d3nodes.style('opacity', function(o) {

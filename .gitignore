@@ -2,5 +2,5 @@
 **/*.iml
 .idea
 out
-web-server/metaScience/WebContent/META-INF/context.xml
+web-server/metaScience/WebContent/META-INF/context*.xml
 extractor/database_connection_config.py

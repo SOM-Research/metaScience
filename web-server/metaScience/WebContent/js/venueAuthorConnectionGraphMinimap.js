@@ -141,7 +141,6 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 									return 'gray';
 							});
 							d3links.style('opacity', function(o) {
-								console.log(o.source.id == node.id);
 								return o.source.id == node.id || o.target.id == node.id ? 1 : 0;
 							});
 							d3nodes.style('opacity', function(o) {
@@ -254,6 +253,10 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 		.attr("class","authorNodeTooltip")
 		.style("opacity",1e-6);
 
+	var linkTooltip = d3.select("body").append("div")
+		.attr("class","authorNodeTooltip")
+		.style("opacity",1e-6);
+
 	// Zoom behavior 
 	var zoom = d3.behavior.zoom()
 		.scaleExtent([0, 10])
@@ -286,7 +289,7 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 	// scale functions
 	var linethickness = d3.scale.linear()
 		.domain([0,maxCollaborations])
-		.range([1,10]);
+		.range([1,12]);
 
 	var nodeRadius = d3.scale.linear()
 		.domain([0,maxPublications])
@@ -324,6 +327,38 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 		.style("pointer-events","none");
 
 	// Mouse Event Handling
+	// Links
+	link.on("mousemove", function(d, index, element) {
+		linkTooltip.selectAll("p").remove();
+		linkTooltip.style("left", (d3.event.pageX+15) +"px")
+			.style("top", (d3.event.pageY-10) + "px");
+		linkTooltip.append("p")
+			.attr("class","tooltiptext")
+			.html("<span>Collaborations: </span>" + d.value);
+
+	});
+
+	link.on("mouseover", function(d) {
+		linkTooltip.transition()
+			.duration(500)
+			.style("opacity",1);
+		link.style("stroke", function(l) {
+			if(d.source === l.source && d.target === l.target)
+				return d3.rgb('#9E00D9');
+			else
+				return 'gray';
+		});
+	});
+
+	link.on("mouseout", function(d) {
+		linkTooltip.transition()
+			.duration(500)
+			.style("opacity",1e-6);
+		link.style("stroke","gray")
+			.style("opacity",1);
+	});
+
+	// Authors
 	authorNodeCircle.on("mousemove", function(d, index, element) {
 		authorNodeTooltip.selectAll("p").remove();
 		authorNodeTooltip.style("left", (d3.event.pageX+15) +"px")
@@ -398,9 +433,6 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 		scaleToContent(container,zoom,venueAuthorConnectionGraph,graphForce);
 		removeLoadingImage("loaderVenueAuthorConnectionGraph");
 		container.style("visibility","visible");
-		console.log(container);
-
-		console.log(graphForce.links());
 
 		//Remove existing minimap
 		$("#minimap").empty();
@@ -528,7 +560,6 @@ venueGraph.minimap = function() {
 		var drag = d3.behavior.drag()
 			.on("drag.minimap", function() {
 				d3.event.sourceEvent.stopImmediatePropagation();
-				console.log("drag");
 				frameTranslationX += d3.event.dx;
 				frameTranslationY += d3.event.dy;
 				frame.attr("transform","translate("+frameTranslationX + "," + frameTranslationY + ")scale(" + frameScale + ")");

@@ -266,7 +266,6 @@ function getValue(node) {
 }
 
 function getMax() {
-     console.log(displayAttendance);
      if(displayAttendance == true) {
           return maxAttendance;
      } else {

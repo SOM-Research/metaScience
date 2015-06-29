@@ -1,6 +1,3 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://som.uoc.es/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 // Author/subauthor ids
 var authorId;
@@ -27,7 +24,6 @@ window.onload = function() {
 	    }
 	}
 	
-	console.log(params.id)
 	// Getting the full name of the author
 	if(params.id) {
 		authorId = params.id;	
@@ -36,33 +32,40 @@ window.onload = function() {
 			success : function(data) {
 				authorName = data.name;
 				$("#authorName").text(authorName);
+
+				updateGraphs(authorId);
+
+				$(".pubSubCategory").on("show.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/expanded.png");
+
+				})
+
+				$(".pubSubCategory").on("hidden.bs.collapse", function() {
+					$(".collapseIcon").empty();
+					d3.select(".collapseIcon").append("img")
+						.attr("src","imgs/collapsed.png");
+
+				})
 			},
 			error : function(data) {
-				$("#authorName").text(params.id);
+				authorNotFound();
 			}
 		});
 	} else {
-		$("#authorName").text('No author found');
+		authorNotFound();
 	}
+}
 
-	updateGraphs(authorId);
-	
-	
-	$(".pubSubCategory").on("show.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/expanded.png");
-		
-	})
-	
-	$(".pubSubCategory").on("hidden.bs.collapse", function() {
-		$(".collapseIcon").empty();
-		d3.select(".collapseIcon").append("img")
-			.attr("src","imgs/collapsed.png");
-		
-	})
-	
-	
+function authorNotFound() {
+	hideRow("conferenceConnectionRow");
+	hideRow("coAuthorConnectionRow");
+	hideRow("collaborationEvolutionRow");
+	hideRow("activityChartRow");
+	hideRow("mainRow");
+	$("#authorName").text('Author not found');
+	$("#notFoundRow").css("display", "block");
 }
 
 function updateGraphs(authorId) {
@@ -116,6 +119,19 @@ function updateActivity(authorId) {
 }
 
 function generateActivityDiagram(activityData) {
+	var pages = ['Pages'];
+	for(var i = 1; i < activityData.years.length + 1; i++) {
+		var artP = activityData.articles.pages[i];
+		var bookP = activityData.books.pages[i];
+		var incollectionP = activityData.incollections.pages[i];
+		var inproceedingsP = activityData.inproceedings.pages[i];
+		var othersP = activityData.others.pages[i];
+		var proceedingsP = activityData.proceedings.pages[i];
+		
+		var sumP = artP + bookP + incollectionP + inproceedingsP + othersP + proceedingsP;
+		pages.push(sumP);
+	}
+	
 	showRow("activityChartRow");
 	
   	activityChart = c3.generate({
@@ -127,77 +143,86 @@ function generateActivityDiagram(activityData) {
 	        activityData.inproceedings.publications,
 			activityData.incollections.publications,
 	        activityData.proceedings.publications,
-	        activityData.others.publications
+	        activityData.others.publications,
+	        pages
 	      ],
 	      type: 'bar',
+	      types: {
+	    	  "Journal papers": 'bar',
+	    	  "Books": 'bar',
+	    	  "Conference papers": 'bar',
+	    	  "Part of book or collection": 'bar',
+	    	  "Editor": 'bar',
+	    	  "Others": 'bar',
+	    	  "Pages": 'line'
+	    	  
+	      },
+	      axes: {
+	    	  "Journal papers": 'y',
+	    	  "Books": 'y',
+	    	  "Conference papers": 'y',
+	    	  "Part of book or collection": 'y',
+	    	  "Editor": 'y',
+	    	  "Others": 'y',
+	    	  "Pages": 'y2'
+	      },
 	      groups: [
-	          ['Articles', 'Books','Inproceedings', 'Incollections', 'Proceedings', 'Others']
+	          ["Journal papers", "Books","Conference papers", "Part of book or collection", "Editor", "Others"]
 	      ]
       },
       axis: {
       	x: {
       		type: 'category',
       		categories: activityData.years
+      	},
+      	y: {
+      		label: "publications"
+      	},
+      	y2: {
+      		show: true,
+      		label: "pages",
+      		min:0,
+      		center: 0
       	}
       }
  	});
-  	
-  	pagesChart = c3.generate({
-  		bindto: "#pagePublishedChart",
-  		data: {
-  			columns: [
-				activityData.articles.pages,
-				activityData.books.pages,
-				activityData.inproceedings.pages,
-				activityData.incollections.pages,
-				activityData.proceedings.pages,
-				activityData.others.pages
-  			]
-  		},
-  		axis: {
-  			x: {
-  				type: 'categories',
-  				categories: activityData.years
-  			}
-  		}
-  		
-  	});
+
 
 }
 
 function updatePaperEvolution(authorId) {
 	$.ajax({
-		url: metaScienceServlet + "/paperEvolution?id=" + authorId,
+		url: metaScienceServlet + "/collaborationEvolution?id=" + authorId,
 		success : function(data) {
 	   	  	
 	   	  	// Publication Chart update
-	   	  	generatePaperEvolutionDiagram(data.coAuthors,data.pages);
+	   	  	generatePaperEvolutionDiagram(data);
 		},
 		error : function(xhr, status, error) {
-	   	  	hideRow("pagesEvolutionRow");
+	   	  	hideRow("collaborationEvolutionRow");
 		}
 	});
 }
-function generatePaperEvolutionDiagram(dataCoAuthors,dataPages) {
-	showRow("pagesEvolutionRow");
+function generatePaperEvolutionDiagram(data) {
+	showRow("collaborationEvolutionRow");
 
   	activityChart = c3.generate({
-    	bindto : "#pagesEvolutionChart",
+    	bindto : "#collaborationEvolutionChart",
     	data: {
       		columns: [
-        		dataCoAuthors.num_coAuthors,
-        		dataPages.averagePages
+        		data.coauthors,
+				data.participation
       		],
       		names: {
-      			num_coAuthors: "Collaborations",
-      			average: "Average number of pages"
+      			coAuthors: "Average number of coauthors",
+				participation: "Average number of co-authored papers"
       		},
       		type: 'bar',
       	},
       	axis: {
       		x: {
       			type: 'category',
-      			categories: dataCoAuthors.years
+      			categories: data.years
       		}
       	}
   	});

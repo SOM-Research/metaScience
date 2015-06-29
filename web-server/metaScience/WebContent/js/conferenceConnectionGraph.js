@@ -65,9 +65,6 @@ function drawConferenceConnectionGraph(authorNode,conferenceNodes,links,maxAtten
      var authorNodeAr = nodes.slice();
      nodes = nodes.concat(conferenceNodes);
 
-     console.log(nodes);
-
-
 	//Set author position
 	authorNode.x = widthConferenceGraph/2;
 	authorNode.y = heightConferenceGraph/2;
@@ -81,9 +78,6 @@ function drawConferenceConnectionGraph(authorNode,conferenceNodes,links,maxAtten
      var rectheight = d3.scale.linear()
           .domain([0,maxPublication])
           .range([5,50]);
-
-     console.log("max Publication")
-     console.log(maxPublication)
 
 	//create author node tooltip
 	var authorNodeTooltip = d3.select("body").append("div")

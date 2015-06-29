@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="css/c3.css">
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/jQWidgets/jqx.base.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="imgs/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
     
   	<script src="js/vendor/jquery.js"></script>
   	<script src="js/bootstrap/bootstrap.min.js"></script>
@@ -45,7 +48,14 @@
     <div id="error" class="row middle" style="visibility:hidden">
     </div>
 
-      <div class="row">
+      <div class="row" id="notFoundRow" style="display : none;">
+        <div class="col-md-12 resultBox">
+            <h2 class="text-center"> Oppps, we could not find any author with that ID</h2>
+            <h3 class="text-center">Please, <a href="http://som.uoc.es/metaScience">try again</a></h3>
+        </div>
+      </div>
+
+      <div class="row" id="mainRow">
         <div class="col-md-8 topLeftBox">
           <h1>Main data</h1>
           <table class="table table-condensed table-hover">
@@ -61,11 +71,11 @@
                 <td id="totalPub"><img id="totalPubLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
-                <td style="padding-left: 50px;">Articles</td>
+                <td style="padding-left: 50px;">Journal papers</td>
                 <td id="totalPubArticle"><img id="totalPubArticleLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
-                <td style="padding-left: 50px;">Proceedings</td>
+                <td style="padding-left: 50px;">Editor</td>
                 <td id="totalPubProceeding"><img id="totalPubProceedingLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
@@ -73,11 +83,11 @@
                 <td id="totalPubBook"><img id="totalPubBookLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
-                <td style="padding-left: 50px;">Incollections</td>
+                <td style="padding-left: 50px;">Part of book or collection</td>
                 <td id="totalPubIncollection"><img id="totalPubIncollectionLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
-                <td style="padding-left: 50px;">Inproceedings</td>
+                <td style="padding-left: 50px;">Conference papers</td>
                 <td id="totalPubInproceeding"><img id="totalPubInproceedingLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr class="collapse pubSubCategory">
@@ -100,7 +110,7 @@
           </table>
         </div>  
         <div class="col-md-4 topRightBox">
-          <h1>Activity along the years </h1>
+          <h1>Go to </h1>
           <table class="table table-condensed table-hover">
             <thead>
               <tr>
@@ -112,10 +122,13 @@
                 <td><a href="#activityChartRow">Activity</a></td>
               </tr>
               <tr>
-                <td><a href="#coAuthorConnectionRow">Co-Author Connection</a></td>
+                <td><a href="#collaborationEvolutionRow">Collaboration Evolution</a></td>
               </tr>
               <tr>
-                <td><a href="#conferenceConnectionRow">Conference Connection</a></td>
+                <td><a href="#coAuthorConnectionRow">Co-Author Network</a></td>
+              </tr>
+              <tr>
+                <td><a href="#conferenceConnectionRow">Venues Network</a></td>
               </tr>
             </tbody>
           </table>
@@ -127,18 +140,17 @@
           <h1>Activity along the years</h1>
           <p>We calculate the number of publications of different type along the years</p>
           <div class="chart">
-          	<div id="pagePublishedChart"></div>
             <div id="activityChart"></div>
           </div>
         </div>  
       </div>
 
-      <div class="row" id="pagesEvolutionRow">
+      <div class="row" id="collaborationEvolutionRow">
         <div class="col-md-12 resultBox">
-          <h1>Written pages evolution</h1>
-          <p>We calculate the number of pages written by the author along the years</p>
+          <h1>Collaboration Evolution</h1>
+          <p>We calculate per year: (1) the average number of co-authors per paper and (2) the average number of papers written with co-authors</p>
           <div class="chart">
-            <div id="pagesEvolutionChart"></div>
+            <div id="collaborationEvolutionChart"></div>
           </div>
         </div>
       </div>
@@ -146,18 +158,14 @@
       <div class="row" id="coAuthorConnectionRow">
         <div class="col-md-12 resultBox">
           <div class="col-md-4 leftcol">
-          <h1>Co-Author connection</h1>
+          <h1>Co-Author Network</h1>
           <div class="legend">
           	<div class="legenditem">
           		<img src="imgs/circle.png" height="16" width="16"/>	
           		<p>Author</p>
           	</div>
           	<div class="legenditem">
-          		<img src="imgs/line.png" height="16" width="16"/>	
-          		<p>Collaboration</p>
-          	</div>
-          	<div class="legenditem">
-          		<img src="imgs/lineThick.png" height="16" width="16"/>	
+          		<img src="imgs/circleSize.png" height="16" width="16"/>
           		<p>Number of collaborations</p>
           	</div>
           </div>
@@ -181,7 +189,7 @@
     <div class="row" id="conferenceConnectionRow">
         <div class="col-md-12 resultBox">
           <div class="col-md-4 leftcol">
-          <h1>Venues connections</h1>
+          <h1>Venues Network</h1>
           <div class="legend">
             <div class="legenditem">
               <img src="imgs/colors.png" alt="1f77b4">

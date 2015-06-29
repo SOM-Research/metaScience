@@ -34,8 +34,6 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		String searchString = req.getParameter(SEARCH_PARAM);
 		String requestType = req.getParameter(REQUEST_TYPE);
 		
-		System.out.println("search param : " + searchString);
-		
 		JsonObject response = new JsonObject();
 		
 		if(searchString != null && !searchString.isEmpty()) {
@@ -49,6 +47,7 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		}
 		
 		//Building the response
+		resp.setContentType("application/json");
 		PrintWriter pw = resp.getWriter();
 		pw.append(response.toString());
 		

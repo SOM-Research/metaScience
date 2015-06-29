@@ -1,7 +1,3 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://som.uoc.es/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
-
 var venueName = "";
 var venueId = "";
 var authorName ="";
@@ -15,6 +11,16 @@ window.onload = function() {
     $("#error").css("visibility" ,"visible");
     $("#selectionBox").css("visibility", "hidden");
   }
+    $.ajax({
+        url : metaScienceServlet + "/version",
+        success : function(data) {
+            version = data.version;
+            $("#metascienceVersion").text(version);// Searching for satellite events
+        },
+        error : function(data) {
+            $("#metascienceVersion").text("ERROR");// Searching for satellite events
+        }
+    });
 
     var venueSource =
         {
@@ -103,7 +109,6 @@ window.onload = function() {
                 }
 	        },
             downloadComplete: function (edata, textStatus, jqXHR) {
-                console.log(edata);
             },
             contentType : "application/x-www-form-urlencoded; charset=UTF-8"
     	}

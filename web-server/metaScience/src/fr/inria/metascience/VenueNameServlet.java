@@ -32,13 +32,18 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 			throw new ServletException("The id cannot be null");
 		
 		String venueName = getNameForVenueId(venueId);
-		
-		JsonObject response = new JsonObject();
-		response.addProperty("name", venueName);
 
-		resp.setContentType("text/x-json;charset=UTF-8");    
-		PrintWriter pw = resp.getWriter();
-		pw.append(response.toString());
+		if(venueName != null && !venueName.equals("")) {
+			JsonObject response = new JsonObject();
+			response.addProperty("name", venueName);
+
+			resp.setContentType("text/x-json;charset=UTF-8");
+			PrintWriter pw = resp.getWriter();
+			pw.append(response.toString());
+		} else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
+
 	}
 	
 

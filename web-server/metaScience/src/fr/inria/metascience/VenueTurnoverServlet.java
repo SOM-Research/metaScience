@@ -98,33 +98,42 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
                 survivedYearlyRates.add(new JsonPrimitive(String.valueOf(survived / (perished + survived))));
                 survivedYearlyYears.add(new JsonPrimitive(period));
             }
-            // 1.2 Average
-            Iterator<JsonElement> perishedIterator = perishedYearlyValues.iterator();
-            float totalPerished = 0;
-            while(perishedIterator.hasNext()) {
-                float value = perishedIterator.next().getAsFloat();
-                totalPerished += value;
+            // 1.2 Average perished/survived
+            String query3 = "SELECT ROUND(AVG((perished/(perished+survived))*100), 2) as avg" +
+                    " FROM" +
+                    "   (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span='" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p," +
+                    "   (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "'  AND conf='" + venueId + "'  AND status = 'survived' GROUP BY period) as s" +
+                    " WHERE p.period = s.period;";
+
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(query3);
+            while(rs.next()) {
+                String avg = rs.getString("avg");
+                perishingData.addProperty("avg", avg);
             }
 
-            Iterator<JsonElement> survivedIterator = survivedYearlyValues.iterator();
-            float totalSurvived = 0;
-            while(survivedIterator.hasNext()) {
-                float value = survivedIterator.next().getAsFloat();
-                totalSurvived += value;
+            // 1.3 Average perished/survived
+            String query4 = "SELECT ROUND(AVG((survived/(perished+survived))*100), 2) as avg" +
+                    " FROM" +
+                    "   (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span='" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p," +
+                    "   (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "'  AND conf='" + venueId + "'  AND status = 'survived' GROUP BY period) as s" +
+                    " WHERE p.period = s.period;";
+
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(query4);
+            while(rs.next()) {
+                String avg = rs.getString("avg");
+                survivedData.addProperty("avg", avg);
             }
 
             // 2. preparing the final JSON objects
             JsonArray perishedYearly = new JsonArray();
-            String perishedAvgResult = String.valueOf((totalPerished / (totalPerished + totalSurvived))*100);
-            perishingData.addProperty("avg", perishedAvgResult.substring(0, (perishedAvgResult.length() < 5) ? perishedAvgResult.length() : 5));
             perishedYearly.add(perishedYearlyValues);
             perishedYearly.add(perishedYearlyRates);
             perishedYearly.add(perishedYearlyYears);
             perishingData.add("yearly", perishedYearly);
 
             JsonArray survivedYearly = new JsonArray();
-            String survivedAvgResult = String.valueOf(String.valueOf((totalSurvived / (totalPerished + totalSurvived))*100));
-            survivedData.addProperty("avg", survivedAvgResult.substring(0, (survivedAvgResult.length() < 5) ? survivedAvgResult.length() : 5));
             survivedYearly.add(survivedYearlyValues);
             survivedYearly.add(survivedYearlyRates);
             survivedYearly.add(survivedYearlyYears);

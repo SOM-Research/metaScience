@@ -29,13 +29,17 @@ public class AuthorNameServlet extends AbstractMetaScienceServlet {
 			throw new ServletException("The id cannot be null");
 		
 		String authorName = getNameForAuthorId(authorId);
-		
-		JsonObject response = new JsonObject();
-		response.addProperty("name", authorName);
 
-		resp.setContentType("text/x-json;charset=UTF-8");    
-		PrintWriter pw = resp.getWriter();
-		pw.append(response.toString());
+		if(authorName != null && !authorName.equals("")) {
+			JsonObject response = new JsonObject();
+			response.addProperty("name", authorName);
+
+			resp.setContentType("text/x-json;charset=UTF-8");
+			PrintWriter pw = resp.getWriter();
+			pw.append(response.toString());
+		} else {
+			resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+		}
 	}
 	
 
