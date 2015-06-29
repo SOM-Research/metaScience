@@ -11,6 +11,16 @@ window.onload = function() {
     $("#error").css("visibility" ,"visible");
     $("#selectionBox").css("visibility", "hidden");
   }
+    $.ajax({
+        url : metaScienceServlet + "/version",
+        success : function(data) {
+            version = data.version;
+            $("#metascienceVersion").text(version);// Searching for satellite events
+        },
+        error : function(data) {
+            $("#metascienceVersion").text("ERROR");// Searching for satellite events
+        }
+    });
 
     var venueSource =
         {
