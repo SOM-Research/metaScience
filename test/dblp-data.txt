@@ -1,289 +1,187 @@
-average number of papers: 25.0
-average number of authors: 79.2
-average number of authors per paper: 3.41
-average number of papers per author: 1.07
-average perishing rate: 83.11
-average openness rate: {'from_community': 100.0, 'from_new_comers': 0.0}
+average number of papers: 17.14
+
+average number of authors: 53.14
+
+average number of authors per paper: 3.3
+
+average number of papers per author: 1.06
+
+average perishing rate: 76.42
+
+average openness rate: {'from_community': 15.29, 'from_new_comers': 48.98}
+
 top authors: [
     [
-        "Dimitrios S. Kolovos", 
+        "Juan de Lara", 
         7
-    ], 
-    [
-        "Lionel C. Briand", 
-        7
-    ], 
-    [
-        "Richard F. Paige", 
-        7
-    ], 
-    [
-        "Louis M. Rose", 
-        6
-    ], 
-    [
-        "Tao Yue", 
-        6
-    ], 
-    [
-        "Martin Gogolla", 
-        4
-    ], 
-    [
-        "Jordi Cabot", 
-        4
-    ], 
-    [
-        "Benoît Combemale", 
-        4
-    ], 
-    [
-        "Yvan Labiche", 
-        4
-    ], 
-    [
-        "Marcos Didonet Del Fabro", 
-        4
-    ]
-]
-top regular authors: [
-    [
-        "Dimitrios S. Kolovos", 
-        4
-    ], 
-    [
-        "Benoît Combemale", 
-        4
-    ], 
-    [
-        "Lionel C. Briand", 
-        4
-    ], 
-    [
-        "Tao Yue", 
-        4
-    ], 
-    [
-        "Franck Barbier", 
-        3
-    ], 
-    [
-        "Colin Atkinson", 
-        3
-    ], 
-    [
-        "Martin Gogolla", 
-        3
-    ], 
-    [
-        "Jordi Cabot", 
-        3
     ], 
     [
         "Esther Guerra", 
-        3
+        7
     ], 
     [
-        "Sébastien Mosser", 
-        3
-    ]
-]
-activity along the years: {
-    "authors": {
-        "2010": 93, 
-        "2011": 113, 
-        "2012": 83, 
-        "2013": 55, 
-        "2014": 52
-    }, 
-    "papers": {
-        "2010": 26, 
-        "2011": 34, 
-        "2012": 32, 
-        "2013": 16, 
-        "2014": 17
-    }
-}
-ratios along the years: {
-    "authors_per_paper": {
-        "2010": 3.88, 
-        "2011": 3.59, 
-        "2012": 3.09, 
-        "2013": 3.44, 
-        "2014": 3.06
-    }, 
-    "papers_per_author": {
-        "2010": 1.09, 
-        "2011": 1.08, 
-        "2012": 1.19, 
-        "2013": 1.0, 
-        "2014": 1.0
-    }
-}
-turnover information: {
-    "perishing_rate": {
-        "2011": 76.34, 
-        "2012": 77.88, 
-        "2013": 92.77, 
-        "2014": 85.45
-    }
-}
-average number of papers: 25.0
-average number of authors: 79.2
-average number of authors per paper: 3.41
-average number of papers per author: 1.07
-average perishing rate: 83.11
-average openness rate: {'from_community': 13.79, 'from_new_comers': 53.35}
-top authors: [
+        "Andy Schürr", 
+        6
+    ], 
+    [
+        "Jesús Sánchez Cuadrado", 
+        6
+    ], 
+    [
+        "Frédéric Jouault", 
+        5
+    ], 
+    [
+        "Marcel van Amstel", 
+        5
+    ], 
     [
         "Dimitrios S. Kolovos", 
-        7
-    ], 
-    [
-        "Lionel C. Briand", 
-        7
-    ], 
-    [
-        "Richard F. Paige", 
-        7
-    ], 
-    [
-        "Louis M. Rose", 
-        6
-    ], 
-    [
-        "Tao Yue", 
-        6
-    ], 
-    [
-        "Martin Gogolla", 
-        4
+        5
     ], 
     [
         "Jordi Cabot", 
-        4
+        5
     ], 
     [
-        "Benoît Combemale", 
-        4
+        "Mark van den Brand", 
+        5
     ], 
     [
-        "Yvan Labiche", 
-        4
-    ], 
-    [
-        "Marcos Didonet Del Fabro", 
+        "Gerti Kappel", 
         4
     ]
 ]
+
 top regular authors: [
     [
+        "Esther Guerra", 
+        7
+    ], 
+    [
+        "Juan de Lara", 
+        6
+    ], 
+    [
+        "Jesús Sánchez Cuadrado", 
+        6
+    ], 
+    [
+        "Andy Schürr", 
+        5
+    ], 
+    [
+        "Marcel van Amstel", 
+        4
+    ], 
+    [
         "Dimitrios S. Kolovos", 
         4
     ], 
     [
-        "Benoît Combemale", 
-        4
-    ], 
-    [
-        "Lionel C. Briand", 
-        4
-    ], 
-    [
-        "Tao Yue", 
-        4
-    ], 
-    [
-        "Franck Barbier", 
-        3
-    ], 
-    [
-        "Colin Atkinson", 
-        3
-    ], 
-    [
-        "Martin Gogolla", 
-        3
-    ], 
-    [
         "Jordi Cabot", 
+        4
+    ], 
+    [
+        "Mark van den Brand", 
+        4
+    ], 
+    [
+        "Roy Grønmo", 
         3
     ], 
     [
-        "Esther Guerra", 
-        3
-    ], 
-    [
-        "Sébastien Mosser", 
+        "Gerti Kappel", 
         3
     ]
 ]
+
 activity along the years: {
     "authors": {
-        "2010": 93, 
-        "2011": 113, 
-        "2012": 83, 
-        "2013": 55, 
-        "2014": 52
+        "2008": 48, 
+        "2009": 59, 
+        "2010": 49, 
+        "2011": 59, 
+        "2012": 54, 
+        "2013": 57, 
+        "2014": 46
     }, 
     "papers": {
-        "2010": 26, 
-        "2011": 34, 
-        "2012": 32, 
-        "2013": 16, 
-        "2014": 17
+        "2008": 17, 
+        "2009": 19, 
+        "2010": 18, 
+        "2011": 15, 
+        "2012": 19, 
+        "2013": 18, 
+        "2014": 14
     }
 }
+
 ratios along the years: {
     "authors_per_paper": {
-        "2010": 3.88, 
-        "2011": 3.59, 
-        "2012": 3.09, 
-        "2013": 3.44, 
-        "2014": 3.06
+        "2008": 2.82, 
+        "2009": 3.32, 
+        "2010": 3.28, 
+        "2011": 4.0, 
+        "2012": 2.95, 
+        "2013": 3.33, 
+        "2014": 3.43
     }, 
     "papers_per_author": {
-        "2010": 1.09, 
-        "2011": 1.08, 
-        "2012": 1.19, 
-        "2013": 1.0, 
-        "2014": 1.0
+        "2008": 1.0, 
+        "2009": 1.07, 
+        "2010": 1.2, 
+        "2011": 1.02, 
+        "2012": 1.04, 
+        "2013": 1.05, 
+        "2014": 1.04
     }
 }
+
 turnover information: {
     "perishing_rate": {
-        "2011": 76.34, 
-        "2012": 77.88, 
-        "2013": 92.77, 
-        "2014": 85.45
+        "2009": 64.58, 
+        "2010": 86.44, 
+        "2011": 79.59, 
+        "2012": 71.19, 
+        "2013": 77.78, 
+        "2014": 78.95
     }
 }
+
 openness information: {
     "from_community/from_new_comers": {
-        "2010": [
+        "2008": [
             0.0, 
             100.0
         ], 
+        "2009": [
+            10.53, 
+            63.16
+        ], 
+        "2010": [
+            11.11, 
+            44.44
+        ], 
         "2011": [
-            11.76, 
-            64.71
+            13.33, 
+            60.0
         ], 
         "2012": [
-            15.63, 
-            34.38
+            31.58, 
+            31.58
         ], 
         "2013": [
-            6.25, 
-            50.0
+            33.33, 
+            22.22
         ], 
         "2014": [
-            35.29, 
-            17.65
+            7.14, 
+            21.43
         ]
     }
 }
+
 co-author connections: {
-    "Dimitrios S. Kolovos-Richard F. Paige": "6", 
-    "Louis M. Rose-Dimitrios S. Kolovos": "5", 
-    "Louis M. Rose-Richard F. Paige": "6"
+    "Juan de Lara-Esther Guerra": "6"
 }

@@ -11,11 +11,12 @@ import operator
 
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 driver_edition = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
+driver_author = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
-ACTIVATE_CONFERENCE_FILTER = True
+MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/icmt/' #'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
+ACTIVATE_CONFERENCE_FILTER = False
 CONFERENCE_FILTER = 'ECMFA'
 MINIMUM_COAUTHOR_CONNECTION_STRENGTH = 5
 
@@ -414,6 +415,12 @@ def get_papers_in_edition(driver):
     return papers
 
 
+def get_author_name(link):
+    driver_author.get(link)
+    author_name = driver_author.find_element_by_id("headline").find_element_by_tag_name("h1").text
+    return author_name
+
+
 def analyse_edition(year, href_edition):
     driver_edition.get(href_edition)
 
@@ -425,7 +432,8 @@ def analyse_edition(year, href_edition):
         authors = []
         for span in spans:
             if span.get_attribute('itemprop') == 'author':
-                authors.append(span.text)
+                author_name = get_author_name(span.find_element_by_tag_name('a').get_attribute('href'))
+                authors.append(author_name)
         authors_in_papers.append(authors)
 
     authors_in_edition.update({year: authors_in_papers})
@@ -551,7 +559,6 @@ def calculate_conference_openness_rate(editions):
                 papers_from_community += 1
             elif len(intersection) == 0:
                 papers_from_new_comers += 1
-
         openness_rates.update({e: (round((papers_from_community/float(len(papers)))*100, 2), round((papers_from_new_comers/float(len(papers)))*100, 2))})
         distinct_authors = set(list(chain.from_iterable(editions.get(e))))
         new_authors = distinct_authors - community_authors
@@ -716,6 +723,7 @@ def main():
 
     driver.close()
     driver_edition.close()
+    driver_author.close()
 
 if __name__ == "__main__":
     main()
