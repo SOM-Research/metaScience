@@ -15,7 +15,8 @@ driver_author = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/db/conf/icmt/' #'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
+MANUAL_SELECTION_URL = 'http://dblp1.uni-trier.de/db/conf/msr/index.html' #
+# http://dblp.uni-trier.de/db/conf/icmt/' #'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
 ACTIVATE_CONFERENCE_FILTER = False
 CONFERENCE_FILTER = 'ECMFA'
 MINIMUM_COAUTHOR_CONNECTION_STRENGTH = 5
