@@ -50,7 +50,7 @@ function createMinimap(zoom,nodeContainer) {
 		.targetGraph(nodeContainer);
 
 	minimapContainer.call(minimap);
-	minimap.scale(zoomScale).render();
+	minimap.scale(zoomScale).create();
 }
 
 function generateVenueAuthorConnectionGraph(venueId,subvenueId) {
@@ -221,6 +221,11 @@ function sliderChangeFunction(numStart,numEnd) {
 	filteredNodes.forEach( function(node) {
 		filteredNodesArray.push(node);
 	})
+	
+	var comboboxNodes = new Array();
+	comboboxNodes.push({id:-1,name:" - All Collaborations -"});
+	comboboxNodes = comboboxNodes.concat(filteredNodesArray);
+	$("#coAuthorCombobox").jqxComboBox({source: comboboxNodes});
 
 	var filteredNodesMap = mapId2Node(filteredNodesArray);
 	linkedByIndex = {};
@@ -655,9 +660,9 @@ venueGraph.minimap = function() {
 				zoom.translate([targetTranslateX,targetTranslateY]);
 			});
 		frame.call(drag)
-
-	    minimap.render = function() {
-	    	scale = zoom.scale();
+		
+		minimap.create = function() {
+			scale = zoom.scale();
 
 	    	var node = targetGraph.node().cloneNode(true);
 
@@ -679,6 +684,22 @@ venueGraph.minimap = function() {
 	    	frame.node().parentNode.appendChild(frame.node());
 
 	    	d3.select(node).attr("transform", initTransform);
+		}
+
+	    minimap.render = function() {
+	    	scale = zoom.scale();
+
+	    	var targetTransform = venueGraph.util.getVarsFromTransform(targetGraph.attr("transform"));
+
+	    	frameTranslationX = initTranslationX - ((targetTransform[0]*initScale)/scale);
+	    	frameTranslationY = initTranslationY - ((targetTransform[1]*initScale)/scale);
+	    	frameScale = (initScale/scale);
+	    	frame.attr("transform", "translate(" + frameTranslationX + "," + frameTranslationY + ")scale("+frameScale+")");
+	   
+	   		//put the frame on top
+	    	frame.node().parentNode.appendChild(frame.node());
+
+	    	//d3.select(node).attr("transform", initTransform);
 
 
 	    };
