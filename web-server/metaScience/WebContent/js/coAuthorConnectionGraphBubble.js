@@ -58,7 +58,7 @@ function getCoAuthorConnectionGraphBubble(authorId) {
                };
 
                removeLoadingImage("loaderCoAuthorConnectionGraph");
-               $("#info_coAuthorConnectionGraph").css("visibility","visibile");
+               $("#info_coAuthorConnectionGraph").css("visibility","visible");
                drawCoAuthorConnectionGraphBubble(nodes,maxCollaborations);
 
 
