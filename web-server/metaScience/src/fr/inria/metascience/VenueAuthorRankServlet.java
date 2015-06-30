@@ -61,6 +61,7 @@ public class VenueAuthorRankServlet extends AbstractMetaScienceServlet {
 					+ " JOIN dblp_authorid_ref_new airn"
 					+ " ON pub.id = airn.id"
 					+ " WHERE source = '" + source + "'"
+					+ " AND pub.type = 'inproceedings'"
 					+ " GROUP BY airn.author_id"
 					+ " ORDER BY publications desc"
 					+ " LIMIT 5;";
@@ -105,6 +106,7 @@ public class VenueAuthorRankServlet extends AbstractMetaScienceServlet {
 					+ " JOIN dblp_authorid_ref_new airn"
 					+ " ON pub.id = airn.id"
 					+ " WHERE source = '" + source + "'"
+					+ " AND pub.type = 'inproceedings'"
 					+ " GROUP BY airn.author_id"
 					+ " ORDER BY presence DESC"
 					+ " LIMIT 5;";
@@ -115,7 +117,7 @@ public class VenueAuthorRankServlet extends AbstractMetaScienceServlet {
 	        regularAuthors = prepareRegularAuthorsResults(rs);
 	        
 		} catch (SQLException e) {
-			throw new ServletException("Error accesing the database", e);
+			throw new ServletException("Error accessing the database", e);
 		} finally {
 			try {
 				if(stmt != null) stmt.close();
