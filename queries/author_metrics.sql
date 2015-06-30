@@ -123,9 +123,9 @@ WHERE airn.author_id = 684483
 GROUP BY pub.year, pub.type;
 
 /* 15. Average number of co-authors, sum of coauthors (with duplicates), participation in papers per year*/
-select author_id, author, year, round(avg(authors),2) as avg_coauthors, sum(authors-1) as sum_coauthors, round(sum(participation),2) as participation
+select author_id, author, year, round(avg(co_authors),2) as avg_coauthors, sum(co_authors) as sum_coauthors, round(sum(participation),2) as participation
 from (
-select pub.id, pub.year, title, airn.author_id, airn.author, max(author_num) + 1 as authors, 1/(max(author_num) + 1) as participation
+select pub.id, pub.year, title, airn.author_id, airn.author, max(author_num) as co_authors, 1/(max(author_num) + 1) as participation
 from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
 join dblp_author_ref_new arn on pub.id = arn.id
 where airn.author_id = 636270 and pages is not null
