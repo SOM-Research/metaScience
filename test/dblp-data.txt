@@ -1,220 +1,272 @@
-average number of papers: 38.5
+total number of publications: 44
+total number of journals: 15
+total number of conferences: 29
+total number of books: 0
+total number of editors: 0
+total number of other pubs: 0
+average number of publications per year: 4.4
+total number of co-authors: 30
+average number of co-authors: 2.18
 
-average number of authors: 100.0
-
-average number of authors per paper: 3.03
-
-average number of papers per author: 1.2
-
-average perishing rate: 74.83
-
-average openness rate: {'from_community': 18.15, 'from_new_comers': 41.6}
-
-top authors: [
-    [
-        "Abram Hindle", 
-        16
-    ], 
-    [
-        "Ahmed E. Hassan", 
-        16
-    ], 
-    [
-        "Daniel M. Germán", 
-        16
-    ], 
-    [
-        "Premkumar T. Devanbu", 
-        14
-    ], 
-    [
-        "Gregorio Robles", 
-        14
-    ], 
-    [
-        "Christian Bird", 
-        12
-    ], 
-    [
-        "Jesús M. González-Barahona", 
-        12
-    ], 
-    [
-        "Bram Adams", 
-        10
-    ], 
-    [
-        "Michele Lanza", 
-        10
-    ], 
-    [
-        "Thomas Zimmermann", 
-        9
-    ]
-]
-
-top regular authors: [
-    [
-        "Daniel M. Germán", 
-        9
-    ], 
-    [
-        "Gregorio Robles", 
-        9
-    ], 
-    [
-        "Abram Hindle", 
-        8
-    ], 
-    [
-        "Premkumar T. Devanbu", 
-        8
-    ], 
-    [
-        "Christian Bird", 
-        8
-    ], 
-    [
-        "Ahmed E. Hassan", 
-        7
-    ], 
-    [
-        "Harald C. Gall", 
-        7
-    ], 
-    [
-        "Jesús M. González-Barahona", 
-        7
-    ], 
-    [
-        "Bram Adams", 
-        6
-    ], 
-    [
-        "Cristina Videira Lopes", 
-        5
-    ]
-]
-
-activity along the years: {
-    "authors": {
-        "2005": 59, 
-        "2006": 78, 
-        "2007": 78, 
-        "2008": 69, 
-        "2009": 72, 
-        "2010": 80, 
-        "2011": 95, 
-        "2012": 105, 
-        "2013": 186, 
-        "2014": 178
+Activity along the years:
+{
+    "2006": {
+        "conference": 3
     }, 
-    "papers": {
-        "2005": 22, 
-        "2006": 41, 
-        "2007": 33, 
-        "2008": 28, 
-        "2009": 30, 
-        "2010": 31, 
-        "2011": 34, 
-        "2012": 38, 
-        "2013": 64, 
-        "2014": 64
-    }
-}
-
-ratios along the years: {
-    "authors_per_paper": {
-        "2005": 2.86, 
-        "2006": 3.02, 
-        "2007": 2.79, 
-        "2008": 2.79, 
-        "2009": 2.7, 
-        "2010": 3.03, 
-        "2011": 3.18, 
-        "2012": 2.95, 
-        "2013": 3.42, 
-        "2014": 3.61
+    "2007": {
+        "conference": 3, 
+        "journal": 1
     }, 
-    "papers_per_author": {
-        "2005": 1.07, 
-        "2006": 1.59, 
-        "2007": 1.18, 
-        "2008": 1.13, 
-        "2009": 1.13, 
-        "2010": 1.18, 
-        "2011": 1.14, 
-        "2012": 1.07, 
-        "2013": 1.18, 
-        "2014": 1.3
+    "2008": {
+        "conference": 2, 
+        "journal": 2
+    }, 
+    "2009": {
+        "conference": 1, 
+        "journal": 2
+    }, 
+    "2010": {
+        "conference": 2
+    }, 
+    "2011": {
+        "conference": 3, 
+        "journal": 1
+    }, 
+    "2012": {
+        "conference": 4, 
+        "journal": 1
+    }, 
+    "2013": {
+        "conference": 5, 
+        "journal": 1
+    }, 
+    "2014": {
+        "conference": 6, 
+        "journal": 5
+    }, 
+    "2015": {
+        "journal": 2
     }
 }
 
-turnover information: {
-    "perishing_rate": {
-        "2006": 67.8, 
-        "2007": 70.51, 
-        "2008": 79.49, 
-        "2009": 79.71, 
-        "2010": 72.22, 
-        "2011": 78.75, 
-        "2012": 77.89, 
-        "2013": 68.57, 
-        "2014": 78.49
+Collaboration and page evolution
+{
+    "2006": {
+        "avg.number of co-authors": 1.67, 
+        "avg.pages": 5.83, 
+        "n.coll": 5, 
+        "participation": 1.17
+    }, 
+    "2007": {
+        "avg.number of co-authors": 1.5, 
+        "avg.pages": 2.06, 
+        "n.coll": 6, 
+        "participation": 1.75
+    }, 
+    "2008": {
+        "avg.number of co-authors": 2.5, 
+        "avg.pages": 5.0, 
+        "n.coll": 10, 
+        "participation": 1.25
+    }, 
+    "2009": {
+        "avg.number of co-authors": 1.67, 
+        "avg.pages": 6.58, 
+        "n.coll": 5, 
+        "participation": 1.25
+    }, 
+    "2010": {
+        "avg.number of co-authors": 1.5, 
+        "avg.pages": 1.0, 
+        "n.coll": 3, 
+        "participation": 0.83
+    }, 
+    "2011": {
+        "avg.number of co-authors": 3.25, 
+        "avg.pages": 4.33, 
+        "n.coll": 13, 
+        "participation": 1.13
+    }, 
+    "2012": {
+        "avg.number of co-authors": 1.6, 
+        "avg.pages": 8.0, 
+        "n.coll": 8, 
+        "participation": 2.33
+    }, 
+    "2013": {
+        "avg.number of co-authors": 3.5, 
+        "avg.pages": 5.31, 
+        "n.coll": 21, 
+        "participation": 2.28
+    }, 
+    "2014": {
+        "avg.number of co-authors": 1.91, 
+        "avg.pages": 6.08, 
+        "n.coll": 21, 
+        "participation": 3.83
+    }, 
+    "2015": {
+        "avg.number of co-authors": 2.0, 
+        "avg.pages": 8.33, 
+        "n.coll": 4, 
+        "participation": 0.67
     }
 }
 
-openness information: {
-    "from_community/from_new_comers": {
-        "2005": [
-            0.0, 
-            100.0
-        ], 
-        "2006": [
-            14.63, 
-            51.22
-        ], 
-        "2007": [
-            18.18, 
-            48.48
-        ], 
-        "2008": [
-            28.57, 
-            28.57
-        ], 
-        "2009": [
-            16.67, 
-            40.0
-        ], 
-        "2010": [
-            25.81, 
-            29.03
-        ], 
-        "2011": [
-            20.59, 
-            23.53
-        ], 
-        "2012": [
-            28.95, 
-            34.21
-        ], 
-        "2013": [
-            14.06, 
-            28.13
-        ], 
-        "2014": [
-            14.06, 
-            32.81
-        ]
-    }
+Co-author connection:
+{
+    "Ana Pescador": 1, 
+    "Angelika Kusel": 1, 
+    "Arantza Irastorza": 1, 
+    "Esther Guerra": 16, 
+    "Eva Ogallar": 1, 
+    "Fiorella Mori": 1, 
+    "Frédéric Jouault": 3, 
+    "Iván Dario Claros Gómez": 1, 
+    "Javier Espinazo-Pagán": 2, 
+    "Javier Luis Cánovas Izquierdo": 3, 
+    "Javier Martín": 1, 
+    "Jean Bézivin": 3, 
+    "Jesús García Molina": 20, 
+    "Jesús J. López-Fernández": 1, 
+    "Jesús Perera Aracil": 1, 
+    "Johannes Schönböck": 1, 
+    "Jordi Cabot": 1, 
+    "Juan de Lara": 20, 
+    "Luis M. Alonso": 1, 
+    "Manuel Wimmer": 1, 
+    "Marcos Menárguez Tortosa": 2, 
+    "Miguel Monforte": 1, 
+    "Nicolás Buezas": 1, 
+    "Oscar Díaz": 1, 
+    "Oscar Pérez": 1, 
+    "Ruth Cobos": 1, 
+    "Werner Retschitzegger": 1, 
+    "Wieland Schwinger": 1, 
+    "Ángel Mora Segura": 3, 
+    "Óscar Sánchez Ramón": 4
 }
 
-co-author connections: {
-    "Bram Adams-Ahmed E. Hassan": "7", 
-    "Christian Bird-Premkumar T. Devanbu": "9", 
-    "Gregorio Robles-Jesús M. González-Barahona": "12", 
-    "Israel Herraiz-Gregorio Robles": "7", 
-    "Israel Herraiz-Jesús M. González-Barahona": "7", 
-    "Senthil Mani-Vibha Sinha": "5", 
-    "Sunghun Kim-E. James Whitehead Jr.": "5"
+Venue connection:
+{
+    "ACM Trans. Softw. Eng. Methodol.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ASE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Autom. Softw. Eng.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "CAiSE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "CDVE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "DSDM": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ECEASST": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "ECMDA-FA": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ECMFA": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "EDOC Workshops": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "EDUCON": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ICMT": {
+        "attendance": 6, 
+        "publication": 6
+    }, 
+    "ICWE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "IEEE Software": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "IEEE Trans. Software Eng.": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "ISSRE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Inf. Syst.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Information & Software Technology": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "JISBD": {
+        "attendance": 2, 
+        "publication": 3
+    }, 
+    "Journal of Object Technology": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "MoDELS": {
+        "attendance": 3, 
+        "publication": 3
+    }, 
+    "MoDELS Workshops": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "SAC": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "SLE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Sci. Comput. Program.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Softw., Pract. Exper.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Software and System Modeling": {
+        "attendance": 2, 
+        "publication": 3
+    }, 
+    "TTC": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "WCRE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "WISE": {
+        "attendance": 1, 
+        "publication": 1
+    }
 }

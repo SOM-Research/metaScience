@@ -15,14 +15,17 @@ driver_author = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\
 URL = 'http://dblp.uni-trier.de/db/'
 
 MANUAL_SELECTION = True
-MANUAL_SELECTION_URL = 'http://dblp1.uni-trier.de/db/conf/msr/index.html' #
-# http://dblp.uni-trier.de/db/conf/icmt/' #'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html' #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
+MANUAL_SELECTION_URL = 'http://dblp.uni-trier.de/pers/hd/c/Cuadrado:Jes=uacute=s_S=aacute=nchez'
+#'http://dblp1.uni-trier.de/db/conf/msr/index.html'
+# http://dblp.uni-trier.de/db/conf/icmt/'
+# #'http://dblp.uni-trier.de/db/conf/ecmdafa/index.html'
+# #'http://dblp.uni-trier.de/pers/hd/c/Cabot:Jordi'
 ACTIVATE_CONFERENCE_FILTER = False
 CONFERENCE_FILTER = 'ECMFA'
 MINIMUM_COAUTHOR_CONNECTION_STRENGTH = 5
 
 #type must be defined both for manual and random selection
-type = 'inproceedings' #person, article, inproceedings
+type = 'person' #person, article, inproceedings
 
 OUTPUT = './dblp-data.txt'
 
@@ -158,7 +161,7 @@ def calculate_researcher_average_number_of_coauthors():
         except:
             continue
 
-    return round(sum(coauthors)/float(len(coauthors)),2)
+    return round(sum(coauthors)/float(len(coauthors)), 2)
 
 
 def calculate_number_of_publication_type_for_researcher(entries_per_year, type):
@@ -263,25 +266,34 @@ def calculate_number_of_pages(interval):
     return pages
 
 
-def update_page_evolution_map(page_evolution_per_year, page_evolution, current_year):
+def update_collaboration_and_page_evolution_map(evolution_per_year, evolution, current_year):
     contributed_pages = []
+    number_of_coauthors = []
+    participation = []
     total_coll = 0
-    for value in page_evolution.values():
+    for value in evolution.values():
         pages = value.get('pages')
         coll = value.get('coll')
         if pages > 0:
             contributed_pages.append(float(pages)/(coll+1))
+        participation.append(1/float(coll+1))
+        number_of_coauthors.append(coll)
         total_coll += coll
 
-    page_evolution_per_year.update({current_year: {'avg.pages': round(sum(contributed_pages)/len(contributed_pages), 2), 'n.coll': total_coll}})
+    avg_number_of_coauthors = round(sum(number_of_coauthors)/float(len(number_of_coauthors)), 2)
+    evolution_per_year.update({current_year: {'avg.pages': round(sum(contributed_pages)/len(contributed_pages), 2),
+                                              'n.coll': total_coll,
+                                              'avg.number of co-authors': avg_number_of_coauthors,
+                                              'participation': round(sum(participation), 2)}
+                              })
 
 
-def calculate_page_evolution():
+def calculate_collaboration_and_page_evolution():
     author_name = driver.find_element_by_id('headline').find_element_by_tag_name('h1').text
 
     publ_section = driver.find_element_by_id('publ-section')
     entries = publ_section.find_elements_by_tag_name('li')
-    page_evolution_per_year = {}
+    evolution_per_year = {}
     current_year = None
     paper_counter = 0
     for e in entries:
@@ -290,10 +302,10 @@ def calculate_page_evolution():
 
             if class_name == 'year':
                 if current_year is not None:
-                    update_page_evolution_map(page_evolution_per_year, page_evolution, current_year)
+                    update_collaboration_and_page_evolution_map(evolution_per_year, evolution, current_year)
 
                 current_year = e.text
-                page_evolution = {}
+                evolution = {}
             elif class_name.startswith('entry'):
                 paper_counter += 1
                 spans = e.find_elements_by_tag_name('span')
@@ -310,14 +322,14 @@ def calculate_page_evolution():
                         if coauthor_name != author_name:
                             collaborations += 1
 
-                page_evolution.update({paper_counter: {'pages': pages, 'coll': collaborations}})
+                evolution.update({paper_counter: {'pages': pages, 'coll': collaborations}})
 
         except:
             continue
 
-    update_page_evolution_map(page_evolution_per_year, page_evolution, current_year)
+    update_collaboration_and_page_evolution_map(evolution_per_year, evolution, current_year)
 
-    return page_evolution_per_year
+    return evolution_per_year
 
 
 def init_output():
@@ -372,8 +384,8 @@ def calculate_statistics_for_person():
     write_to_output(json.dumps(entries_per_year, indent=4, sort_keys=True))
     write_to_output('\n')
     write_to_output('\n')
-    pages_evolution = calculate_page_evolution()
-    write_to_output('Written pages evolution')
+    pages_evolution = calculate_collaboration_and_page_evolution()
+    write_to_output('Collaboration and page evolution')
     write_to_output('\n')
     write_to_output(json.dumps(pages_evolution, indent=4, sort_keys=True))
     write_to_output('\n')
