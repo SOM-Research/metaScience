@@ -221,7 +221,7 @@ function generatePaperEvolutionDiagram(data) {
       		],
       		names: {
       			coAuthors: "Average number of coauthors",
-				participation: "Average number of co-authored papers"
+				participation: "Participation in co-authored publications"
       		},
       		type: 'bar',
       	},
