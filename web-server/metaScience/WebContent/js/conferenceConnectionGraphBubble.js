@@ -88,21 +88,36 @@ function getConferenceConnectionGraphBubble(authorId) {
                              var selecteditem = event.args.item;
                              var selectedIndex = event.args.index;
                              if (selecteditem) {
+                            	 var nodes = $("#conferenceCombobox").jqxComboBox('getItems');
+                            	 var originalNodes = new Array();
+                            	 nodes.forEach(function(element) {
+                            		 if(element.id != -1) {
+                            			 originalNodes.push(element.originalItem);
+                            		 }
+                            	 })
                                   var node = d3.select(selecteditem.originalItem);
                                   if(node.length == 1) {
                                        node = node[0][0];
                                        if(selectedIndex != 0) {
-                                            d3conferenceNodes.style("opacity", function(n) {
-                                                 if(node.source != n.source) {
-                                                      return 0.07;
-                                                 }
-                                            })
+                                    	   d3conferenceNodes.style("opacity", function(n) {
+                                    		   if(originalNodes.indexOf(n) != -1) {
+                                    			   if(node.source != n.source) {
+                                    				   return 0.07;
+                                    			   }
+                                    		   } else {
+                                    			   return 0.07;
+                                    		   }
+                                    	   })
                                        } else {
-                                          d3conferenceNodes.style("opacity", function(n) {
-                                                 if(node.source != n.source) {
-                                                      return 1;
-                                                 }
-                                            })
+                                    	   d3conferenceNodes.style("opacity", function(n) {
+                                        	  if(originalNodes.indexOf(n) != -1) {
+                                        		  if(node.source != n.source) {
+                                        			  return 1;
+                                        		  }
+                                        	  } else {
+                                        		  return 0.07;
+                                        	  }
+                                           })
                                        }
                                   }
                              }
@@ -248,12 +263,22 @@ function drawConferenceConnectionGraphBubble(nodes) {
 }
 
 function sliderChangeFunction(numStart,numEnd) {
+	var selectedNodes = new Array();
+	selectedNodes.push({source : " - All Venues - "});
     d3conferenceNodes.style("opacity", function(n) {
          var value = getValue(n);
          if(value < numStart || value > numEnd) {
               return 0.07;
+         } else {
+        	 selectedNodes.push(n);
          }
     });
+    
+    $("#conferenceCombobox").jqxComboBox({source: selectedNodes});
+    $("#conferenceCombobox").jqxComboBox('selectIndex',0);
+    
+    
+    
 }
 
 function getValue(node) {
