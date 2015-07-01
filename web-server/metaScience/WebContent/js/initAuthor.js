@@ -199,12 +199,18 @@ function updatePaperEvolution(authorId) {
 	   	  	generatePaperEvolutionDiagram(data);
 		},
 		error : function(xhr, status, error) {
+			$("#avgCollaborations").text("Not available");
 	   	  	hideRow("collaborationEvolutionRow");
 		}
 	});
 }
 function generatePaperEvolutionDiagram(data) {
 	showRow("collaborationEvolutionRow");
+
+
+	var averageCollaborations = data.avg;
+	$("#avgCollaborationsLoading").css("visibility","hidden");
+	$("#avgCollaborations").text(averageCollaborations);
 
   	activityChart = c3.generate({
     	bindto : "#collaborationEvolutionChart",
@@ -215,7 +221,7 @@ function generatePaperEvolutionDiagram(data) {
       		],
       		names: {
       			coAuthors: "Average number of coauthors",
-				participation: "Average number of co-authored papers"
+				participation: "Participation in co-authored publications"
       		},
       		type: 'bar',
       	},
