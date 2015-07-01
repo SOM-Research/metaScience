@@ -38,17 +38,14 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 	}
 	
 	private JsonObject getPaperEvolutionInformation(String authorId) throws ServletException {
-		JsonObject collaborationInformationJson = getCollaborationInformation(authorId);
-		return collaborationInformationJson;
-	}
-
-	private JsonObject getCollaborationInformation(String authorId) throws ServletException {
 		JsonObject collaborationInformationJson = new JsonObject();
 
 		Connection con = Pooling.getInstance().getConnection();
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
+
+			/* 1. Getting yearly info */
 			stmt = con.createStatement();
 			String query = "SELECT author_id, author, year, round(AVG(authors),2) AS avg_coauthors," +
 					" SUM(authors-1) AS sum_coauthors, round(SUM(participation),2) AS participation" +
@@ -63,25 +60,8 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 					" GROUP BY pub_info.year;";
 
 			rs = stmt.executeQuery(query);
-			collaborationInformationJson = prepareCollaborationInformationJson(rs);
-		} catch( SQLException e) {
-			throw new ServletException("Error getting collaboration evolution", e);
-		} finally {
-			try {
-				if(stmt != null) stmt.close();
-				if(rs != null) rs.close();
-				if(con != null) con.close();
-			} catch (SQLException e) {
-				throw new ServletException("Impossible to close the connection", e);
-			}
-		}
-		return collaborationInformationJson;
-	}
 
-	private JsonObject prepareCollaborationInformationJson(ResultSet rs) throws ServletException {
-		JsonObject collaboration = new JsonObject();
-
-		try {
+			/* Building response for yearly info */
 			JsonArray years = new JsonArray();
 			JsonArray coAuthors = new JsonArray();
 			coAuthors.add(new JsonPrimitive("coAuthors"));
@@ -97,14 +77,41 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 				coAuthors.add(new JsonPrimitive(avgCoAuthors));
 				participations.add(new JsonPrimitive(participation));
 			}
+			collaborationInformationJson.add("years", years);
+			collaborationInformationJson.add("coauthors", coAuthors);
+			collaborationInformationJson.add("participation", participations);
 
-			collaboration.add("years", years);
-			collaboration.add("coauthors", coAuthors);
-			collaboration.add("participation", participations);
-		} catch(SQLException e) {
-			throw new ServletException("Error retrieving author information fields from ResultSet",e);
+			/* Getting average */
+			stmt = con.createStatement();
+			String query2 = "SELECT ROUND(AVG(co_authors),2) AS total_avg_coauthors" +
+					" FROM (" +
+					"    SELECT pub.id, pub.year, title, airn.author_id, airn.author, MAX(author_num) AS co_authors" +
+					"    FROM dblp_pub_new pub JOIN dblp_authorid_ref_new airn ON pub.id = airn.id " +
+					"      JOIN dblp_author_ref_new arn ON pub.id = arn.id " +
+					"    WHERE airn.author_id = '" + authorId+ "' AND pages IS NOT NULL " +
+					"    GROUP BY pub.id) AS pub_info;";
+
+			rs = stmt.executeQuery(query2);
+
+			/* Building average info*/
+			double totalAvg = 0;
+			while(rs.next()) {
+				totalAvg = rs.getDouble("total_avg_coauthors");
+			}
+			collaborationInformationJson.addProperty("avg", totalAvg);
+
+		} catch( SQLException e) {
+			throw new ServletException("Error getting collaboration evolution", e);
+		} finally {
+			try {
+				if(stmt != null) stmt.close();
+				if(rs != null) rs.close();
+				if(con != null) con.close();
+			} catch (SQLException e) {
+				throw new ServletException("Impossible to close the connection", e);
+			}
 		}
-		return collaboration;
+		return collaborationInformationJson;
 	}
 
 	/**

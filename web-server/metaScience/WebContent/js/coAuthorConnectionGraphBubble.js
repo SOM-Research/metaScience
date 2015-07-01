@@ -34,7 +34,6 @@ function getCoAuthorConnectionGraphBubble(authorId) {
               removeLoadingImage("loaderCoAuthorConnectionGraph");
 
               $("#totalCollaborations").text("Not available");
-              $("#avgCollaborations").text("Not available");
 
               creatingWarningMessage(d3.select("#coAuthorConnectionGraph"),heightCoAuthorGraph/2,widthCoAuthorGraph/2,"An error occured");
 
@@ -43,12 +42,9 @@ function getCoAuthorConnectionGraphBubble(authorId) {
               var authorNodes = jsonNodes.coAuthors;
               var maxCollaborations = jsonNodes.author.max_collaborations;
               var totalCollaborations = jsonNodes.author.total_collaborators;
-              var averageCollaborations = jsonNodes.author.average_collaborations;
 
               $("#totalCollaborationsLoading").css("visibility","hidden");
               $("#totalCollaborations").text(totalCollaborations);
-              $("#avgCollaborationsLoading").css("visibility","hidden");
-              $("#avgCollaborations").text(averageCollaborations);
 
               // d3.layout.pack work with hierarchic; this is to flatten the hierarchy and respect the input format of pack
               if(authorNodes.length > 0) {
@@ -61,11 +57,7 @@ function getCoAuthorConnectionGraphBubble(authorId) {
                $("#info_coAuthorConnectionGraph").css("visibility","visible");
                drawCoAuthorConnectionGraphBubble(nodes,maxCollaborations);
 
-
                createSlider("collabSlider","Number of collaborations", 1,maxCollaborations,sliderCollaborationChangeFunction);
-
-
-               
 
                var comboboxNodes = new Array();
                comboboxNodes.push({name : " - All co authors - ", id: -1});
