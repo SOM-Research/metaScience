@@ -131,3 +131,12 @@ join dblp_author_ref_new arn on pub.id = arn.id
 where airn.author_id = 636270 and pages is not null
 group by pub.id) as pub_info
 group by pub_info.year;
+
+/* 16. Average number of co-authors per author*/
+select round(avg(co_authors),2) as total_avg_coauthors
+from (
+select pub.id, pub.year, title, airn.author_id, airn.author, max(author_num) as co_authors
+from dblp_pub_new pub join dblp_authorid_ref_new airn on pub.id = airn.id
+join dblp_author_ref_new arn on pub.id = arn.id
+where airn.author_id = 573097 and pages is not null
+group by pub.id) as pub_info;
