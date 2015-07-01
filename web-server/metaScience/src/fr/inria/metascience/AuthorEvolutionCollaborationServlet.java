@@ -47,16 +47,15 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 
 			/* 1. Getting yearly info */
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author, year, round(AVG(authors),2) AS avg_coauthors," +
-					" SUM(authors-1) AS sum_coauthors, round(SUM(participation),2) AS participation" +
+			String query = "SELECT author_id, author, year, round(AVG(co_authors),2) AS avg_coauthors, " +
+					" SUM(co_authors) AS sum_coauthors, round(SUM(participation),2) AS participation" +
 					" FROM (" +
-					"   SELECT pub.id, pub.year, title, airn.author_id, airn.author, MAX(author_num) + 1 AS authors, " +
-					"          1/(MAX(author_num) + 1) AS participation" +
-					"   FROM dblp_pub_new pub " +
-					"      JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
-					"      JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
-					"   WHERE airn.author_id = " + authorId + " AND pages IS NOT NULL" +
-					"   GROUP BY pub.id) AS pub_info\n" +
+					"    SELECT pub.id, pub.year, title, airn.author_id, airn.author, max(author_num) as co_authors, " +
+					"           1/(max(author_num) + 1) as participation" +
+					"    FROM dblp_pub_new pub JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
+					"       JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
+					"    WHERE airn.author_id = " + authorId + " AND pages IS NOT NULL" +
+					"    GROUP BY pub.id) AS pub_info" +
 					" GROUP BY pub_info.year;";
 
 			rs = stmt.executeQuery(query);
