@@ -1,0 +1,14 @@
+In update_auxiliary_database_tables.py
+
+	def update_aux_dblp_inproceedings_tracks(cnx, starting_year):
+
+	    cursor = cnx.cursor()
+	    query = "INSERT INTO dblp.aux_dblp_inproceedings_tracks " \
+		    "SELECT NULL, id as dblp_id, dblp_key, crossref, url, title, NULL, NULL, NULL, NULL,NULL " \
+		    "FROM dblp.dblp_pub_new where type = 'inproceedings' " \
+		    "AND id NOT IN (SELECT dblp_id FROM dblp.aux_dblp_inproceedings_tracks) " \
+		    "AND year >= " + str(starting_year) + " " \
+		    "AND source IN (" + CONFERENCES + ")"
+	    cursor.execute(query)
+	    cnx.commit()
+	    cursor.close()

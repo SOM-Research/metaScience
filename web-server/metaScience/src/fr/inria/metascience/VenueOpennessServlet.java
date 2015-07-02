@@ -19,7 +19,10 @@ import java.util.Iterator;
  */
 @WebServlet("/venueOpenness")
 public class VenueOpennessServlet extends AbstractMetaScienceServlet {
-    @Override
+    
+	private static final long serialVersionUID = 1L;
+
+	@Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         addResponseOptions(resp);
 
@@ -50,7 +53,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
         JsonObject openness = new JsonObject();
         try {
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call dblp.get_openness_conf('" + venueId + "')}";
+            String query1 = "{call " + dblpSchema + ".get_openness_conf('" + venueId + "')}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
 
@@ -59,7 +62,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the average
             String query2 = "SELECT ROUND(AVG(o.from_outsiders/o.number_of_papers)*100,2) as avg " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query2);
 
@@ -70,8 +73,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query3 = "SELECT ROUND((o.from_outsiders/o.number_of_papers), 2) as ratio, o.year as year " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+            String query3 = "SELECT ROUND((o.from_outsiders/o.number_of_papers), 4) as ratio, o.year as year " +
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query3);
 
@@ -97,7 +100,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the average select
             String query4 = "SELECT ROUND(AVG(o.perc_new_authors),2) as avg " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query4);
 
@@ -109,7 +112,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the data yearly
             String query5 = "SELECT ROUND(o.perc_new_authors/100, 2) as ratio, o.year as year " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query5);
 
@@ -135,7 +138,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the average
             String query6 = "SELECT ROUND(AVG(o.from_community/o.number_of_papers)*100,2) as avg " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query6);
 
@@ -146,8 +149,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query7 = "SELECT ROUND((o.from_community/o.number_of_papers), 2) as ratio, o.year as year " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+            String query7 = "SELECT ROUND((o.from_community/o.number_of_papers), 4) as ratio, o.year as year " +
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query7);
 
@@ -173,7 +176,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the average
             String query8 = "SELECT ROUND(AVG(1-((o.from_outsiders + o.from_community)/o.number_of_papers))*100,2) as avg " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query8);
 
@@ -185,7 +188,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
 
             // Getting the data yearly
             String query9 = "SELECT ROUND(1-((o.from_outsiders + o.from_community)/o.number_of_papers), 2) as ratio, o.year as year " +
-                    "FROM dblp._openness_conf o WHERE conf='" + venueId + "';";
+                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query9);
 

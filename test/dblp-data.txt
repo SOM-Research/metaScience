@@ -1,0 +1,272 @@
+total number of publications: 44
+total number of journals: 15
+total number of conferences: 29
+total number of books: 0
+total number of editors: 0
+total number of other pubs: 0
+average number of publications per year: 4.4
+total number of co-authors: 30
+average number of co-authors: 2.18
+
+Activity along the years:
+{
+    "2006": {
+        "conference": 3
+    }, 
+    "2007": {
+        "conference": 3, 
+        "journal": 1
+    }, 
+    "2008": {
+        "conference": 2, 
+        "journal": 2
+    }, 
+    "2009": {
+        "conference": 1, 
+        "journal": 2
+    }, 
+    "2010": {
+        "conference": 2
+    }, 
+    "2011": {
+        "conference": 3, 
+        "journal": 1
+    }, 
+    "2012": {
+        "conference": 4, 
+        "journal": 1
+    }, 
+    "2013": {
+        "conference": 5, 
+        "journal": 1
+    }, 
+    "2014": {
+        "conference": 6, 
+        "journal": 5
+    }, 
+    "2015": {
+        "journal": 2
+    }
+}
+
+Collaboration and page evolution
+{
+    "2006": {
+        "avg.number of co-authors": 1.67, 
+        "avg.pages": 5.83, 
+        "n.coll": 5, 
+        "participation": 1.17
+    }, 
+    "2007": {
+        "avg.number of co-authors": 1.5, 
+        "avg.pages": 2.06, 
+        "n.coll": 6, 
+        "participation": 1.75
+    }, 
+    "2008": {
+        "avg.number of co-authors": 2.5, 
+        "avg.pages": 5.0, 
+        "n.coll": 10, 
+        "participation": 1.25
+    }, 
+    "2009": {
+        "avg.number of co-authors": 1.67, 
+        "avg.pages": 6.58, 
+        "n.coll": 5, 
+        "participation": 1.25
+    }, 
+    "2010": {
+        "avg.number of co-authors": 1.5, 
+        "avg.pages": 1.0, 
+        "n.coll": 3, 
+        "participation": 0.83
+    }, 
+    "2011": {
+        "avg.number of co-authors": 3.25, 
+        "avg.pages": 4.33, 
+        "n.coll": 13, 
+        "participation": 1.13
+    }, 
+    "2012": {
+        "avg.number of co-authors": 1.6, 
+        "avg.pages": 8.0, 
+        "n.coll": 8, 
+        "participation": 2.33
+    }, 
+    "2013": {
+        "avg.number of co-authors": 3.5, 
+        "avg.pages": 5.31, 
+        "n.coll": 21, 
+        "participation": 2.28
+    }, 
+    "2014": {
+        "avg.number of co-authors": 1.91, 
+        "avg.pages": 6.08, 
+        "n.coll": 21, 
+        "participation": 3.83
+    }, 
+    "2015": {
+        "avg.number of co-authors": 2.0, 
+        "avg.pages": 8.33, 
+        "n.coll": 4, 
+        "participation": 0.67
+    }
+}
+
+Co-author connection:
+{
+    "Ana Pescador": 1, 
+    "Angelika Kusel": 1, 
+    "Arantza Irastorza": 1, 
+    "Esther Guerra": 16, 
+    "Eva Ogallar": 1, 
+    "Fiorella Mori": 1, 
+    "Frédéric Jouault": 3, 
+    "Iván Dario Claros Gómez": 1, 
+    "Javier Espinazo-Pagán": 2, 
+    "Javier Luis Cánovas Izquierdo": 3, 
+    "Javier Martín": 1, 
+    "Jean Bézivin": 3, 
+    "Jesús García Molina": 20, 
+    "Jesús J. López-Fernández": 1, 
+    "Jesús Perera Aracil": 1, 
+    "Johannes Schönböck": 1, 
+    "Jordi Cabot": 1, 
+    "Juan de Lara": 20, 
+    "Luis M. Alonso": 1, 
+    "Manuel Wimmer": 1, 
+    "Marcos Menárguez Tortosa": 2, 
+    "Miguel Monforte": 1, 
+    "Nicolás Buezas": 1, 
+    "Oscar Díaz": 1, 
+    "Oscar Pérez": 1, 
+    "Ruth Cobos": 1, 
+    "Werner Retschitzegger": 1, 
+    "Wieland Schwinger": 1, 
+    "Ángel Mora Segura": 3, 
+    "Óscar Sánchez Ramón": 4
+}
+
+Venue connection:
+{
+    "ACM Trans. Softw. Eng. Methodol.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ASE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Autom. Softw. Eng.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "CAiSE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "CDVE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "DSDM": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ECEASST": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "ECMDA-FA": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ECMFA": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "EDOC Workshops": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "EDUCON": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "ICMT": {
+        "attendance": 6, 
+        "publication": 6
+    }, 
+    "ICWE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "IEEE Software": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "IEEE Trans. Software Eng.": {
+        "attendance": 2, 
+        "publication": 2
+    }, 
+    "ISSRE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Inf. Syst.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Information & Software Technology": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "JISBD": {
+        "attendance": 2, 
+        "publication": 3
+    }, 
+    "Journal of Object Technology": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "MoDELS": {
+        "attendance": 3, 
+        "publication": 3
+    }, 
+    "MoDELS Workshops": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "SAC": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "SLE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Sci. Comput. Program.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Softw., Pract. Exper.": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "Software and System Modeling": {
+        "attendance": 2, 
+        "publication": 3
+    }, 
+    "TTC": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "WCRE": {
+        "attendance": 1, 
+        "publication": 1
+    }, 
+    "WISE": {
+        "attendance": 1, 
+        "publication": 1
+    }
+}

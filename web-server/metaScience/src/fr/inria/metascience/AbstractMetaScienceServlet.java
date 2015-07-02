@@ -19,6 +19,7 @@ public class AbstractMetaScienceServlet extends HttpServlet {
     /** Params used in the servlets */
 	static final String ID_PARAM = "id";
     static final String SUBID_PARAM = "subid";
+    
 
     /** Some conference whose source/sourceId vary */
     HashMap<String, String> preCachedVenues = new HashMap();
@@ -28,9 +29,15 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 	 */
 	String allowOrigin;
 	
+	/** DBLP schema name */
+	String dblpSchema;
+
+	/** Version deployed */
+	String metascienceVersion;
+	
 	@Override
 	public void init() throws ServletException {
-        preCachedVenues.put("ecmfa", "ecmdafa");
+        //preCachedVenues.put("ecmfa", "ecmdafa");
 
 		try {
 			Properties properties = new Properties();
@@ -38,6 +45,11 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 			allowOrigin = properties.getProperty("allowOrigin");
 			if(allowOrigin == null)
 				throw new ServletException("No value for allowOrigin in config file");
+			
+			dblpSchema = properties.getProperty("dblpSchema");
+			metascienceVersion = properties.getProperty("version");
+			if(dblpSchema == null)
+				throw new ServletException("No value for dblpSchema in config file");
 		} catch (IOException e) {
 			throw new ServletException("No configuration found");
 		}
