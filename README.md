@@ -20,8 +20,14 @@ The author metrics include:
 
 ## What is coming next?
 
+<<<<<<< HEAD
 The service is under development and we are currently working on many other visualizations/metrics involving:
 - Variation of conferences’ locations and dates, evolution of conference topics,...
+=======
+The service is still under development and we are currently working on many other visualizations/metrics involving:
+- PC turnover, variation of conferences’ locations and dates, evolution of conference topics,...
+- Author's metrics like number of publications, co-author connections, etc...
+>>>>>>> master
 - Journal metrics similar to those ones presented for conferences.
  
 Of course if you would like MetaScience to show something you have in mind, do not hesitate to contact us or open an issue in our GitHub repository
@@ -33,9 +39,17 @@ Of course if you would like MetaScience to show something you have in mind, do n
 * [Jordi Cabot](http://github.com/jcabot/ "Jordi Cabot")
 * [Robin Boncorps](http://github.com/rboncorps/ "Robin Boncorps")
 
+<<<<<<< HEAD
 Javier and Jordi are currently members of [SOM](http://som.uoc.es), a research team of IN3-UOC. Robin and Valerio are members of [Atlanmod](http://www.emn.fr/z-info/atlanmod), a research team of Inria.
+=======
+Javier, and Jordi are currently members of [SOM](http://som.uoc.es), a research team of IN3-UOC. Robin and Valerio are members of [Atlanmod](http://www.emn.fr/z-info/atlanmod), a research team of Inria.
+>>>>>>> master
 
 How can I follow the latest news about the project?
 ---------------------------------------------------
 
+<<<<<<< HEAD
 All major announcements will be posted in the [modeling-languages.com](http://modeling-languages.com "modeling-languages.com") portal. You can also follow our [@softmodeling](https://twitter.com/softmodeling "@softmodeling") and [@jlcanovas](https://twitter.com/jlcanovas "@jlcanovas") twitter accounts for updates whenever you want. 
+=======
+All major announcements will be posted in the [modeling-languages.com](http://modeling-languages.com "modeling-languages.com") portal. You can also follow our [@softmodeling](https://twitter.com/softmodeling "@softmodeling") and [@jlcanovas](https://twitter.com/jlcanovas "@jlcanovas") twitter accounts for updates whenever you want). 
+>>>>>>> master
