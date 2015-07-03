@@ -21,6 +21,10 @@ var authorSelected = false;
 var selectedNodes = new Array();
 var selectedLinks = new Array();
 
+var nodeContainer, graphZoom;
+
+var initScale, initTansX, initTransY;
+
 var graphForce = d3.layout.force()
 		.gravity(0.2)
 		.charge(-1500)
@@ -135,9 +139,13 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 		        	var node = d3.select(selecteditem.originalItem);
 		        	if(node.length == 1) {
 			        	node = node[0][0];
+			        	
+			        	
 
 			        	if(selectedIndex != 0) {
 			        		authorSelected = true;
+			        		selectedNodes.splice(0,selectedNodes.length);
+							selectedLinks.splice(0,selectedLinks.length);
 
 				        	d3links.style("stroke", function(l) {
 								if(node.id == l.source.id || node.id == l.target.id){
@@ -163,11 +171,15 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 									
 							});
 							
+							zoomToScale(selectedNodes);
+							
 						} else {
 							
 							authorSelected = false;
 							selectedNodes.splice(0,selectedNodes.length);
 							selectedLinks.splice(0,selectedLinks.length);
+							
+							resetTranform();
 							
 							d3links.style("stroke", function(l) {
 								return 'gray';
@@ -180,8 +192,7 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 							});
 						}
 					}
-					            //venueName = selecteditem.originalItem.name;
-					            //venueId = selecteditem.originalItem.id;
+
 				}
 		  	}
 		});
@@ -191,6 +202,8 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
         	authorSelected = false;
         	selectedNodes.splice(0,selectedNodes.length);
 			selectedLinks.splice(0,selectedLinks.length);
+			
+			resetTranform();
        	});
 
        	$("#coAuthorCombobox").on('click', function (event) {
@@ -203,6 +216,15 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 	});
 	
 	
+}
+
+function resetTranform() {
+	nodeContainer.attr("transform", "translate(" + [initTansX,initTransY] + ")scale(" + initScale + ")");
+	graphZoom.translate([initTansX,initTransY]);
+	graphZoom.scale(initScale);
+	venueAuthorConnectionGraph.call(graphZoom);
+	
+	minimap.render();
 }
 
 function sliderChangeFunction(numStart,numEnd) {
@@ -242,6 +264,7 @@ function sliderChangeFunction(numStart,numEnd) {
 	//remove previous graph if exists
 	if ($("#venueAuthorConnectionGraph").children().size() > 0) {
 		$("#venueAuthorConnectionGraph").empty();
+		$("#minimap").empty();
 	}
 	drawVenueAuthorConnectionGraph(filteredNodesArray,filteredLinks,maxCollaborations,maxPublications);
 
@@ -261,6 +284,7 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 
 	if(d3.select("#loaderVenueAuthorConnectionGraph").empty()) {
 		onLoadingGraph(d3.select("#venueAuthorConnectionGraph"), "loaderVenueAuthorConnectionGraph", heightAuthor, widthAuthor);
+		onLoadingGraph(d3.select("#minimap"),"loaderMinimap",(heightAuthor*minimapScale) + 10,(widthAuthor*minimapScale) + 10);
 	}
 
 	// Creating structure
@@ -277,6 +301,7 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 
 	//On loading
 	container.style("visibility","hidden");
+	nodeContainer = container;
 
 	// Creating tooltip
 	var authorNodeTooltip = d3.select("body").append("div")
@@ -297,6 +322,8 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 			container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 			minimap.scale(d3.event.scale).render();
 		});
+	
+	graphZoom = zoom;
 
 	venueAuthorConnectionGraph.call(zoom);
 
@@ -540,6 +567,58 @@ function dragended(d) {
 	d3.select(this).classed("dragging",false);
 }
 
+function zoomToScale(nodes) {
+	console.log(nodes);
+	
+	var maxX = -10000;
+	var maxY = -10000;
+	var minX = 10000;
+	var minY = 10000;
+	for(var n = 0 ; n < nodes.length ; n++) {
+		var node = nodes[n];
+		var x = node.x;
+		var y = node.y;
+		console.log(x,y);
+		if(x > maxX) maxX=x;
+		if(x < minX) minX=x;
+		if(y > maxY) maxY=y;
+		if(y < minY) minY=y;
+	}
+	
+	maxX += 20;
+	maxY += 20;
+	minX -= 20;
+	minY -= 20;
+	
+	var scaleXMin = (widthAuthor -10) / (Math.abs(maxX - minX));
+	var scaleYMin = (heightAuthor -10) / (Math.abs(maxY - minY));
+	console.log(scaleXMin,scaleYMin);
+	var scaleMin = Math.min(scaleXMin,scaleYMin,1);
+	
+	var graphContainerWidth = Math.abs(maxX - minX);
+	var graphContainerHeight = Math.abs(maxY - minY);
+	
+	// Center of the graph Container
+	var graphContainerCenterX = maxX - (graphContainerWidth/2);
+	var graphContainerCenterY = maxY - (graphContainerHeight/2);
+	
+	var graphContainerScaledCenterX = graphContainerCenterX * scaleMin;
+	var graphContainerScaledCenterY = graphContainerCenterY * scaleMin;
+	
+	var containerCenterX = widthAuthor/2;
+	var containerCenterY = heightAuthor/2;
+	
+	var translationX = containerCenterX - graphContainerScaledCenterX;
+	var translationY = containerCenterY - graphContainerScaledCenterY;
+	
+	nodeContainer.attr("transform", "translate(" + [translationX,translationY] + ")scale(" + scaleMin + ")");
+	graphZoom.translate([translationX,translationY]);
+	graphZoom.scale(scaleMin);
+	venueAuthorConnectionGraph.call(graphZoom);
+	
+	minimap.render();
+}
+
 function scaleToContent(container,zoom,graph,graphForce) {
 	var gNodes = graphForce.nodes();
 
@@ -581,6 +660,10 @@ function scaleToContent(container,zoom,graph,graphForce) {
 
 		var translationX = containerCenterX - graphContainerScaledCenterX;
 		var translationY = containerCenterY - graphContainerScaledCenterY;
+		
+		initScale = scaleMin;
+		initTansX = translationX;
+		initTransY = translationY;
 
 		container.attr("transform", "translate(" + [translationX,translationY] + ")scale(" + scaleMin + ")");
 		zoom.translate([translationX,translationY]);
@@ -659,7 +742,7 @@ venueGraph.minimap = function() {
 
 				zoom.translate([targetTranslateX,targetTranslateY]);
 			});
-		frame.call(drag)
+		frame.call(drag);
 		
 		minimap.create = function() {
 			scale = zoom.scale();
@@ -700,8 +783,6 @@ venueGraph.minimap = function() {
 	    	frame.node().parentNode.appendChild(frame.node());
 
 	    	//d3.select(node).attr("transform", initTransform);
-
-
 	    };
 
 	}
@@ -759,9 +840,4 @@ venueGraph.minimap = function() {
     };
 
     return minimap;
-
-
-
-
-
 }
