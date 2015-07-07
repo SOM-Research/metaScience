@@ -54,6 +54,7 @@ public class JournalAuthorRankServlet extends AbstractMetaScienceServlet {
 					+ " JOIN dblp_authorid_ref_new airn"
 					+ " ON pub.id = airn.id"
 					+ " WHERE source = '" + journalId + "'"
+					+ " AND pub.type = 'article'"
 					+ " GROUP BY airn.author_id"
 					+ " ORDER BY publications desc"
 					+ " LIMIT 5;";
@@ -91,6 +92,7 @@ public class JournalAuthorRankServlet extends AbstractMetaScienceServlet {
 					+ " JOIN dblp_authorid_ref_new airn"
 					+ " ON pub.id = airn.id"
 					+ " WHERE source = '" + journalId + "'"
+					+ " AND pub.type = 'article'"
 					+ " GROUP BY airn.author_id"
 					+ " ORDER BY presence DESC"
 					+ " LIMIT 5;";

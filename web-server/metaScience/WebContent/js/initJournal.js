@@ -1,6 +1,3 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
-
 // Journal id
 var journalId;
 var subjournalId;
@@ -28,10 +25,10 @@ window.onload = function() {
 	
 	// Getting the full name of the journal
 	if(params.id) {
-		journalId = params.id;	
+		journalId = decodeURI(params.id);	
     $("#journalName").text(journalId);
 	} else {
-		$("#journalName").text('No journal found');
+		journalNotFound();
 	}
 
 	// Searching for satellite events
@@ -41,19 +38,20 @@ window.onload = function() {
 
 function updateGraphs(journalId) {
 	updateBasic(journalId);
-  updateRank(journalId);
-  generateJournalAuthorConnectionGraph(journalId);
+	updateRank(journalId);
+	generateJournalAuthorConnectionGraph(journalId);
 }
 
 function updateBasic(journalId) {
 	$.ajax({
 		url: metaScienceServlet + "/journalActivity?id=" + journalId + ((journalId != subjournalId && subjournalId != undefined) ? "&subid=" + subjournalId : ""),
 		success : function(data) {
-      $("#activityChartRow").css("visibility", "visible");
-      $("#ratiosChartRow").css("visibility", "visible");
-      $("#avgAuthorsLoading").css("visibility", "hidden");
+			showRow("activityChartRow");
+			showRow("ratiosChartRow");
+			
+			$("#avgAuthorsLoading").css("visibility", "hidden");
 			$("#avgAuthors").text(data.authors.avg);
-      $("#avgPapersLoading").css("visibility", "hidden");
+			$("#avgPapersLoading").css("visibility", "hidden");
 			$("#avgPapers").text(data.papers.avg);
 			var activityChart = c3.generate({		
 			    bindto: '#activityChart',
@@ -71,9 +69,9 @@ function updateBasic(journalId) {
 			    }
 			});
 
-      $("#avgAuthorsPerPaperLoading").css("visibility", "hidden");
+			$("#avgAuthorsPerPaperLoading").css("visibility", "hidden");
 			$("#avgAuthorsPerPaper").text(data.authorsPerPaper.avg);
-      $("#avgPapersPerAuthorLoading").css("visibility", "hidden");
+			$("#avgPapersPerAuthorLoading").css("visibility", "hidden");
 			$("#avgPapersPerAuthor").text(data.papersPerAuthor.avg);
 			var ratiosChart = c3.generate({		
 			    bindto: '#ratiosChart',
@@ -103,8 +101,8 @@ function updateBasic(journalId) {
 			$("#avgPapers").text("Not available");
 			$("#avgAuthorsPerPaper").text("Not available");
 			$("#avgPapersPerAuthor").text("Not available");
-      $("#activityChartRow").css("visibility", "hidden");
-      $("#ratiosChartRow").css("visibility", "hidden");
+			hideRow("activityChartRow");
+			hideRow("ratiosChartRow");
 		}
 	});
 }
@@ -113,23 +111,46 @@ function updateRank(journalId,subjournalId) {
   $.ajax( {
     url: metaScienceServlet + "/journalAuthorRank?id=" + journalId + ((journalId != subjournalId && subjournalId != undefined) ? "&subid=" + subjournalId : ""),
     success: function(data) {
-      $("#topAuthor1").text(data.top["1"].name);
-      $("#topAuthor2").text(data.top[2].name);
-      $("#topAuthor3").text(data.top[3].name);
-      $("#topAuthor4").text(data.top[4].name);
-      $("#topAuthor5").text(data.top[5].name);
+    	$("#topAuthor1").text(data.top[1].name);
+        $("#topAuthor2").text(data.top[2].name);
+        $("#topAuthor3").text(data.top[3].name);
+        $("#topAuthor4").text(data.top[4].name);
+        $("#topAuthor5").text(data.top[5].name);
 
-      $("#regularAuthor1").text(data.regular[1].name);
-      $("#regularAuthor2").text(data.regular[2].name);
-      $("#regularAuthor3").text(data.regular[3].name);
-      $("#regularAuthor4").text(data.regular[4].name);
-      $("#regularAuthor5").text(data.regular[5].name);
+        $("#numAuthor1").text(data.top[1].publications);
+        $("#numAuthor2").text(data.top[2].publications);
+        $("#numAuthor3").text(data.top[3].publications);
+        $("#numAuthor4").text(data.top[4].publications);
+        $("#numAuthor5").text(data.top[5].publications);
+
+        $("#regularAuthor1").text(data.regular[1].name);
+        $("#regularAuthor2").text(data.regular[2].name);
+        $("#regularAuthor3").text(data.regular[3].name);
+        $("#regularAuthor4").text(data.regular[4].name);
+        $("#regularAuthor5").text(data.regular[5].name);
+
+        $("#presenceAuthor1").text(data.regular[1].presence);
+        $("#presenceAuthor2").text(data.regular[2].presence);
+        $("#presenceAuthor3").text(data.regular[3].presence);
+        $("#presenceAuthor4").text(data.regular[4].presence);
+        $("#presenceAuthor5").text(data.regular[5].presence);
     },
     error: function(xhr, status, error) {
 
     }
   });
 }
+
+function journalNotFound() {
+	  $("#journalName").text('Journal not found');
+	  $(".topBox").css("visibility", "hidden");
+	  $("#mainRow").css("visibility","hidden");
+	  $("#rankAuthorsRow").css("visibility","hidden");
+	  $("#activityChartRow").css("visibility","hidden");
+	  $("#ratiosChartRow").css("visibility","hidden");
+	  $("#journalAuthorConnectionRow").css("visibility","hidden");
+	  $("#notFoundRow").css("display", "block");
+	}
 
 
 

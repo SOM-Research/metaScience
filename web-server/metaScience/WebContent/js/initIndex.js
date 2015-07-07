@@ -1,9 +1,12 @@
 var venueName = "";
 var venueId = "";
 var authorName ="";
-var authorId = ""
+var authorId = "";
+var journalName = "";
+var journalId = "";
 var searchstring= "";
 var authorSearchstring = "";
+var journalSearchstring = "";
 
 window.onload = function() {
   if(window.location.protocol !== 'http:') {
@@ -21,6 +24,12 @@ window.onload = function() {
             $("#metascienceVersion").text("ERROR");// Searching for satellite events
         }
     });
+    
+    
+    $('#tabs a').click(function (e) {
+    	  e.preventDefault()
+    	  $(this).tab('show')
+	})
 
     var venueSource =
         {
@@ -183,9 +192,9 @@ window.onload = function() {
     
     $("#authorSearchBtn").on('click', function() {
     	if(authorId === undefined || authorId === '') {
-	    	var searchedVenue = $('#acombobox').jqxComboBox('searchString');
+	    	var searchedAuthor = $('#acombobox').jqxComboBox('searchString');
 	    	$.ajax({
-				url : metaScienceServlet + "/authors?search=" + searchedVenue + "&type=2",
+				url : metaScienceServlet + "/authors?search=" + searchedAuthor + "&type=2",
 				dataType: "json",
 				success : function(data) {
 					authorCount = data.count;
@@ -211,5 +220,94 @@ window.onload = function() {
     		window.location.href = metaScienceServlet + "/author.html?id=" + authorId;
     	}
     })
+    
+    $("#journalSearchBtn").on('click', function() {
+    	if(journalId === undefined || journalId === '') {
+	    	var searchedJournal = $('#jcombobox').jqxComboBox('searchString');
+	    	$.ajax({
+				url : metaScienceServlet + "/journals?search=" + searchedJournal + "&type=2",
+				dataType: "json",
+				success : function(data) {
+					journalCount = data.count;
+					journals = data.journals;
+					if(journalCount == 1) {
+						//Go to venue page
+						journalId = journals[0].journalId;
+						window.location.href = metaScienceServlet + "/journal.html?id=" + journalId;
+					} else {
+						// display list of possible venues
+						$("#jcombobox").jqxComboBox("clear");
+						for(var i= 0 ; i < journalCount ; i++) {
+							var journal = journals[i];
+							$("#jcombobox").jqxComboBox("addItem",journal);
+						}
+					}
+				},
+				error : function(data) {
+					
+				}
+			});
+    	} else {
+    		window.location.href = metaScienceServlet + "/journal.html?id=" + journalId;
+    	}
+    })
+    
+    var journalSource =
+    {
+        datatype: "json",
+        datafields: [
+            { name: 'journalName', type : 'string' },
+            { name: 'journalId', type : 'string' },
+        ],
+        url: metaScienceServlet + "/journals"
+    };
+
+	var journalDataAdapter = new $.jqx.dataAdapter(journalSource,
+	    {
+	        beforeSend: function (jqxhr, settings) {
+	            journalSearchstring = $("#jcombobox").jqxComboBox('searchString');
+	            if (journalSearchstring != undefined) {
+	                    settings.url = settings.url + "&search=" + journalSearchstring + "&type=1";
+	            } else {
+	                console.log("it WAS undefined");
+	            }
+	        },
+	        loadComplete: function() {
+	        }
+	    }
+	);
+	
+	$("#jcombobox").jqxComboBox(
+	    {
+	        width: "100%",
+	        height: 30,
+	        source: journalDataAdapter,
+	        displayMember: "journalName",
+	        valueMember: "journalId",
+	        remoteAutoComplete: true,
+	        remoteAutoCompleteDelay: 500,
+	        minLength: 3,
+	        placeHolder: "Journal Name (enter at least three letters to search)",
+	        showArrow : false,
+	        search: function (journalSearchString) {
+	            $("#jcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+	            journalDataAdapter.dataBind();
+	        }
+	    });
+	
+	$("#jcombobox").on('bindingComplete', function (event) {
+	    $("#jcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background-image": "none" });
+	});
+	
+	$("#jcombobox").on('select', function (event) {
+	    if (typeof event.args != 'undefined') {
+	        var selecteditem = event.args.item;
+	        if (selecteditem) {
+	            journalName = selecteditem.originalItem.name;
+	            journalId = selecteditem.originalItem.journalId;
+	        }
+	    }
+	});
+    
     
 };

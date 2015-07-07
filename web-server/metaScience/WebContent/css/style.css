@@ -308,6 +308,12 @@ footer a:link, footer a:visited, footer a:hover, footer a:active {
 	padding-right: 10px;
 }
 
+.nav-tabs > li > a {
+    background: #DADADA;
+    border-radius: 0;
+    box-shadow: inset 0 -8px 7px -9px rgba(0,0,0,.4),-2px -2px 5px -2px rgba(0,0,0,.4);
+}
+
 
 
 

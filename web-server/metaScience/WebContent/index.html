@@ -83,30 +83,45 @@
         </div>
         </div>
       </div>
-
-      <div class="row">
-        <h1 class="text-center">We can help you!</h1>
-
-        <div class="col-md-6">
-          <div class="selectionBox">
-            <h2>Search by venue</h2>
-            <p class="text-center"><div id='vcombobox'></div></p>
-            <p class="text-center">
-              <button id="venueSearchBtn" class="btn btn-block" >Show me!</button>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="selectionBox">
-            <h2>Search by author</h2>
-            <p class="text-center"><div id="acombobox"></div><p>
-            <p class="text-center">
-              <button id="authorSearchBtn" class="btn btn-block" >Show me!</button>
-            </p>
-          </div>
-        </div>
+      
+      <div class="row" id="tabs">
+      	<ul class="nav nav-tabs nav-justified" role="tablist">
+      		<li role="presentation" class="active"><a href="#venueSelection" aria-controls="venueSelection" role="tab" data-toggle="tab">Venue</a></li>
+      		<li role="presentation"><a href="#authorSelection" aria-controls="authorSelection" role="tab" data-toggle="tab">Author</a></li>
+      		<li role="presentation"><a href="#journalSelection" aria-controls="journalSelection" role="tab" data-toggle="tab">Journal</a></li>
+      	</ul>
+      	
+      	<div class="tab-content">
+      		<div role="tabpanel" class="tab-pane active" id="venueSelection">
+      			<div class="selectionBox">
+		            <h2>Search by venue</h2>
+		            <p class="text-center"><div id='vcombobox'></div></p>
+		            <p class="text-center">
+		              <button id="venueSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		    	</div>
+      		</div>
+      		<div role="tabpanel" class="tab-pane" id="authorSelection">
+	      		<div class="selectionBox">
+		            <h2>Search by author</h2>
+		            <p class="text-center"><div id="acombobox"></div><p>
+		            <p class="text-center">
+		              <button id="authorSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		       	</div>
+      		</div>
+      		<div role="tabpanel" class="tab-pane" id="journalSelection">
+	      		<div class="selectionBox">
+		            <h2>Search by Journal</h2>
+		            <p class="text-center"><div id="jcombobox"></div><p>
+		            <p class="text-center">
+		              <button id="journalSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		       	</div>
+      		</div>
+      	</div>
       </div>
+
     </div>
 
 
