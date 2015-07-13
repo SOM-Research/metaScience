@@ -26,7 +26,18 @@ window.onload = function() {
 	
 	// Getting the full name of the author
 	if(params.id) {
-		authorId = params.id;	
+		authorId = params.id;
+
+		// Twitter button update
+		var tweetBtn = $('<a></a>')
+			.addClass('twitter-share-button')
+			.attr('href', 'http://twitter.com/share')
+			.attr('data-url', metaScienceServlet + 'author.html?id=' + authorId)
+			.attr('data-count', 'none')
+			.attr('data-text', "I discovered my scientific performance thanks to #metascience");
+		$('#tweetBtn').append(tweetBtn);
+		twttr.widgets.load();
+
 		$.ajax({
 			url : metaScienceServlet + "/authorName?id=" + params.id,
 			success : function(data) {
@@ -102,6 +113,7 @@ function updateActivity(authorId) {
 	   	  	
 	   	  	// Publication Chart update
 	   	  	generateActivityDiagram(data.publications);
+
 		},
 		error : function(xhr, status, error) {
 	   	  	$("#totalPub").text("Not available");

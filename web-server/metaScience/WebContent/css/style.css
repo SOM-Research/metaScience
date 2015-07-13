@@ -308,6 +308,11 @@ footer a:link, footer a:visited, footer a:hover, footer a:active {
 	padding-right: 10px;
 }
 
+.twitter-share-button {
+	float : right;
+	margin-top: 30px;
+}
+
 
 
 
