@@ -160,7 +160,7 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 							d3nodes.style('opacity', function(o) {
 								if(o.id != node.id) {
 									if(neighboring(node.id,o.id)) {
-										selectedNodes.push(o);filteredNodesArray
+										selectedNodes.push(o);
 										return 1;
 									} else {
 										return 0;
