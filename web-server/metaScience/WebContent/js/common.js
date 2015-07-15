@@ -122,6 +122,8 @@ function createSlider(selectorId,labelText, min, max,changeFunction) {
     resetBtn.attr("style", "margin-top:12px");
     resetBtn.on('click', function(event) {
         slider.jqxSlider('setValue',[min,max]);
+        labelStartRangeText.text(min);
+        labelEndRangeText.text(max);
         changeFunction(min,max)
     });
 }
