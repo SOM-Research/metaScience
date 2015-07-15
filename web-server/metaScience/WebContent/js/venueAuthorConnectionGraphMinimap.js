@@ -26,7 +26,7 @@ var nodeContainer, graphZoom;
 var initScale, initTansX, initTransY;
 
 var graphForce = d3.layout.force()
-		.gravity(0.2)
+		.gravity(0.3)
 		.charge(-1500)
 		.friction(0.8)
 		.size([widthAuthor,heightAuthor])
@@ -160,7 +160,7 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 							d3nodes.style('opacity', function(o) {
 								if(o.id != node.id) {
 									if(neighboring(node.id,o.id)) {
-										selectedNodes.push(o);
+										selectedNodes.push(o);filteredNodesArray
 										return 1;
 									} else {
 										return 0;
@@ -211,7 +211,11 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
             
        	});
 
-       	createSlider("coAuthorCollaborationSlider","Number of collaborations",1,maxCollaborations,sliderChangeFunction);
+       	//Edge filtering slider
+       	createSlider("coAuthorCollaborationSlider","Number of collaborations",1,maxCollaborations,edgeSliderChangeFunction);
+       	
+       	//Node filtering slider
+       	createSlider("coAuthorPublicationSlider","Number of publications",1,maxPublications,nodeSliderChangeFunction);
 		
 	});
 	
@@ -227,29 +231,79 @@ function resetTranform() {
 	minimap.render();
 }
 
-function sliderChangeFunction(numStart,numEnd) {
+function nodeSliderChangeFunction(numStart,numEnd) {
+	
+	var links = JSON.parse(JSON.stringify(JsonLinks));
+	
+	var filteredNodes = JSON.parse(JSON.stringify(JsonNodes.filter( function(n) {
+		if(n.publications >= numStart && n.publications <= numEnd) {
+			return n;
+		}
+	})));
+	
+	//filter links 
+	var filteredLinks = new Set();
+	filteredNodes.forEach(function(nSource) {
+		filteredNodes.forEach(function(nTarget) {
+			links.forEach(function(link) {
+				if(link.source == nSource.id && link.target == nTarget.id) {
+					filteredLinks.add(link);
+				}
+			})
+		})
+	});
+	
+	var filteredLinksArray = new Array();
+	filteredLinks.forEach( function(link) {
+		filteredLinksArray.push(link);
+	})
+	
+	var filteredNodesMap = mapId2Node(filteredNodes);
+	linkedByIndex = {};
+	filteredLinksArray.forEach(function(link) {
+			linkedByIndex[link.source + "," + link.target] = 1;
+	 	 	linkedByIndex[link.source + "," + link.source] = 1;
+	  		linkedByIndex[link.target + "," + link.target] = 1;
+	  		linkedByIndex[link.target + "," + link.source] = 1;
+			link.source = filteredNodesMap[link.source];
+			link.target = filteredNodesMap[link.target];
 
-	var filteredNodes = new Set();
+		});
+
+	//remove previous graph if exists
+	if ($("#venueAuthorConnectionGraph").children().size() > 0) {
+		$("#venueAuthorConnectionGraph").empty();
+		$("#minimap").empty();
+	}
+	drawVenueAuthorConnectionGraph(filteredNodes,filteredLinksArray,maxCollaborations,maxPublications);
+	
+}
+
+function edgeSliderChangeFunction(numStart,numEnd) {
+
+//	var filteredNodes = new Set();
 	var filteredLinks = JSON.parse(JSON.stringify(JsonLinks.filter( function(l) {
 		if(l.value >= numStart && l.value <= numEnd) {
-			filteredNodes.add(JsonNodesMap[l.source]);
-			filteredNodes.add(JsonNodesMap[l.target]);
+//			filteredNodes.add(JsonNodesMap[l.source]);
+//			filteredNodes.add(JsonNodesMap[l.target]);
 			return l;
 		}
 	})));
+	
+	var nodes = JSON.parse(JSON.stringify(JsonNodes));
 
 	// convert Set to Array for d3 compliance
-	var filteredNodesArray = new Array();
-	filteredNodes.forEach( function(node) {
-		filteredNodesArray.push(node);
-	})
+//	var filteredNodesArray = new Array();
+//	filteredNodes.forEach( function(node) {
+//		filteredNodesArray.push(node);
+//	})
 	
-	var comboboxNodes = new Array();
-	comboboxNodes.push({id:-1,name:" - All Collaborations -"});
-	comboboxNodes = comboboxNodes.concat(filteredNodesArray);
-	$("#coAuthorCombobox").jqxComboBox({source: comboboxNodes});
+//	var comboboxNodes = new Array();
+//	comboboxNodes.push({id:-1,name:" - All Collaborations -"});
+//	comboboxNodes = comboboxNodes.concat(filteredNodesArray);
+//	$("#coAuthorCombobox").jqxComboBox({source: comboboxNodes});
 
-	var filteredNodesMap = mapId2Node(filteredNodesArray);
+	var filteredNodesMap = mapId2Node(nodes);
 	linkedByIndex = {};
 	filteredLinks.forEach(function(link) {
 			linkedByIndex[link.source + "," + link.target] = 1;
@@ -266,7 +320,7 @@ function sliderChangeFunction(numStart,numEnd) {
 		$("#venueAuthorConnectionGraph").empty();
 		$("#minimap").empty();
 	}
-	drawVenueAuthorConnectionGraph(filteredNodesArray,filteredLinks,maxCollaborations,maxPublications);
+	drawVenueAuthorConnectionGraph(nodes,filteredLinks,maxCollaborations,maxPublications);
 
 }
 
