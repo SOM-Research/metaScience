@@ -1,5 +1,5 @@
-//var metaScienceServlet = 'http://localhost:8080/metaScience';
-var metaScienceServlet = 'http://som-research.uoc.edu/tools/metaScience';
+var metaScienceServlet = 'http://localhost:8080/metaScience';
+//var metaScienceServlet = 'http://som-research.uoc.edu/tools/metaScience';
 //var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 function onLoadingGraph(svgIdContainer, loaderId, svgHeight, svgWidth) {
@@ -97,7 +97,7 @@ function createSlider(selectorId,labelText, min, max,changeFunction) {
         value: { rangeStart: min, rangeEnd: max }
     });
 
-    slider.bind('change', function(event) {
+    slider.bind('slideEnd', function(event) {
         var numStart = event.args.value.rangeStart;
         var numEnd = event.args.value.rangeEnd;
 
