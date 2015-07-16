@@ -1,13 +1,13 @@
 # MetaScience
 
-MetaScience is an online service we have developed to help researchers on analyzing conferences. We rely on the database provided by DBLP, to derive some useful metrics for conferences and authors. 
+MetaScience is an online service we have developed to help researchers analyze their research profile and that of the conferences where they publish. We rely on the data provided by DBLP, to derive some useful metrics for conferences and authors. 
 
 The conference metrics include:
 
 - **Top 5 authors** and **Top 5 regular authors**
 - **Conference activity**. It provides the overall number of authors and papers for each conference edition.
 - **Conference ratios**. It presents the number of authors per paper and papers per author for each edition.
-- **Community turnover**. Following the popular expression publish or perish, it calculates the percentage of authors that survived/perished between the editions of the conference. In particular, the user can select a unit of time that spans between two consecutive editions or three.
+- **Community turnover**. Following the popular expression publish or perish, it calculates the percentage of authors that survived/perished between the editions of the conference. 
 - **Openness**. It measures how much the community underlying a conference is open towards newcomers. Thus, for each edition it presents the ratio between papers coming from authors that have never published in the conference before (outsiders) as well as the papers with all authors having published there already (community member).
 - **Co-author connections**. It shows a graph where nodes represent authors and edges connect co-authors. It helps to identify group of people usually working together.
 

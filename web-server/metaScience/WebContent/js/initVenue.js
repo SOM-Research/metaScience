@@ -99,7 +99,7 @@ window.onload = function() {
                     placeHolder: "Main Conference track",
                     showArrow : true,
                     search: function (searchString) {
-                      $(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                      $(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
                       dataAdapter.dataBind();
                     }
                   });

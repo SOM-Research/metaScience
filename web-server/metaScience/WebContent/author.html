@@ -14,8 +14,8 @@
     
   	<script src="js/vendor/jquery.js"></script>
   	<script src="js/bootstrap/bootstrap.min.js"></script>
-  	<script src="js/d3.v3.min.js" charset="utf-8"></script>
-    <script src="js/c3.js" charset="utf-8"></script>
+  	<script src="js/vendor/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/vendor/c3.js" charset="utf-8"></script>
     <script src="js/jQWidgets/jqxcore.js"></script>
     <script src="js/jQWidgets/jqxdata.js"></script>
     <script src="js/jQWidgets/jqxbuttons.js"></script>
@@ -113,13 +113,8 @@
           </table>
         </div>  
         <div class="col-md-4 topRightBox">
-          <h1>Go to </h1>
+          <h1 style="margin-bottom: 1.5em;">Go to </h1>
           <table class="table table-condensed table-hover">
-            <thead>
-              <tr>
-                <th>Click to Jump</th>
-              </tr>
-            </thead>
             <tbody>
               <tr>
                 <td><a href="#activityChartRow">Activity</a></td>
@@ -141,7 +136,7 @@
       <div class="row" id="activityChartRow">
         <div class="col-md-12 resultBox">
           <h1>Activity along the years</h1>
-          <p>We calculate the number of publications of different type along the years</p>
+          <p>Number of papers published grouped by the type of publication + total number of pages published every year </p>
           <div class="chart">
             <div id="activityChart"></div>
           </div>
@@ -151,7 +146,7 @@
       <div class="row" id="collaborationEvolutionRow">
         <div class="col-md-12 resultBox">
           <h1>Collaboration Evolution</h1>
-          <p>We calculate per year: (1) the average number of co-authors per paper and (2) participation (number of papers) in co-authored publications.</p>
+          <p>(1) Average number of co-authors per paper and year and (2) total author contribution to the papers published by the author in that year</p>
           <div class="chart">
             <div id="collaborationEvolutionChart"></div>
           </div>
@@ -201,7 +196,7 @@
             </div>
             <div class="legenditem">
               <img src="imgs/colorSize.png" height="16" width="16"/>
-              <p>Number of publications / attendance </p>
+              <p>Number of publications / Number of years with at least one publication </p>
             </div>
           </div>
           <div class="options">
@@ -213,7 +208,7 @@
               <div id="conferenceSlider"></div>
               <p> Displayed information</p>
               <p class="text-center">
-                  <p><div id='conferenceRadio1'>Attendance</div>
+                  <p><div id='conferenceRadio1'>Years with publication</div>
                   <div id='conferenceRadio2'>Publication</div></p>
               </p>
             </div>
@@ -224,7 +219,7 @@
         <div class="col-md-8 rightcol">
           <div class="socialBtnGraph" id="tweetBtn3"></div>
           <div style="margin-top: 56px;" class="graphContainer" id="conferenceConnectionGraphContainer"></div>
-            <small id="info_conferenceConnectionGraph" style="visibility:hidden">(Pass your mouse over the conferences to see the author involvement information)</small>
+            <small id="info_conferenceConnectionGraph" style="visibility:hidden">(Hover your mouse over the conferences to see the author involvement information)</small>
         </div>  
       </div>
     </div>
