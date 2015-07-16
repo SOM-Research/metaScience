@@ -69,7 +69,7 @@ window.onload = function() {
             search: function (searchString) {
             	venueId = '';
             	venueName = '';
-                $("#vcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                $("#vcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
                 venueDataAdapter.dataBind();
             }
         });
@@ -129,7 +129,7 @@ window.onload = function() {
             search: function (authorSearchString) {
             	authorId = '';
             	authorName = '';
-                $("#acombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                $("#acombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
                 authorDataAdapter.dataBind();
             }
         });
