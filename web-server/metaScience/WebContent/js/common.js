@@ -94,6 +94,7 @@ function createSlider(selectorId,labelText, min, max,changeFunction) {
         min: min,
         mode: 'fixed',
         rangeSlider: true,
+        tooltip: true,
         value: { rangeStart: min, rangeEnd: max }
     });
 
@@ -124,6 +125,7 @@ function createSlider(selectorId,labelText, min, max,changeFunction) {
         slider.jqxSlider('setValue',[min,max]);
         labelStartRangeText.text(min);
         labelEndRangeText.text(max);
+        
         changeFunction(min,max)
     });
 }
