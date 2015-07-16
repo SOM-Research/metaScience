@@ -1,4 +1,4 @@
-package fr.inria.metascience;
+package som.metascience;
 
 import com.google.gson.JsonObject;
 

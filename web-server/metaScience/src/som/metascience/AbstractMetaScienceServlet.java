@@ -1,4 +1,4 @@
-package fr.inria.metascience;
+package som.metascience;
 
 import java.io.IOException;
 import java.util.HashMap;

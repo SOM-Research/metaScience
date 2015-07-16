@@ -1,4 +1,4 @@
-package fr.inria.metascience;
+package som.metascience;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,7 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import fr.inria.metascience.elements.Publications;
+import som.metascience.elements.Publications;
 
 /**
  * This servlet returns the activity for an author

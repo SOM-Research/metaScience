@@ -1,4 +1,4 @@
-package fr.inria.metascience;
+package som.metascience;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import fr.inria.metascience.elements.Author;
-import fr.inria.metascience.elements.AuthorPair;
+import som.metascience.elements.Author;
+import som.metascience.elements.AuthorPair;
 
 @WebServlet("/venueAuthorCollaboration")
 public class VenueAuthorCollaborationServlet extends AbstractMetaScienceServlet {

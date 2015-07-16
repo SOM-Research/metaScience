@@ -1,4 +1,4 @@
-package fr.inria.metascience;
+package som.metascience;
 
 import java.sql.Connection;
 import java.sql.SQLException;

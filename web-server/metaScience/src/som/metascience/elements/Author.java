@@ -1,4 +1,4 @@
-package fr.inria.metascience.elements;
+package som.metascience.elements;
 
 public class Author {
 	
