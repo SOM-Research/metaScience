@@ -1,8 +1,3 @@
-/**
- * 
- */
-
-
 function createProjectCombobox() {
 	// prepare the data
     var source =
