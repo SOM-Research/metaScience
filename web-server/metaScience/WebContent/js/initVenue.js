@@ -32,7 +32,28 @@ window.onload = function() {
 	
 	// Getting the full name of the venue
 	if(params.id) {
-		venueId = params.id;	
+      venueId = params.id;
+
+
+      // Twitter buttons update
+      var tweetBtn1 = $('<a></a>')
+          .addClass('twitter-share-button')
+          .attr('href', 'http://twitter.com/share')
+          .attr('data-url', metaScienceServlet + 'venue.html?id=' + venueId)
+          .attr('data-count', 'none')
+          .attr('data-text', "Discover who are the top five authors in " + venueId + " thanks to #metascience");
+      $('#tweetBtn1').append(tweetBtn1);
+      twttr.widgets.load();
+
+      var tweetBtn2 = $('<a></a>')
+          .addClass('twitter-share-button')
+          .attr('href', 'http://twitter.com/share')
+          .attr('data-url', metaScienceServlet + 'venue.html?id=' + venueId)
+          .attr('data-count', 'none')
+          .attr('data-text', "Discover who's who in " + venueId + " thanks to #metascience");
+      $('#tweetBtn2').append(tweetBtn2);
+      twttr.widgets.load();
+
 		$.ajax({
 			url : metaScienceServlet + "/venueName?id=" + params.id,
 			success : function(data) {

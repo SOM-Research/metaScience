@@ -308,6 +308,25 @@ footer a:link, footer a:visited, footer a:hover, footer a:active {
 	padding-right: 10px;
 }
 
+.socialBtnTop {
+	float : right;
+	margin-top: 30px;
+	margin-right : 48px;
+}
+
+.socialBtnTopVenue {
+	float : right;
+	margin-top: 30px;
+	margin-right : 78px;
+
+}
+
+.socialBtnGraph {
+	float : right;
+	margin-top: 25px;
+	margin-right : -12px;
+}
+
 
 
 
