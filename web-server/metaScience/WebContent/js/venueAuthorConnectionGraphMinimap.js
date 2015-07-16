@@ -14,6 +14,8 @@ var d3nodesCircle;
 var JsonNodes,JsonLinks;
 var JsonNodesMap;
 
+var baseNodes, baseLinks;
+
 var maxCollaborations,maxPublications;
 var minimap;
 
@@ -21,12 +23,16 @@ var authorSelected = false;
 var selectedNodes = new Array();
 var selectedLinks = new Array();
 
+var filteredNodes, filteredLinks;
+
+var edgeSliderStart,edgeSliderEnd;
+
 var nodeContainer, graphZoom;
 
 var initScale, initTansX, initTransY;
 
 var graphForce = d3.layout.force()
-		.gravity(0.2)
+		.gravity(0.3)
 		.charge(-1500)
 		.friction(0.8)
 		.size([widthAuthor,heightAuthor])
@@ -104,6 +110,12 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
 		
 		
 		if(links.length > 0) {
+			baseNodes = new Array();
+			baseLinks = new Array();
+			baseNodes = baseNodes.concat(nodes);
+			baseLinks = baseLinks.concat(links);
+			filteredNodes = nodes;
+			filteredLinks = links;
 			drawVenueAuthorConnectionGraph(nodes,links,maxCollaborations,maxPublications);	
 		}
 
@@ -211,7 +223,13 @@ function getVenueAutorConnectionGraph(venueId,subvenueId) {
             
        	});
 
-       	createSlider("coAuthorCollaborationSlider","Number of collaborations",1,maxCollaborations,sliderChangeFunction);
+       	//Edge filtering slider
+       	createSlider("coAuthorCollaborationSlider","Number of collaborations",1,maxCollaborations,edgeSliderChangeFunction);
+       	edgeSliderStart = 1;
+       	edgeSliderEnd = maxCollaborations;
+       	
+       	//Node filtering slider
+       	createSlider("coAuthorPublicationSlider","Number of publications",1,maxPublications,nodeSliderChangeFunction);
 		
 	});
 	
@@ -227,46 +245,115 @@ function resetTranform() {
 	minimap.render();
 }
 
-function sliderChangeFunction(numStart,numEnd) {
-
-	var filteredNodes = new Set();
-	var filteredLinks = JSON.parse(JSON.stringify(JsonLinks.filter( function(l) {
-		if(l.value >= numStart && l.value <= numEnd) {
-			filteredNodes.add(JsonNodesMap[l.source]);
-			filteredNodes.add(JsonNodesMap[l.target]);
-			return l;
-		}
-	})));
-
-	// convert Set to Array for d3 compliance
-	var filteredNodesArray = new Array();
-	filteredNodes.forEach( function(node) {
-		filteredNodesArray.push(node);
-	})
+function nodeSliderChangeFunction(numStart,numEnd) {
 	
-	var comboboxNodes = new Array();
-	comboboxNodes.push({id:-1,name:" - All Collaborations -"});
-	comboboxNodes = comboboxNodes.concat(filteredNodesArray);
-	$("#coAuthorCombobox").jqxComboBox({source: comboboxNodes});
-
-	var filteredNodesMap = mapId2Node(filteredNodesArray);
-	linkedByIndex = {};
-	filteredLinks.forEach(function(link) {
-			linkedByIndex[link.source + "," + link.target] = 1;
-	 	 	linkedByIndex[link.source + "," + link.source] = 1;
-	  		linkedByIndex[link.target + "," + link.target] = 1;
-	  		linkedByIndex[link.target + "," + link.source] = 1;
-			link.source = filteredNodesMap[link.source];
-			link.target = filteredNodesMap[link.target];
-
-		});
+	var displayedNodes = baseNodes.filter( function(n) {
+		if(n.publications >= numStart && n.publications <= numEnd) {
+			return n;
+		}
+	});
+	
+	console.log(displayedNodes);
+	
+	//filter links 
+	var links = baseLinks;
+	//var filteredLinks = new Set();
+	var displayedLinks = new Set();
+	displayedNodes.forEach(function(nSource) {
+		displayedNodes.forEach(function(nTarget) {
+			links.forEach(function(link) {
+				if(link.source.id == nSource.id && link.target.id == nTarget.id) {
+					displayedLinks.add(link);
+				}
+			})
+		})
+	});
+	
+	var displayedLinksArray = new Array();
+	displayedLinks.forEach( function(link) {
+		displayedLinksArray.push(link);
+	});
+	
+	var filteredLink = new Array();
+	filteredLinks = filteredLink.concat(displayedLinksArray);
+	
+	console.log("node");
+	console.log(filteredLinks);
+	
+	displayedLinksArray = applyEdgeSliderChangeFunction(displayedLinksArray);
+	
+//	var filteredNodesMap = mapId2Node(displayedNodes);
+//	linkedByIndex = {};
+//	displayedLinksArray.forEach(function(link) {
+//		linkedByIndex[link.source + "," + link.target] = 1;
+// 	 	linkedByIndex[link.source + "," + link.source] = 1;
+//  		linkedByIndex[link.target + "," + link.target] = 1;
+//  		linkedByIndex[link.target + "," + link.source] = 1;
+//		link.source = filteredNodesMap[link.source];
+//		link.target = filteredNodesMap[link.target];
+//
+//	});
+	
 
 	//remove previous graph if exists
 	if ($("#venueAuthorConnectionGraph").children().size() > 0) {
 		$("#venueAuthorConnectionGraph").empty();
 		$("#minimap").empty();
 	}
-	drawVenueAuthorConnectionGraph(filteredNodesArray,filteredLinks,maxCollaborations,maxPublications);
+	
+	filteredNodes = displayedNodes;
+	drawVenueAuthorConnectionGraph(displayedNodes,displayedLinksArray,maxCollaborations,maxPublications);
+	
+}
+
+
+function applyEdgeSliderChangeFunction(links) {
+	var resultLinks = new Array();
+	links.forEach(function(l) {
+		if(l.value >= edgeSliderStart && l.value <= edgeSliderEnd) {
+			resultLinks.push(l);
+		}
+	});
+	return resultLinks;
+}
+
+function edgeSliderChangeFunction(numStart,numEnd) {
+	
+	edgeSliderStart = numStart;
+	edgeSliderEnd = numEnd;
+	
+	var displayedNodes = filteredNodes;
+	
+	console.log("edge");
+	console.log(filteredLinks);
+	
+	var displayedLinks = filteredLinks.filter(function(l) {
+		if(l.value >= numStart && l.value <= numEnd) {
+			return l;
+		}
+	});
+	
+//	var filteredNodesMap = mapId2Node(displayedNodes);
+//	
+//	linkedByIndex = {};
+//	displayedLinks.forEach(function(link) {
+//			linkedByIndex[link.source.id + "," + link.target.id] = 1;
+//	 	 	linkedByIndex[link.source.id + "," + link.source.id] = 1;
+//	  		linkedByIndex[link.target.id + "," + link.target.id] = 1;
+//	  		linkedByIndex[link.target.id + "," + link.source.id] = 1;
+//			link.source = filteredNodesMap[link.source.id];
+//			link.target = filteredNodesMap[link.target.id];
+//
+//		});
+	console.log(displayedLinks)
+
+	//remove previous graph if exists
+	if ($("#venueAuthorConnectionGraph").children().size() > 0) {
+		$("#venueAuthorConnectionGraph").empty();
+		$("#minimap").empty();
+	}
+	
+	drawVenueAuthorConnectionGraph(displayedNodes,displayedLinks,maxCollaborations,maxPublications);
 
 }
 
@@ -286,6 +373,21 @@ function drawVenueAuthorConnectionGraph(nodes, links, maxCollaborations, maxPubl
 		onLoadingGraph(d3.select("#venueAuthorConnectionGraph"), "loaderVenueAuthorConnectionGraph", heightAuthor, widthAuthor);
 		onLoadingGraph(d3.select("#minimap"),"loaderMinimap",(heightAuthor*minimapScale) + 10,(widthAuthor*minimapScale) + 10);
 	}
+	
+	
+	var mapNodes = mapId2Node(nodes);
+	
+			// neighboring
+	linkedByIndex = {};
+	links.forEach(function(link) {
+		linkedByIndex[link.source.id + "," + link.target.id] = 1;
+ 	 	linkedByIndex[link.source.id + "," + link.source.id] = 1;
+  		linkedByIndex[link.target.id + "," + link.target.id] = 1;
+  		linkedByIndex[link.target.id + "," + link.source.id] = 1;
+		link.source = mapNodes[link.source.id];
+		link.target = mapNodes[link.target.id];
+
+	});
 
 	// Creating structure
 	var panrect = venueAuthorConnectionGraph.append("rect")
