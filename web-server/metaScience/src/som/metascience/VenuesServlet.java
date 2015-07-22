@@ -36,7 +36,8 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonObject response = new JsonObject();
 		
 		// Obtains the search param
-		String searchString = req.getParameter(SEARCH_PARAM);
+		String searchString = new String(req.getParameter(SEARCH_PARAM).getBytes("iso-8859-1"),"utf-8");
+		//String searchString = req.getParameter(SEARCH_PARAM);
 		String requestType = req.getParameter(REQUEST_TYPE);
 		
 		if(searchString != null && !searchString.isEmpty()) {

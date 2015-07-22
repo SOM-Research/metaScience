@@ -2,6 +2,7 @@ package som.metascience;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,7 +32,7 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		addResponseOptions(resp);
 		
-		String searchString = req.getParameter(SEARCH_PARAM);
+		String searchString = new String(req.getParameter(SEARCH_PARAM).getBytes("iso-8859-1"),"utf-8");
 		String requestType = req.getParameter(REQUEST_TYPE);
 		
 		JsonObject response = new JsonObject();
