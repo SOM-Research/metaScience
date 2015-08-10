@@ -39,7 +39,7 @@ window.onload = function() {
       var tweetBtn1 = $('<a></a>')
           .addClass('twitter-share-button')
           .attr('href', 'http://twitter.com/share')
-          .attr('data-url', metaScienceServlet + 'venue.html?id=' + venueId)
+          .attr('data-url', metaScienceServlet + '/venue.html?id=' + venueId)
           .attr('data-count', 'none')
           .attr('data-text', "Discover who are the top five authors in " + venueId + " thanks to #metascience");
       $('#tweetBtn1').append(tweetBtn1);
@@ -48,7 +48,7 @@ window.onload = function() {
       var tweetBtn2 = $('<a></a>')
           .addClass('twitter-share-button')
           .attr('href', 'http://twitter.com/share')
-          .attr('data-url', metaScienceServlet + 'venue.html?id=' + venueId)
+          .attr('data-url', metaScienceServlet + '/venue.html?id=' + venueId)
           .attr('data-count', 'none')
           .attr('data-text', "Discover who's who in " + venueId + " thanks to #metascience");
       $('#tweetBtn2').append(tweetBtn2);
