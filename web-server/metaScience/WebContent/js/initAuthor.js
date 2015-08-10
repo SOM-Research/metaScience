@@ -32,7 +32,7 @@ window.onload = function() {
 		var tweetBtn1 = $('<a></a>')
 			.addClass('twitter-share-button')
 			.attr('href', 'http://twitter.com/share')
-			.attr('data-url', metaScienceServlet + 'author.html?id=' + authorId)
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId)
 			.attr('data-count', 'none')
 			.attr('data-text', "I discovered my scientific research performance thanks to #metascience");
 		$('#tweetBtn1').append(tweetBtn1);
@@ -40,17 +40,17 @@ window.onload = function() {
 		var tweetBtn2 = $('<a></a>')
 			.addClass('twitter-share-button')
 			.attr('href', 'http://twitter.com/share')
-			.attr('data-url', metaScienceServlet + 'author.html?id=' + authorId + "#coAuthorConnectionRow")
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId + "#coAuthorConnectionRow")
 			.attr('data-count', 'none')
-			.attr('data-text', "See who are my best research colleagues thanks to #metascience");
+			.attr('data-text', "See who are my research colleagues thanks to #metascience");
 		$('#tweetBtn2').append(tweetBtn2);
 
 		var tweetBtn3 = $('<a></a>')
 			.addClass('twitter-share-button')
 			.attr('href', 'http://twitter.com/share')
-			.attr('data-url', metaScienceServlet + 'author.html?id=' + authorId + "#conferenceConnectionRow")
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId + "#conferenceConnectionRow")
 			.attr('data-count', 'none')
-			.attr('data-text', "See where my research papers are published thanks to #metascience");
+			.attr('data-text', "See where my papers are published thanks to #metascience");
 		$('#tweetBtn3').append(tweetBtn3);
 		twttr.widgets.load();
 
