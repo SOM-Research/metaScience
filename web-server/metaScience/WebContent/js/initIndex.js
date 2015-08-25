@@ -10,7 +10,7 @@ var journalSearchstring = "";
 
 window.onload = function() {
   if(window.location.protocol !== 'http:') {
-    $("#error").html('<p>You are accessing from an HTTPS connection and our service is located in an HTTP server.</p><p>Please access to our HTTP server <a href="http://atlanmod.github.io/metaScience">here</p>');
+    $("#error").html('<p>You are accessing from an HTTPS connection and our service is located in an HTTP server.</p><p>Please access to our HTTP server <a href="http://som-research.uoc.edu/tools/metaScience">here</p>');
     $("#error").css("visibility" ,"visible");
     $("#selectionBox").css("visibility", "hidden");
   }
@@ -78,7 +78,7 @@ window.onload = function() {
             search: function (searchString) {
             	venueId = '';
             	venueName = '';
-                $("#vcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                $("#vcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
                 venueDataAdapter.dataBind();
             }
         });
@@ -138,7 +138,7 @@ window.onload = function() {
             search: function (authorSearchString) {
             	authorId = '';
             	authorName = '';
-                $("#acombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+                $("#acombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
                 authorDataAdapter.dataBind();
             }
         });
@@ -290,7 +290,7 @@ window.onload = function() {
 	        placeHolder: "Journal Name (enter at least three letters to search)",
 	        showArrow : false,
 	        search: function (journalSearchString) {
-	            $("#jcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading_project.gif') no-repeat right 5px center" });
+	            $("#jcombobox").find(".jqx-combobox-input, .jqx-combobox-content").css({ "background": "url('imgs/loading.gif') no-repeat right 5px center" });
 	            journalDataAdapter.dataBind();
 	        }
 	    });

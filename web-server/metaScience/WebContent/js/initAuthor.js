@@ -6,7 +6,7 @@ var subAuthorId;
 window.onload = function() {
 
   if(window.location.protocol !== 'http:') {
-    $("#error").html('<p>You are accessing from an HTTPS connection and our service is located in an HTTP server.</p><p>Please access to our HTTP server <a href="http://atlanmod.github.io/metaScience">here</p>');
+    $("#error").html('<p>You are accessing from an HTTPS connection and our service is located in an HTTP server.</p><p>Please access to our HTTP server <a href="http://som-research.uoc.edu/tools/metaScience">here</p>');
     $("#error").css("visibility" ,"visible");
   }
 
@@ -26,7 +26,34 @@ window.onload = function() {
 	
 	// Getting the full name of the author
 	if(params.id) {
-		authorId = params.id;	
+		authorId = params.id;
+
+		// Twitter buttons update
+		var tweetBtn1 = $('<a></a>')
+			.addClass('twitter-share-button')
+			.attr('href', 'http://twitter.com/share')
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId)
+			.attr('data-count', 'none')
+			.attr('data-text', "I discovered my scientific research performance thanks to #metascience");
+		$('#tweetBtn1').append(tweetBtn1);
+
+		var tweetBtn2 = $('<a></a>')
+			.addClass('twitter-share-button')
+			.attr('href', 'http://twitter.com/share')
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId + "#coAuthorConnectionRow")
+			.attr('data-count', 'none')
+			.attr('data-text', "See who are my research colleagues thanks to #metascience");
+		$('#tweetBtn2').append(tweetBtn2);
+
+		var tweetBtn3 = $('<a></a>')
+			.addClass('twitter-share-button')
+			.attr('href', 'http://twitter.com/share')
+			.attr('data-url', metaScienceServlet + '/author.html?id=' + authorId + "#conferenceConnectionRow")
+			.attr('data-count', 'none')
+			.attr('data-text', "See where my papers are published thanks to #metascience");
+		$('#tweetBtn3').append(tweetBtn3);
+		twttr.widgets.load();
+
 		$.ajax({
 			url : metaScienceServlet + "/authorName?id=" + params.id,
 			success : function(data) {
@@ -102,6 +129,7 @@ function updateActivity(authorId) {
 	   	  	
 	   	  	// Publication Chart update
 	   	  	generateActivityDiagram(data.publications);
+
 		},
 		error : function(xhr, status, error) {
 	   	  	$("#totalPub").text("Not available");

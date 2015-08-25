@@ -14,8 +14,8 @@
     
   	<script src="js/vendor/jquery.js"></script>
   	<script src="js/bootstrap/bootstrap.min.js"></script>
-  	<script src="js/d3.v3.min.js" charset="utf-8"></script>
-    <script src="js/c3.js" charset="utf-8"></script>
+  	<script src="js/vendor/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/vendor/c3.js" charset="utf-8"></script>
     <script src="js/jQWidgets/jqxcore.js"></script>
     <script src="js/jQWidgets/jqxdata.js"></script>
     <script src="js/jQWidgets/jqxbuttons.js"></script>
@@ -30,7 +30,7 @@
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-      ga('create', 'UA-54150984-2', 'auto');
+      ga('create', 'UA-54150984-4', 'auto');
       ga('send', 'pageview');
 
     </script>
@@ -65,6 +65,9 @@
 
       <div class="row" id="mainRow">
         <div class="col-md-8 topLeftBox">
+          <div class="socialBtnTopVenue" id="tweetBtn1">
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </div>
           <h1>Main data</h1>
           <table class="table table-condensed table-hover">
             <thead>
@@ -95,20 +98,15 @@
                 <td id="avgPerishingRate"><img id="avgPerishingRateLoading" src="imgs/loading.gif"></td>
               </tr>
               <tr>
-                <td>Average openness rate (papersFromNewcomers / papersFromCommunity)</td>
+                <td>Average Openness rate: % of newcomers papers & % of community papers</td>
                 <td id="avgOpenness"><img id="avgOpennessLoading" src="imgs/loading.gif"></td>
               </tr>
             </tbody>
           </table>
         </div>  
         <div class="col-md-4 topRightBox">
-          <h1>Go to </h1>
+          <h1 style="margin-bottom: 1.5em;">Go to </h1>
           <table class="table table-condensed table-hover">
-            <thead>
-              <tr>
-                <th>Click to Jump</th>
-              </tr>
-            </thead>
             <tbody>
               <tr>
                 <td><a href="#activityChartRow">Number of papers / authors</a></td>
@@ -136,7 +134,7 @@
       <div class="row" id="rankAuthorsRow">
         <div class="col-md-12 resultBox">
           <div class="col-md-6 leftcol">
-            <h1>Top 5 Authors</h1>
+            <h1>Top 5 most prolific authors</h1>
             <table class="table table-condensed table-hover">
               <thead>
                 <tr>
@@ -175,13 +173,13 @@
             </table>
           </div>
           <div class="col-md-6 rightcol">
-            <h1>Regular 5 authors</h1>
+            <h1>Top 5 most regular authors</h1>
             <table class="table table-condensed table-hover">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Author</th>
-                  <th>Number of editions attended</th>
+                  <th>Editions with at least one paper published</th>
                 </tr>
               </thead>
               <tbody>
@@ -219,7 +217,7 @@
       <div class="row" id="activityChartRow">
         <div class="col-md-12 resultBox">
           <h1>Activity along the years</h1>
-          <p>We calculate the number of authors and papers along the years</p>
+          <p>Number of authors and papers along the years</p>
           <div class="chart">
             <div id="activityChart"></div>
           </div>
@@ -229,7 +227,7 @@
       <div class="row" id="ratiosChartRow">
         <div class="col-md-12 resultBox">
           <h1>Ratios along the years</h1>
-          <p>We calculate two ratios: (1) number of authors per paper and (2) number of papers per author.</p>
+          <p>(1) Number of authors per paper and (2) number of papers per author.</p>
           <div class="chart">
             <div id="ratiosChart"></div>
           </div>
@@ -257,7 +255,7 @@
           <h1>Openness information</h1>
             <p>The openness factor measures the percentage of papers for which (1)  all authors are new to the conference (i.e. they have never published a paper in there before)
             and (2) all authors are part of the community (i.e. they have at least published a paper before). The former starts with 100% and the latter with 0%,
-            and they are updated along the years. As we don't show the percentage for papers with mixed authors, the values don't have to sum up 100%.
+            and they evolve along the years. As we don't show the percentage for papers with mixed authors, the values don't have to add up 100%.
             </p>
           <div class="chart">
             <div id="opChart"></div>
@@ -272,11 +270,11 @@
 
             <div class="legend">
               <div class="legenditem">
-                <img src="imgs/authorNode.png" height="16" width="16"/> 
+                <img src="imgs/circle.png" height="16" width="16"/>
                 <p>Author</p>
               </div>
               <div class="legenditem">
-                <img src="imgs/authorNodeSize.png" height="16" width="16"/> 
+                <img src="imgs/circleSize.png" height="16" width="16"/>
                 <p>Number of publications</p>
               </div>
               <div class="legenditem">
@@ -285,7 +283,7 @@
               </div>
               <div class="legenditem">
                 <img src="imgs/lineThick.png" height="16" width="16"/>  
-                <p>Number of collaborations</p>
+                <p>Minimum number of collaborations</p>
               </div>
             </div>
             <div class="options">
@@ -297,13 +295,15 @@
                   <div style="margin-top:10px;"><button id="resetCoAuthorCombobox" class="btn btn-block">Reset</button></div></p>
                 </div>
                 <div id="coAuthorCollaborationSlider" class="selectorItem"></div>
+                <div id="coAuthorPublicationSlider" class="selectorItem"></div>
               </div>
             </div>
             <div id="minimapContainer" class="minimap options"></div>
           </div>
           <div class="col-md-8 rightcol">
+            <div class="socialBtnGraph" id="tweetBtn2"></div>
             <div style="margin-top: 56px;" class="graphContainer" id="venueAuthorConnectionGraphContainer"></div>
-            <small id="info_venueAuthorConnectionGraph" style="visibility:hidden">(Pass your mouse over the )</small>
+            <small id="info_venueAuthorConnectionGraph" style="visibility:hidden">(Hover your mouse over the )</small>
           </div>  
         </div>
       </div>
