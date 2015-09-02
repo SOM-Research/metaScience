@@ -25,10 +25,10 @@ def update_type_conference(cnx, dblp_key):
 	
     cursor = cnx.cursor()
     type = ''
-    if 'conference' in title.lower():
-        type = 'conference'
-    elif 'workshop' in title.lower():
+    if 'workshop' in title.lower():
         type = 'workshop'
+    elif 'conference' in title.lower():
+        type = 'conference'
     elif 'symposium' in title.lower():
         type = 'symposium'
 
