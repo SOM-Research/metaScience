@@ -68,7 +68,7 @@ public class JournalServlet extends AbstractMetaScienceServlet{
 							+ " FROM dblp_pub_new"
 							+ " WHERE source IS NOT NULL AND"
 							+ " type = 'article' AND "
-							+ " source LIKE '%" + searchString + "%'"
+							+ " (source LIKE '%" + searchString + "%' OR source_id LIKE '%" + searchString + "%' ) "
 							+ " GROUP BY source;";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
