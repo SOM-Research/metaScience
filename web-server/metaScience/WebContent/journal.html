@@ -1,0 +1,272 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>metaScience</title>
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="css/c3.css">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/jQWidgets/jqx.base.css" />
+    <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="imgs/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
+    
+  	<script src="js/vendor/jquery.js"></script>
+  	<script src="js/bootstrap/bootstrap.min.js"></script>
+  	<script src="js/vendor/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/vendor/c3.js" charset="utf-8"></script>
+    <script src="js/jQWidgets/jqxcore.js"></script>
+    <script src="js/jQWidgets/jqxdata.js"></script>
+    <script src="js/jQWidgets/jqxbuttons.js"></script>
+    <script src="js/jQWidgets/jqxscrollbar.js"></script>
+    <script src="js/jQWidgets/jqxlistbox.js"></script>
+    <script src="js/jQWidgets/jqxcombobox.js"></script>
+    <script src="js/jQWidgets/jqxslider.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-54150984-4', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 venue">
+          <div class="text-center" id="journalName"></div>
+        </div>
+      </div>
+
+      <div id="error" class="row middle" style="visibility:hidden"></div>
+
+
+      <div class="row" id="notFoundRow" style="display : none;">
+        <div class="col-md-12 resultBox">
+          <h2 class="text-center"> Oppps, we could not find any journal with that ID</h2>
+          <h3 class="text-center">Please, <a href="http://som.uoc.es/metaScience">try again</a></h3>
+        </div>
+      </div>
+
+      <div class="row topBox">
+        <div class="col-md-3">
+          Showing results for 
+        </div>
+        <div class="col-md-9">
+          <div id='satelliteCombobox'></div>
+        </div>
+      </div>
+
+      <div class="row" id="mainRow">
+        <div class="col-md-8 topLeftBox">
+          <div class="socialBtnTopVenue" id="tweetBtn1">
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </div>
+          <h1>Main data</h1>
+          <table class="table table-condensed table-hover">
+            <thead>
+              <tr>
+                <th>Metric name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Average number of papers</td>
+                <td id="avgPapers"><img id="avgPapersLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Average number of authors</td>
+                <td id="avgAuthors"><img id="avgAuthorsLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Average number of authors per paper</td>
+                <td id="avgAuthorsPerPaper"><img id="avgAuthorsPerPaperLoading" src="imgs/loading.gif"></td>
+              </tr>
+              <tr>
+                <td>Average number of papers per author</td>
+                <td id="avgPapersPerAuthor"><img id="avgPapersPerAuthorLoading" src="imgs/loading.gif"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>  
+        <div class="col-md-4 topRightBox">
+          <h1 style="margin-bottom: 1.5em;">Go to </h1>
+          <table class="table table-condensed table-hover">
+            <tbody>
+              <tr>
+                <td><a href="#activityChartRow">Number of papers / authors</a></td>
+              </tr>
+              <tr>
+                <td><a href="#ratiosChartRow">Number of authors per paper</a></td>
+              </tr>
+              <tr>
+                <td><a href="#ratiosChartRow">Number of papers per author</a></td>
+              </tr>
+              <tr>
+                <td><a href="#journalAuthorConnectionRow">Co-Author Connections</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div> 
+      </div>
+
+      <div class="row" id="rankAuthorsRow">
+        <div class="col-md-12 resultBox">
+          <div class="col-md-6 leftcol">
+            <h1>Top 5 most prolific authors</h1>
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Author</th>
+                  <th>Total number of papers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td id="topAuthor1"></td>
+                  <td id="numAuthor1"></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td id="topAuthor2"></td>
+                  <td id="numAuthor2"></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td id="topAuthor3"></td>
+                  <td id="numAuthor3"></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td id="topAuthor4"></td>
+                  <td id="numAuthor4"></td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td id="topAuthor5"></td>
+                  <td id="numAuthor5"></td>
+                </tr>
+              <tbody>
+            </table>
+          </div>
+          <div class="col-md-6 rightcol">
+            <h1>Top 5 most regular authors</h1>
+            <table class="table table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Author</th>
+                  <th>Editions with at least one paper published</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td id="regularAuthor1"></td>
+                  <td id="presenceAuthor1"></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td id="regularAuthor2"></td>
+                  <td id="presenceAuthor2"></td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td id="regularAuthor3"></td>
+                  <td id="presenceAuthor3"></td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <td id="regularAuthor4"></td>
+                  <td id="presenceAuthor4"></td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <td id="regularAuthor5"></td>
+                  <td id="presenceAuthor5"></td>
+                </tr>
+              <tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" id="activityChartRow">
+        <div class="col-md-12 resultBox">
+          <h1>Activity along the years</h1>
+          <p>Number of authors and papers along the years</p>
+          <div class="chart">
+            <div id="activityChart"></div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="row" id="ratiosChartRow">
+        <div class="col-md-12 resultBox">
+          <h1>Ratios along the years</h1>
+          <p>(1) Number of authors per paper and (2) number of papers per author.</p>
+          <div class="chart">
+            <div id="ratiosChart"></div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="row" id="journalAuthorConnectionRow">
+        <div class="col-md-12 resultBox">
+          <div class="col-md-4 leftcol">
+            <h1>Co-Author connections</h1>
+
+            <div class="legend">
+              <div class="legenditem">
+                <img src="imgs/circle.png" height="16" width="16"/>
+                <p>Author</p>
+              </div>
+              <div class="legenditem">
+                <img src="imgs/circleSize.png" height="16" width="16"/>
+                <p>Number of publications</p>
+              </div>
+              <div class="legenditem">
+                <img src="imgs/line.png" height="16" width="16"/> 
+                <p>Collaboration</p>
+              </div>
+              <div class="legenditem">
+                <img src="imgs/lineThick.png" height="16" width="16"/>  
+                <p>Minimum number of collaborations</p>
+              </div>
+            </div>
+            <div class="options">
+              <div class="selector option">
+                <div class="selectorItem">
+                  <p> Author Selection</p>
+                  <p class="text-center">
+                  <div id='coAuthorCombobox'></div>
+                  <div style="margin-top:10px;"><button id="resetCoAuthorCombobox" class="btn btn-block">Reset</button></div></p>
+                </div>
+                <div id="coAuthorCollaborationSlider" class="selectorItem"></div>
+                <div id="coAuthorPublicationSlider" class="selectorItem"></div>
+              </div>
+            </div>
+            <div id="minimapContainer" class="minimap options"></div>
+          </div>
+          <div class="col-md-8 rightcol">
+            <div class="socialBtnGraph" id="tweetBtn2"></div>
+            <div style="margin-top: 56px;" class="graphContainer" id="journalAuthorConnectionGraphContainer"></div>
+            <small id="info_journalAuthorConnectionGraph" style="visibility:hidden">(Hover your mouse over the )</small>
+          </div>  
+        </div>
+      </div>
+    </div>
+
+    <script src="js/initJournal.js"></script>
+    <script src="js/journalAuthorConnectionGraphMinimap.js"></script>
+  </body>
+</html>

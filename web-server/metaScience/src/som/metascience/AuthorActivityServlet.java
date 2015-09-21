@@ -15,11 +15,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import som.metascience.elements.Publications;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
-import som.metascience.elements.Publications;
 
 /**
  * This servlet returns the activity for an author
