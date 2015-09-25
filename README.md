@@ -1,6 +1,6 @@
 # MetaScience
 
-MetaScience is an online service we have developed to help researchers analyze their research profile and that of the conferences where they publish. We rely on the data provided by DBLP, to derive some useful metrics for conferences and authors. 
+MetaScience is an online service we have developed to help researchers analyze their research profile and that of the conferences/journals where they publish. We rely on the data provided by DBLP, to derive some useful metrics for conferences, journals and authors. 
 
 The conference metrics include:
 
@@ -9,6 +9,13 @@ The conference metrics include:
 - **Conference ratios**. It presents the number of authors per paper and papers per author for each edition.
 - **Community turnover**. Following the popular expression publish or perish, it calculates the percentage of authors that survived/perished between the editions of the conference. 
 - **Openness**. It measures how much the community underlying a conference is open towards newcomers. Thus, for each edition it presents the ratio between papers coming from authors that have never published in the conference before (outsiders) as well as the papers with all authors having published there already (community member).
+- **Co-author connections**. It shows a graph where nodes represent authors and edges connect co-authors. It helps to identify group of people usually working together.
+
+The journal metrics include:
+
+- **Top 5 authors** and **Top 5 regular authors**
+- **Journal activity**. It provides the overall number of authors and papers for each journal issue.
+- **Journal ratios**. It presents the number of authors per paper and papers per author for each journal issue.
 - **Co-author connections**. It shows a graph where nodes represent authors and edges connect co-authors. It helps to identify group of people usually working together.
 
 The author metrics include:
@@ -22,7 +29,6 @@ The author metrics include:
 
 The service is under development and we are currently working on many other visualizations/metrics involving:
 - Variation of conferences’ locations and dates, evolution of conference topics,...
-- Journal metrics similar to those ones presented for conferences.
  
 Of course if you would like MetaScience to show something you have in mind, do not hesitate to contact us or open an issue in our GitHub repository
 
