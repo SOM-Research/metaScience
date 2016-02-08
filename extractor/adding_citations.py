@@ -36,6 +36,7 @@ SCHOLAR = 'http://scholar.google.com'
     #'http://anonymouse.org/cgi-bin/anon-www.cgi/http://scholar.google.com'
 
 LOG_FILENAME = 'logger_paper_citations.log'
+COLLECT_PAPER_CITATIONS = True
 
 #Build the chrome_options object specifying the locally running Privoxy as the proxy server
 chrome_options = webdriver.ChromeOptions()
@@ -267,7 +268,10 @@ def add_scholar_citations(cnx, title, key, paper_id):
                     if leveh_distance > 1:
                         logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
                     add_paper_citation(hit, cnx, paper_id)
-                    add_authors_citations(hit, cnx, title, paper_id)
+
+                    if COLLECT_PAPER_CITATIONS:
+                        add_authors_citations(hit, cnx, title, paper_id)
+
                     flag = 1
                     break
                 elif 7 <= leveh_distance <= 12:

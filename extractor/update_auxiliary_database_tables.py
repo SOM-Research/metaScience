@@ -43,7 +43,7 @@ DBLP_DUMP = 'http://dblp.l3s.de/dblp++.php'
 DUMP_LOCATION = '../facetedDBLP/'
 LOG_FILENAME = 'logger_update_database.log'
 
-def update_dblp_tables(database_name):
+def update_dblp_tables():
     driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
     driver.get(DBLP_DUMP)
     link = driver.find_element_by_link_text("database dump")
@@ -73,7 +73,7 @@ def update_dblp_tables(database_name):
               " --port=" + dbconnection.CONFIG.get('port') +
               " --default-character-set=utf8 "
               " --comments "
-              " --database=" + database_name + " < " + dump_path)
+              " --database=" + dbconnection.CONFIG.get('database') + " < " + dump_path)
 
     #delete dump file
     os.remove(dump_path)
@@ -173,7 +173,7 @@ def main():
 
     if UPDATE_DBLP_TABLES:
         #update dblp tables (download the latest dump and substitute the old tables)
-        update_dblp_tables(dbconnection.DATABASE_NAME)
+        update_dblp_tables()
 
     if UPDATE_AUX_TABLES:
         #update aux tables
@@ -195,7 +195,7 @@ def main():
     if EXTRACT_PROGRAM_COMMITTEES:
         ##note that the script that updates the program committee can be executed separately,
         ##since it mainly relies on the information contained into the pc_info.json
-        os.system("extracting_program_committee.py")
+        os.system("adding_program_committee.py")
 
 if __name__ == "__main__":
     main()
