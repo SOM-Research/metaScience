@@ -22,6 +22,9 @@ body {
 .jumbotron {
 	background-color: #2b5a70;
 	padding-top: 50px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+	padding-top: 20px;
 }
 
 .jumbotron h1 a, .jumbotron h1 a:hover {
@@ -36,12 +39,19 @@ body {
 	margin-bottom: 40px;
 }
 
+.jumbotron .snapshot {
+	color : #ffffff;
+	font-size: 0.8em;
+	margin-bottom: 0px;
+	font-style: italic;
+}
+
 .selectionBox {
 	background-color: #c2a267;
 	padding: 10px 35px 30px 35px;
 	border-radius: 10px;
 	color : #ffffff;
-	margin-top: 50px;
+	margin-top: 30px;
 	margin-bottom: 20px;
 }
 
@@ -256,31 +266,75 @@ footer a:link, footer a:visited, footer a:hover, footer a:active {
 .legend {
 	border: 2px solid gray;
 	border-radius: 5px;
-	margin:5px 0px 5px 0px;
+	margin:5px 0px 15px 0px;
+	padding : 0px 10px 10px 10px;
+	background-color: white;
 }
 
 .legenditem {
 	height: 16px;
 	width: 100%;
-	padding: 10px;	
-	display:inline-block;
+	display: inline-block;
+	padding-top: 10px;
 }
 
 .legenditem img {
 	float: left;
 	margin-right: 10px;
-	background-color: #FFFFFF;
+}
 
+.legenditem p {
+	color : black;
+	font-size: 95%;
 }
 
 .options {
 	border: 2px solid gray;
 	border-radius: 5px;
-	margin:5px 0px 5px 0px;
+	margin:5px 0px 15px 0px;
+	background-color: white;
 }
 
 .option {
 	padding: 10px 20px;
+}
+
+.option p {
+	color: black;
+}
+
+.collapseIcon {
+	float: left;
+	padding-right: 10px;
+}
+
+.nav-tabs > li > a {
+    background: #DADADA;
+    border-radius: 0;
+    box-shadow: inset 0 -8px 7px -9px rgba(0,0,0,.4),-2px -2px 5px -2px rgba(0,0,0,.4);
+	font-family: 'Helvetica Neue', Helvetica;
+	font-size: 18px;
+	font-weight: 500;
+	color: #2b5a70;
+}
+
+.socialBtnTop {
+	float : right;
+	margin-top: 30px;
+	margin-right : 48px;
+}
+
+.socialBtnTopVenue {
+	float : right;
+	margin-top: 30px;
+	margin-right : 78px;
+
+}
+
+.socialBtnGraph {
+	float : right;
+	margin-top: 25px;
+	margin-right : -12px;
 }
 
 

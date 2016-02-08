@@ -23,6 +23,7 @@ var graphNodes;
      // remove previous graph if exists
      if( $("#conferenceConnectionGraph").children().size() > 0) {
           $("#conferenceConnectionGraph").empty();
+          $("#conferenceSlider").empty();
      }
 
      getConferenceConnectionGraphBubble(authorId);
@@ -46,14 +47,9 @@ function getConferenceConnectionGraphBubble(authorId) {
               var totalConferences = jsonNodes.author.total_conferences;
               var averageConferences = jsonNodes.author.average_conferences;
 
-              $("#totalConferencesLoading").css("visibility","hidden");
-              $("#totalConferences").text(totalConferences);
-              $("#avgConferencesLoading").css("visibility","hidden");
-              $("#avgConferences").text(averageConferences);
-
               if(conferenceNodes.length > 0) {
                     var nodes = {
-                    children : conferenceNodes
+                    		children : conferenceNodes
                     };
 
                     graphNodes = nodes;
@@ -64,7 +60,7 @@ function getConferenceConnectionGraphBubble(authorId) {
                    loadGraph(true);
 
                    var comboboxNodes = new Array();
-                   comboboxNodes.push({source : " - All conferences - "});
+                   comboboxNodes.push({source : " - All Venues - "});
                    comboboxNodes = comboboxNodes.concat(conferenceNodes);
 
                    $("#conferenceCombobox").jqxComboBox(
@@ -92,21 +88,36 @@ function getConferenceConnectionGraphBubble(authorId) {
                              var selecteditem = event.args.item;
                              var selectedIndex = event.args.index;
                              if (selecteditem) {
+                            	 var nodes = $("#conferenceCombobox").jqxComboBox('getItems');
+                            	 var originalNodes = new Array();
+                            	 nodes.forEach(function(element) {
+                            		 if(element.id != -1) {
+                            			 originalNodes.push(element.originalItem);
+                            		 }
+                            	 })
                                   var node = d3.select(selecteditem.originalItem);
                                   if(node.length == 1) {
                                        node = node[0][0];
                                        if(selectedIndex != 0) {
-                                            d3conferenceNodes.style("opacity", function(n) {
-                                                 if(node.source != n.source) {
-                                                      return 0.07;
-                                                 }
-                                            })
+                                    	   d3conferenceNodes.style("opacity", function(n) {
+                                    		   if(originalNodes.indexOf(n) != -1) {
+                                    			   if(node.source != n.source) {
+                                    				   return 0.07;
+                                    			   }
+                                    		   } else {
+                                    			   return 0.07;
+                                    		   }
+                                    	   })
                                        } else {
-                                          d3conferenceNodes.style("opacity", function(n) {
-                                                 if(node.source != n.source) {
-                                                      return 1;
-                                                 }
-                                            })
+                                    	   d3conferenceNodes.style("opacity", function(n) {
+                                        	  if(originalNodes.indexOf(n) != -1) {
+                                        		  if(node.source != n.source) {
+                                        			  return 1;
+                                        		  }
+                                        	  } else {
+                                        		  return 0.07;
+                                        	  }
+                                           })
                                        }
                                   }
                              }
@@ -230,6 +241,7 @@ function drawConferenceConnectionGraphBubble(nodes) {
                     .style("top",(d3.event.pageY-10) + "px");
 
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> name: <span>" + d.source);
+          nodeTooltip.append("p").attr("class","tooltiptext").html("<span> type: <span>" + d.type);
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> number of attendance: <span>" + d.attendance);
           nodeTooltip.append("p").attr("class","tooltiptext").html("<span> number of publication: <span>" + d.publications);
 
@@ -251,12 +263,22 @@ function drawConferenceConnectionGraphBubble(nodes) {
 }
 
 function sliderChangeFunction(numStart,numEnd) {
+	var selectedNodes = new Array();
+	selectedNodes.push({source : " - All Venues - "});
     d3conferenceNodes.style("opacity", function(n) {
          var value = getValue(n);
          if(value < numStart || value > numEnd) {
               return 0.07;
+         } else {
+        	 selectedNodes.push(n);
          }
     });
+    
+    $("#conferenceCombobox").jqxComboBox({source: selectedNodes});
+    $("#conferenceCombobox").jqxComboBox('selectIndex',0);
+    
+    
+    
 }
 
 function getValue(node) {
@@ -269,7 +291,6 @@ function getValue(node) {
 }
 
 function getMax() {
-     console.log(displayAttendance);
      if(displayAttendance == true) {
           return maxAttendance;
      } else {

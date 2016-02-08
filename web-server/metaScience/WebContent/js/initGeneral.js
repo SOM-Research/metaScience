@@ -1,5 +1,3 @@
-var metaScienceServlet = 'http://localhost:8080/metaScience';
-//var metaScienceServlet = 'http://atlanmodexp.info.emn.fr:8800/metaScience';
 
 window.onload = function() {
 	var topicsChart = c3.generate({		

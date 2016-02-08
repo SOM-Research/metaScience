@@ -18,21 +18,13 @@ var d3nodes;
  	// remove previous graph if exists
  	if( $("#coAuthorConnectionGraph").children().size() > 0) {
  		$("#coAuthorConnectionGraph").empty();
+ 		$("collabSlider").empty();
  	}
 
  	getCoAuthorConnectionGraphBubble(authorId);
  }
 
 function getCoAuthorConnectionGraphBubble(authorId) {
-
-    /*$("#totalCollaborationsLoading").css("visibility","hidden");
-          $("#totalCollaborations").text(data.collaborations.total);
-          $("#avgCollaborationsLoading").css("visibility","hidden");
-          $("#avgCollaborations").text(data.collaborations.avg);
-
-    $("#totalCollaborations").text("Not available");
-          $("#avgCollaborations").text("Not available");*/
-
 
      onLoadingGraph(d3.select("#coAuthorConnectionGraph"), "loaderCoAuthorConnectionGraph", heightCoAuthorGraph, widthCoAuthorGraph);
 
@@ -42,7 +34,6 @@ function getCoAuthorConnectionGraphBubble(authorId) {
               removeLoadingImage("loaderCoAuthorConnectionGraph");
 
               $("#totalCollaborations").text("Not available");
-              $("#avgCollaborations").text("Not available");
 
               creatingWarningMessage(d3.select("#coAuthorConnectionGraph"),heightCoAuthorGraph/2,widthCoAuthorGraph/2,"An error occured");
 
@@ -50,13 +41,10 @@ function getCoAuthorConnectionGraphBubble(authorId) {
               
               var authorNodes = jsonNodes.coAuthors;
               var maxCollaborations = jsonNodes.author.max_collaborations;
-              var totalCollaborations = jsonNodes.author.total_collaborations;
-              var averageCollaborations = jsonNodes.author.average_collaborations;
+              var totalCollaborations = jsonNodes.author.total_collaborators;
 
               $("#totalCollaborationsLoading").css("visibility","hidden");
               $("#totalCollaborations").text(totalCollaborations);
-              $("#avgCollaborationsLoading").css("visibility","hidden");
-              $("#avgCollaborations").text(averageCollaborations);
 
               // d3.layout.pack work with hierarchic; this is to flatten the hierarchy and respect the input format of pack
               if(authorNodes.length > 0) {
@@ -66,14 +54,10 @@ function getCoAuthorConnectionGraphBubble(authorId) {
                };
 
                removeLoadingImage("loaderCoAuthorConnectionGraph");
-               $("#info_coAuthorConnectionGraph").css("visibility","visibile");
+               $("#info_coAuthorConnectionGraph").css("visibility","visible");
                drawCoAuthorConnectionGraphBubble(nodes,maxCollaborations);
 
-
                createSlider("collabSlider","Number of collaborations", 1,maxCollaborations,sliderCollaborationChangeFunction);
-
-
-               
 
                var comboboxNodes = new Array();
                comboboxNodes.push({name : " - All co authors - ", id: -1});
@@ -103,21 +87,38 @@ function getCoAuthorConnectionGraphBubble(authorId) {
                     if (typeof event.args != 'undefined') {
                          var selecteditem = event.args.item;
                          if (selecteditem) {
+                        	 
+                        	 var nodes = $("#coAuthorCombobox").jqxComboBox('getItems');
+                        	 var originalNodes = new Array();
+                        	 nodes.forEach(function(element) {
+                        		 if(element.id != -1)
+                        			 originalNodes.push(element.originalItem);
+                        	 })
+                        	 
                               var node = d3.select(selecteditem.originalItem);
                               if(node.length == 1) {
                                    node = node[0][0];
                                    if(node.id != -1) {
-                                        d3nodes.style("opacity", function(n) {
-                                             if(node.id != n.id) {
-                                                  return 0.05;
-                                             }
+                                	   d3nodes.style("opacity", function(n) {
+                                		   if(originalNodes.indexOf(n) != -1) {
+	                                             if(node.id != n.id) {
+	                                                  return 0.1;
+	                                             }
+                                		   } else {
+                                			   return 0.1;
+                                		   }
                                         })
                                    } else {
-                                      d3nodes.style("opacity", function(n) {
-                                             if(node.id != n.id) {
-                                                  return 1;
-                                             }
-                                        })
+                                	   d3nodes.style("opacity", function(n) {
+                                		   if(originalNodes.indexOf(n) != -1) {
+	                                             if(node.id != n.id) {
+	                                                  return 1;
+	                                             }
+	                              		   } else {
+	                              			   return 0.1;
+	                              		   }
+                                       
+                                        });
                                    }
                               }
                          }
@@ -218,10 +219,18 @@ function drawCoAuthorConnectionGraphBubble(nodes,maxCollaborations) {
 }
 
 function sliderCollaborationChangeFunction(numStart,numEnd) {
+	
+	var selectedNodes = new Array();
+	selectedNodes.push({name : " - All co authors - ", id: -1});
     d3nodes.style("opacity", function(n) {
-      console.log(n.num_collaborations)
          if(n.num_collaborations < numStart || n.num_collaborations > numEnd) {
               return 0.1;
+         } else {
+        	 //console.log(d3.select(n));
+        	 selectedNodes.push(n);
          }
     });
+    
+    $("#coAuthorCombobox").jqxComboBox({source: selectedNodes});
+    $("#coAuthorCombobox").jqxComboBox('selectIndex',0);
 }

@@ -8,25 +8,30 @@
     <link rel="stylesheet" href="css/jQWidgets/jqx.base.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link href='http://fonts.googleapis.com/css?family=Anton' rel='stylesheet' type='text/css'>
+    <link rel="icon" type="image/png" sizes="32x32" href="imgs/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="imgs/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="imgs/favicon-16x16.png">
     
-    <script src="js/vendor/jquery.js"></script>
-    <script src="js/bootstrap/bootstrap.min.js"></script>
-    <script src="js/d3.v3.min.js" charset="utf-8"></script>
-    <script src="js/jQWidgets/jqxcore.js"></script>
-    <script src="js/jQWidgets/jqxdata.js"></script>
-    <script src="js/jQWidgets/jqxbuttons.js"></script>
-    <script src="js/jQWidgets/jqxscrollbar.js"></script>
-    <script src="js/jQWidgets/jqxlistbox.js"></script>
-    <script src="js/jQWidgets/jqxcombobox.js"></script>
-    <script src="js/initIndex.js"></script>
+  	<script src="js/vendor/jquery.js"></script>
+  	<script src="js/bootstrap/bootstrap.min.js"></script>
+  	<script src="js/vendor/d3.v3.min.js" charset="utf-8"></script>
+  	<script src="js/jQWidgets/jqxcore.js"></script>
+  	<script src="js/jQWidgets/jqxdata.js"></script>
+  	<script src="js/jQWidgets/jqxbuttons.js"></script>
+  	<script src="js/jQWidgets/jqxscrollbar.js"></script>
+  	<script src="js/jQWidgets/jqxlistbox.js"></script>
+  	<script src="js/jQWidgets/jqxcombobox.js"></script>
+    <script src="js/common.js"></script>
 
-    <script>
+  	<script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-      ga('create', 'UA-54150984-2', 'auto');
+
+      ga('create', 'UA-54150984-4', 'auto');
       ga('send', 'pageview');
+
     </script>
   </head>
   <body>
@@ -36,15 +41,16 @@
         <div class="row">
           <div class="col-md-12">
             <!--<img src="imgs/icon.png"/>-->
-            <h1><a href="http://atlanmod.github.io/metaScience">MetaScience</a></h1> 
-            <h2>Your first step in research</h2>
+            <h1><a href="http://som-research.uoc.edu/tools/metaScience">MetaScience</a></h1>
+            <h2>Analyzing the research profile of authors, conferences and journals</h2>
             <p>
-            <button class="btn" onclick="location.href='http://github.com/atlanmod/metaScience'">
+  		      <button class="btn" onclick="location.href='https://github.com/SOM-Research/metaScience'">
               <img style="float: left; margin-right: 0px; margin-top: 0px; margin-right: 10px; padding-top: 0px; padding-left: 0px; width: 18px;" src="imgs/gh-icon.png"/>
               Visit on GitHub
             </button>
             <button class="btn" onclick="location.href='contact.html'">About us</button>
             </p>
+            <p class="text-right snapshot">DBLP snapshot used: 2015-06-13</p>
           </div>
         </div>
       </div>  
@@ -59,60 +65,67 @@
       </div>
 
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-6">
         <div class="row">
-            <h4 style="text-align: right">...the people involved in conferences?</h4>
-            <h4 style="text-align: right">...how many papers are accepted in a conference?</h4>
-            <h4 style="text-align: right">...how many people <i>survive</i> in each conference edition?</h4>
-            <h4 style="text-align: right">...how many papers come from new people for each edition?</h4>
+            <h4 style="text-align: right; margin-right: 20px;">...the most successful researchers in a conference?</h4>
+            <h4 style="text-align: right; margin-right: 20px;">...trends in paper acceptance rates ?</h4>
+            <h4 style="text-align: right; margin-right: 20px;">...the <i>hidden</i> collaboration networks?</h4>
+            <h4 style="text-align: right; margin-right: 20px;">...how easy is for newcomers to publish?</h4>
         </div>
         </div>
 
-        <div class="col-md-offset-2 col-md-5">
+        <div class="col-md-6">
         <div class="row">
-            <h4>...the publications of an author?</h4>
-            <h4>...how many pages an author has written?</h4>
-            <h4>...how an author relates with other co-authors?</h4>
-            <h4>...how an author is <i>linked</i> to his/her conferences?</h4>
+            <h4 style="margin-left: 20px;">...the evolution of an author's publication activity?</h4>
+            <h4 style="margin-left: 20px;">...the most common co-authors?</h4>
+            <h4 style="margin-left: 20px;">...the popular publication venues?</h4>
+            <h4 style="margin-left: 20px;">...whether the number of co-authors per paper increase through time?</h4>
         </div>
         </div>
       </div>
-
+      
+      
       <div class="row">
         <h1 class="text-center">We can help you!</h1>
+      <div class="row" id="tabs">
+
+      	<ul style="margin-top:15px;" class="nav nav-tabs nav-justified" role="tablist">
+      		<li role="presentation" class="active"><a href="#venueSelection" aria-controls="venueSelection" role="tab" data-toggle="tab">Conference</a></li>
+      		<li role="presentation"><a href="#authorSelection" aria-controls="authorSelection" role="tab" data-toggle="tab">Author</a></li>
+      		<li role="presentation"><a href="#journalSelection" aria-controls="journalSelection" role="tab" data-toggle="tab">Journal</a></li>
+      	</ul>
+
+      	<div class="tab-content">
+      		<div role="tabpanel" class="tab-pane active" id="venueSelection">
+      			<div class="selectionBox">
+		            <h2>Search by conference</h2>
+		            <p class="text-center"><div id='vcombobox'></div></p>
+		            <p class="text-center">
+		              <button id="venueSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		    	</div>
+      		</div>
+      		<div role="tabpanel" class="tab-pane" id="authorSelection">
+	      		<div class="selectionBox">
+		            <h2>Search by author</h2>
+		            <p class="text-center"><div id="acombobox"></div><p>
+		            <p class="text-center">
+		              <button id="authorSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		       	</div>
+      		</div>
+      		<div role="tabpanel" class="tab-pane" id="journalSelection">
+	      		<div class="selectionBox">
+		            <h2>Search by journal</h2>
+		            <p class="text-center"><div id="jcombobox"></div><p>
+		            <p class="text-center">
+		              <button id="journalSearchBtn" class="btn btn-block" >Show me!</button>
+		            </p>
+		       	</div>
+      		</div>
+      	</div>
       </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="selectionBox">
-            <h2>Search by venue</h2>
-            <p class="text-center"><div id='vcombobox'></div></p>
-            <p class="text-center">
-              <button class="btn btn-block" onclick="location.href='venue.html?id=' + venueId">Show me!</button>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="selectionBox">
-            <h2>Search by author</h2>
-            <p class="text-center"><div id="acombobox"></div><p>
-            <p class="text-center">
-              <button class="btn btn-block" onclick="location.href='author.html?id=' + authorId">Show me!</button>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-          <div class="selectionBox">
-            <h2>Search by journal</h2>
-            <p class="text-center"><div id='jcombobox'></div></p>
-            <p class="text-center">
-              <button class="btn btn-block" onclick="location.href='journal.html?id=' + journalId">Show me!</button>
-            </p>
-          </div>
-        </div>
-
+	</div>
     </div>
 
 
@@ -120,9 +133,12 @@
       <div class="row">
         <div class="col-md-12">  
           <p class="text-center"><small>Code and Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</small></p>
-          <p class="text-center"><small><a href="http://www.emn.fr/z-info/atlanmod/index.php/Main_Page">AtlanMod</a></small></p>
+          <p class="text-center"><small>MetaScience <span id="metascienceVersion"></span></small></p>
         </div>
       </div>
     </footer>
+
+
+    <script src="js/initIndex.js"></script>
   </body>
 </html>
