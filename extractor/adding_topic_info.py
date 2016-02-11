@@ -16,7 +16,7 @@ import database_connection_config as dbconnection
 #This script gathers (via Selenium) the TOPICS
 #for the editions from 2003 of the venue defined in the topic_info.json
 #Currently, we track
-#MODELS
+#MODELS, ASE, ICSE
 #we plan to add
 #ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
 #WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
@@ -112,8 +112,9 @@ def extract_member_name(text):
 
 
 def add_name_to_list(members, name):
-    if name.strip() != '':
-        members.add(name)
+    stripped = re.sub(r'^\W+', '', name.strip())
+    if len(stripped) > 3:
+        members.add(stripped)
 
 
 def collect_members_from_web_elements(selected_web_elements, member_tag, single_or_all):
@@ -156,8 +157,9 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text, me
     content = re.sub(stop_text + '.*$', '', content, flags=re.DOTALL)
     member_entries = content.split(member_separator)
     for me in member_entries:
-        if me != '':
-            members.add(me.strip())
+        stripped = re.sub(r'^\W+', '', me.strip())
+        if len(stripped) > 3:
+            members.add(stripped)
 
     return members
 
@@ -180,8 +182,9 @@ def extract_topic_info_from_text(cnx, text, entry_separator):
         entries = text.split(entry_separator)
 
     for e in entries:
-        if e != '':
-            members.add(e.strip())
+        stripped = re.sub(r'^\W+', '', e.strip())
+        if len(stripped) > 3:
+            members.add(stripped)
     insert_topics_in_db(cnx, members)
 
 
@@ -202,6 +205,8 @@ def get_separator(separator):
         s = '('
     elif separator.lower() == "dash":
         s = '-'
+    elif separator.lower() == "vertical_bar":
+        s = '|'
     return s
 
 
