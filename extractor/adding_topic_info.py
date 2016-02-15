@@ -16,11 +16,9 @@ import database_connection_config as dbconnection
 #This script gathers (via Selenium) the TOPICS
 #for the editions from 2003 of the venue defined in the topic_info.json
 #Currently, we track
-#MODELS, ASE, ICSE
+#MODELS, ASE, ICSE, FSE, ASE, FASE, WCRE, CSMR, ICMT, APSEC
 #we plan to add
-#ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
-#WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
-#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA, MSR
+#VISSOFT, ICSM, SOFTVIS, SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA, MSR
 #The configuration of the json file is explained clearly in the main()
 
 
