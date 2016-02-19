@@ -55,6 +55,10 @@ BEGIN
 			SET page_number = NULL;
 		END IF;
 	END IF;
+	
+	IF page_number <> 1 THEN
+		SET page_number = page_number + 1;
+	END IF;
 
 	RETURN page_number;
 
@@ -80,6 +84,7 @@ BEGIN
         SET in_roman = LEFT(in_roman, LENGTH(in_roman) - 1);
     END WHILE;
 
+    SET sum = sum + 1;
     RETURN sum;
 END //
 
