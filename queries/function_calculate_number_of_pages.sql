@@ -84,7 +84,6 @@ BEGIN
         SET in_roman = LEFT(in_roman, LENGTH(in_roman) - 1);
     END WHILE;
 
-    SET sum = sum + 1;
     RETURN sum;
 END //
 
