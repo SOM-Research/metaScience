@@ -43,7 +43,22 @@ BEGIN
 					SET page_number = from_roman(left_part) - from_roman(right_part);
 				END IF;
 			ELSE
-				SET page_number = NULL;
+				IF left_part REGEXP '^[[:digit:]]+:[[:digit:]]+$' AND right_part REGEXP '^[[:digit:]]+:[[:digit:]]+$' THEN
+					SET left_part_int =  CONVERT(SUBSTRING(left_part, INSTR(left_part, ':') + 1), SIGNED INTEGER);
+					SET right_part_int =  CONVERT(SUBSTRING(right_part, INSTR(right_part, ':') + 1), SIGNED INTEGER);
+					
+					IF right_part_int > left_part_int THEN
+						SET page_number = right_part_int - left_part_int;
+					ELSE
+						SET page_number = left_part_int - right_part_int;
+					END IF;
+
+					IF page_number = 0 THEN
+						SET page_number = 1;
+					END IF;
+				ELSE
+					SET page_number = NULL;
+				END IF;
 			END IF;
 		END IF;
 	/* if a '-' is not found*/
