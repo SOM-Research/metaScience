@@ -3,18 +3,18 @@ __author__ = 'atlanmod'
 import logging
 import mysql.connector
 from mysql.connector import errorcode
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 import re
 import time
 import nltk.metrics
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import database_connection_config as dbconnection
 import datetime
-from selenium.common.exceptions import TimeoutException
 import sys
 
 #Launch this script in debug mode and put a break point on the instruction "print "redirected to captcha"

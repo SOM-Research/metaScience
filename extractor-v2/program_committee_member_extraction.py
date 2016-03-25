@@ -10,46 +10,43 @@ import re
 import codecs
 import time
 from unidecode import unidecode
-import cross_module_variables as shared
-import database_connection_config as dbconnection
 
-#This script gathers (via Selenium) the TOPICS
-#for the editions from 2003 of the venue defined in the topic_info.json
+#This script gathers (via Selenium) the PROGRAM COMMITTEE CHAIR and MEMBERS
+#for the editions from 2003 of the conferences defined in the pc_info.json
 #Currently, we track
-#MODELS, ASE, ICSE, FSE, ASE, FASE, WCRE, CSMR, ICMT, APSEC, ICSM, CAISE, ER, ECMFA
+#ICSE, FSE, ESEC, ASE, SPLASH, OOPSLA, ECOOP, ISSTA, FASE,
+#MODELS, WCRE, CSMR, ICMT, COMPSAC, APSEC, VISSOFT, ICSM, SOFTVIS,
+#SCAM, TOOLS, CAISE, ER, ECMFA, ECMDA-FA, MSR
 #The configuration of the json file is explained clearly in the main()
 
 
-LOG_FILENAME = 'logger_topic_info.log'
+LOG_FILENAME = 'logger_program_committee.log'
+GOOGLE = 'http://www.google.com'
 
-JSON_FILE = "./topic_info_aut.json"
-JSON_ENTRY_ATTRIBUTES_FOR_HTML = 15
+INPUT = "../data/program_committee_member_identified_aut.txt"
+OUTPUT = "../data/program_committee_member_extracted__.txt"
+
+JSON_ENTRY_ATTRIBUTES_FOR_HTML = 18
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 6
-JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 12
+JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 16
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 
 VENUE = ''
 YEAR = ''
+ROLE = ''
 TYPE = ''
 
 
-def insert_topics_in_db(cnx, topics):
-    cursor = cnx.cursor()
-    for topic in topics:
-        if u"\uFFFD" in topic:
-            topic = topic.replace(u"\uFFFD", '?')
-            logging.warning(topic + " detected unrecognized character(s)!"
-                            + " venue/year: " + VENUE + "/" + YEAR)
-        #TODO, member_decoded = re.sub('\s+', ' ', unidecode(member).decode('utf-8').strip().strip(','))
-        topic_decoded = unidecode(topic).decode('utf-8').strip().strip(',').lower()
+def invert_name(name):
+    names = name.split(',')
+    return names[1].strip() + ' ' + names[0].strip()
 
-        query = "INSERT IGNORE INTO aux_topics " \
-                "SET name = %s, venue = %s, type=%s, year = %s"
-        arguments = [topic_decoded, VENUE, TYPE, int(YEAR)]
-        cursor.execute(query, arguments)
-        cnx.commit()
 
-    cursor.close()
+def save_members(members):
+    f = codecs.open(OUTPUT, "a+", "utf-8")
+    output = {"members": list(members), "venue": VENUE, "year": YEAR, "role": ROLE}
+    f.write(json.dumps(output) + '\n')
+    f.close()
 
 
 def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word, tag_stop_word):
@@ -58,23 +55,23 @@ def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word
         #collect elements after the stop word, relying or not on the start word tag selected.
         if tag_start_word != 'NULL':
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]/following::*")
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]/following::*")
         else:
-            after_start_word = driver.find_elements_by_xpath("//*/descendant-or-self::*[contains(.,'" + start_word + "')][1]/following::*")
+            after_start_word = driver.find_elements_by_xpath("//*/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]/following::*")
     else:
         if tag_start_word != 'NULL' and not tag_filter.lower().startswith('all_columns'):
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::*[contains(@id,'" + tag_filter + "') or contains(@class,'" + tag_filter + "')]"
                 "/descendant-or-self::*")
         elif tag_start_word != 'NULL' and tag_filter.lower().startswith('all_columns'):
             column = tag_filter.split('-')[1]
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::tr/td[" + column + "]/descendant-or-self::*")
         else:
             after_start_word = driver.find_elements_by_xpath(
-                "//*/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//*/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::*[contains(@id,'" + tag_filter + "') or contains(@class,'" + tag_filter + "')]"
                 "/descendant-or-self::*")
 
@@ -84,10 +81,10 @@ def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word
     if stop_word != "NULL":
         if tag_stop_word != 'NULL':
             before_stop_word = driver.find_elements_by_xpath("//" + tag_stop_word + ""
-                    "/descendant-or-self::*[contains(.,'" + stop_word + "')][1]/preceding::*")
+                    "/descendant-or-self::*[contains(normalize-space(.),'" + stop_word + "')][1]/preceding::*")
         else:
             before_stop_word = driver.find_elements_by_xpath("//*"
-                   "/descendant-or-self::*[contains(.,'" + stop_word + "')][1]/preceding::*")
+                   "/descendant-or-self::*[contains(normalize-space(.),'" + stop_word + "')][1]/preceding::*")
     else:
         before_stop_word = after_start_word
 
@@ -104,11 +101,37 @@ def define_replacement(member_name_separator):
     return replacement
 
 
-def add_name_to_list(members, name):
-    stripped = re.sub(r'^\W+', '', name.strip())
-    if len(stripped) > 3:
-        if not stripped in members:
-            members.append(stripped)
+# def extract_member_name(mixed, member_name_separator, inverted_name, text):
+#     name = ''
+#     replacement = ''
+#     if member_name_separator != '':
+#         if member_name_separator in text:
+#             replacement = define_replacement(member_name_separator)
+#
+#     if mixed == 'yes':
+#         if ROLE in ('chair', 'c_board'):
+#             if 'chair' in text.lower():
+#                 if member_name_separator != '':
+#                     name = re.sub(replacement, '', text)
+#                 else:
+#                     name = text
+#         else:
+#             if 'chair' not in text.lower():
+#                 if member_name_separator != '':
+#                     name = re.sub(replacement, '', text)
+#                 else:
+#                     name = text
+#     else:
+#         if member_name_separator != '':
+#             name = re.sub(replacement, '', text)
+#         else:
+#             name = text
+#
+#
+#     if inverted_name == 'yes':
+#         if name != '':
+#             name = invert_name(name)
+#     return name
 
 
 def is_in_exception(text, exceptions):
@@ -131,61 +154,7 @@ def get_exception(text, exceptions):
     return found
 
 
-def collect_members_from_web_elements(selected_web_elements, member_tag, member_starts_with, member_ends_with,
-                                      single_or_all, exceptions):
-    members = []
-    for element in selected_web_elements:
-        text = element.text.strip()
-        #do not analyse empty text
-        if text != '':
-            if element.tag_name == member_tag:
-                if single_or_all == "single":
-                    if exceptions:
-                        if is_in_exception(text, exceptions):
-                            exception = get_exception(text, exceptions)
-                            if exception != '':
-                                add_name_to_list(members, exception)
-                        else:
-                            name = digest_text(text, member_starts_with, member_ends_with)
-                            if name.strip() != '':
-                                add_name_to_list(members, name)
-                    else:
-                        name = digest_text(text, member_starts_with, member_ends_with)
-                        if name.strip() != '':
-                            add_name_to_list(members, name)
-                else:
-                    lines = text.split('\n')
-                    for l in lines:
-                        name = l.strip()
-                        if exceptions:
-                            if is_in_exception(text, exceptions):
-                                exception = get_exception(text, exceptions)
-                                if exception != '':
-                                    add_name_to_list(members, exception)
-                            else:
-                                name = digest_text(name, member_starts_with, member_ends_with)
-                                if name.strip() != '':
-                                    add_name_to_list(members, name)
-                        else:
-                            name = digest_text(l.strip(), member_starts_with, member_ends_with)
-                            if name.strip() != '':
-                                add_name_to_list(members, name)
-
-    return members
-
-
-def extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
-                              member_tag, member_starts_with, member_ends_with, single_or_all,
-                              exceptions):
-    driver.get(url)
-    time.sleep(5)
-    selected_web_elements = get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word, tag_stop_word)
-    members = collect_members_from_web_elements(selected_web_elements, member_tag,
-                                                member_starts_with, member_ends_with, single_or_all, exceptions)
-    return members
-
-
-def digest_text(content, start_text, stop_text):
+def digest_text(content, start_text, stop_text, inverted, mixed):
     START_TEXT = 'START_TEXT'
     STOP_TEXT = 'STOP_TEXT'
     if start_text in ["null", ""]:
@@ -201,21 +170,82 @@ def digest_text(content, start_text, stop_text):
         content = content.replace(stop_text, STOP_TEXT, 1)
         content = re.sub(STOP_TEXT + '.*$', '', content, flags=re.DOTALL)
 
+    #TODO mixed
+
+    if inverted == 'yes':
+        if content != '':
+            content = invert_name(content)
+
     return content
+
+
+
+def add_name_to_list(members, name):
+    if name.strip() != '':
+        members.add(name)
+
+
+def collect_members_from_web_elements(selected_web_elements, member_tag,
+                                      single_or_all, member_starts_with, member_ends_with, inverted_name, mixed,
+                                      exceptions):
+    members = set()
+    for element in selected_web_elements:
+        text = element.text.strip()
+        #do not analyse empty text
+        if text != '':
+            if element.tag_name == member_tag:
+                if single_or_all == "single":
+                    if exceptions:
+                        if is_in_exception(text, exceptions):
+                            exception = get_exception(text, exceptions)
+                            add_name_to_list(members, exception)
+                        else:
+                            name = digest_text(text, member_starts_with, member_ends_with, inverted_name, mixed)
+                            add_name_to_list(members, name)
+                    else:
+                        name = digest_text(text, member_starts_with, member_ends_with, inverted_name, mixed)
+                        add_name_to_list(members, name)
+                else:
+                    lines = text.split('\n')
+                    for l in lines:
+                        name = l.strip()
+                        if exceptions:
+                            if is_in_exception(text, exceptions):
+                                exception = get_exception(text, exceptions)
+                                add_name_to_list(members, exception)
+                            else:
+                                name = digest_text(name, member_starts_with, member_ends_with, inverted_name, mixed)
+                                add_name_to_list(members, name)
+                        else:
+                            name = digest_text(l.strip(), member_starts_with, member_ends_with, inverted_name, mixed)
+                            add_name_to_list(members, name)
+
+    return members
+
+
+def extract_members_from_html(url, start_text, tag_start_text, tag_filter, stop_text, tag_stop_text,
+                              member_tag, member_starts_with, member_ends_with, single_or_all, inverted_name, mixed,
+                              exceptions):
+    driver.get(url)
+    time.sleep(5)
+    selected_web_elements = get_selection_web_elements(start_text, tag_start_text, tag_filter, stop_text, tag_stop_text)
+    members = collect_members_from_web_elements(selected_web_elements, member_tag,
+                                                single_or_all, member_starts_with, member_ends_with, inverted_name, mixed,
+                                                exceptions)
+    return members
 
 
 def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
                                       member_separator, member_starts_with, member_ends_with,
-                                      exceptions):
+                                      mixed, inverted_name, exceptions):
     driver.get(url)
     time.sleep(5)
-    members = []
+    members = set()
 
-
-    element = driver.find_element_by_xpath("//" + target_tag + "[contains(.,'" + start_text + "')]")
+    element = driver.find_element_by_xpath("//" + target_tag + "[contains(normalize-space(text()),'" + start_text + "')]")
     content = element.text
 
-    content = digest_text(content, start_text, stop_text)
+    content = digest_text(content, start_text, stop_text, mixed)
     member_entries = content.split(member_separator)[1:]
 
     for me in member_entries:
@@ -223,76 +253,72 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
         if exceptions:
             if is_in_exception(stripped, exceptions):
                 exception = get_exception(stripped, exceptions)
-                if exception != '':
-                    add_name_to_list(members, exception)
+                add_name_to_list(members, exception)
             else:
-                name = digest_text(stripped, member_starts_with, member_ends_with)
-                if name.strip() != '':
-                    add_name_to_list(members, name)
-        else:
-            name = digest_text(stripped, member_starts_with, member_ends_with)
-            if name.strip() != '':
+                name = digest_text(stripped, member_starts_with, member_ends_with, inverted_name, mixed)
                 add_name_to_list(members, name)
+        else:
+            name = digest_text(stripped, member_starts_with, member_ends_with, inverted_name, mixed)
+            add_name_to_list(members, name)
 
     return members
 
 
-def extract_topic_info_from_html(cnx, url,
-                                 start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
-                                 member_tag, member_starts_with, member_ends_with, single_or_all,
-                                 exceptions):
-    members = extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
-                                        member_tag, member_starts_with, member_ends_with, single_or_all,
+def extract_program_committee_info_from_html(url,
+                                   start_text, tag_start_text, tag_filter, stop_text, tag_stop_text,
+                                   member_tag, member_starts_with, member_ends_with, single_or_all,
+                                   exceptions, inverted_name, mixed):
+    members = extract_members_from_html(url, start_text, tag_start_text, tag_filter, stop_text, tag_stop_text,
+                                        member_tag, member_starts_with, member_ends_with, single_or_all, inverted_name, mixed,
                                         exceptions)
     if len(members) == 0:
-        logging.warning("members not found! venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
-    insert_topics_in_db(cnx, members)
+        logging.warning("extraction - members not found! conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
+    save_members(members)
 
 
-def extract_topic_info_from_text(cnx, text, entry_separator):
-    members = []
+def extract_program_committee_info_from_text(text, entry_separator):
+    members = set()
     if entry_separator == '':
         entries = [text]
     else:
         entries = text.split(entry_separator)
 
     for e in entries:
-        add_name_to_list(members, e)
-    insert_topics_in_db(cnx, members)
+        if e != '':
+            members.add(e.strip())
+    save_members(members)
 
 
-def extract_topic_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
-                                         member_separator, member_starts_with, member_ends_with,
-                                         exceptions):
+def extract_program_committee_info_from_text_in_html(url, target_tag, start_text, stop_text,
+                                                     member_separator, member_starts_with, member_ends_with,
+                                                     mixed, inverted_name, exceptions):
     members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
                                                 member_separator, member_starts_with, member_ends_with,
-                                                exceptions)
-    insert_topics_in_db(cnx, members)
+                                                mixed, inverted_name, exceptions)
+    save_members(members)
 
 
-def convert_keyword(keyword):
-    k = keyword
-    if keyword.lower() == "new_line":
-        k = '\n'
-    elif keyword.lower() == "comma":
-        k = ','
-    elif keyword.lower() == "empty_string":
-        k = ''
-    elif keyword.lower() == "left_par":
-        k = '('
-    elif keyword.lower() == "dash":
-        k = '-'
-    elif keyword.lower() == "vertical_bar":
-        k = '|'
-    return k
+def get_separator(separator):
+    s = separator
+    if separator.lower() == "new_line":
+        s = '\n'
+    elif separator.lower() == "comma":
+        s = ','
+    elif separator.lower() == "empty_string":
+        s = ''
+    elif separator.lower() == "left_par":
+        s = '('
+    elif separator.lower() == "dash":
+        s = '-'
+    return s
 
 
 def check_value(attribute, text, allowed):
     check = text.lower() in allowed and text.lower().strip() != ''
 
     if check is False:
-        logging.warning("wrong attribute for " + attribute + " .Value: " + text + " is not allowed."
-                        + " venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
+        logging.warning("extraction - wrong attribute for " + attribute + " .Value: " + text + " is not allowed."
+                        + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
 
     return check
 
@@ -303,8 +329,8 @@ def check_type(text, attribute):
         matchObj = re.match("\d\d\d\d", text)
         if matchObj is None:
             check = False
-            logging.warning("wrong attribute for " + attribute + " . Value: " + text + " is not a four-digit year."
-                            + " venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
+            logging.warning("extraction - wrong attribute for " + attribute + " . Value: " + text + " is not a four-digit year."
+                            + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     else:
         check = False
 
@@ -326,7 +352,7 @@ def check_input(json_entry, parser):
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML and
                       check_type(json_entry.get('year'), 'year'))
     else:
-        logging.warning("parser " + parser + " unknown!"
+        logging.warning("extraction - parser " + parser + " unknown!"
                         +" venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
     return passed
 
@@ -335,21 +361,21 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     line_counter = 1
     #Each JSON data per line
-    json_file = codecs.open(JSON_FILE, 'r', 'utf-8')
+    json_file = codecs.open(INPUT, 'r', 'utf-8')
     json_lines = json_file.read()
-    for line in json_lines.split('\r\n'):
+    for line in json_lines.split('\n'):
         if line.strip() != '':
             if not line.startswith("#"):
                 json_entry = json.loads(line)
                 try:
-                    global VENUE, YEAR, TYPE
+                    global ROLE, VENUE, YEAR, TYPE
                     parser = json_entry.get("parser").lower()
-                    VENUE = json_entry.get("venue") #The acronym of the venue to analyse
-                    YEAR = json_entry.get("year") #The year of the venue to analyse
-                    TYPE = json_entry.get("type") #The type of the topics (applications, industrial, etc.)
+                    TYPE = json_entry.get("type").lower()
+                    ROLE = json_entry.get("role").lower() #The role to extract: MEMBER or CHAIR
+                    VENUE = json_entry.get("venue") #The acronym of the conference to analyse
+                    YEAR = json_entry.get("year") #The year of the conference to analyse
                     if check_input(json_entry, parser):
                         #HTML parser. It is used to collect text in one or more HTML tags
                         if parser == 'html':
@@ -359,9 +385,9 @@ def main():
                             start_text = json_entry.get("start_text")
                             #TAG_START_TEXT. The tag that contains the START TEXT
                             tag_start_text = json_entry.get("tag_start_text")
-                            #FILTER. It used to select only tags with a given id or class attribute
-                            #that follow the START_TEXT/TAG_START_TEXT. In addition, you can use the keyword ALL_COLUMNS-COL
-                            # and the parser will select all the columns in position COL that are included betweent the START_TEXT/TAG_START_TEXT - STOP_TEXT
+                            #TAG_SELECTOR. It used to select only tags with a given id or class attributes
+                            #that follow the START_TEXT/TAG_START_TEXT. In addition, you can use the keyword ALL_FIRST_COLUMNS
+                            # and the parser will select all the first columns that follow the START_TEXT/TAG_START_TEXT
                             tag_filter = json_entry.get("filter")
                             #STOP_TEXT. The end point to parse the page
                             stop_text = json_entry.get("stop_text")
@@ -376,15 +402,26 @@ def main():
                             #Possible ends are NULL, COMMA, NEW_LINE, LEFT PAR, DASH, EMPTY_STRING or user defined separators
                             member_ends_with = json_entry.get("member_remove_after").lower()
                             #CONTAINMENT. SINGLE or ALL.
+                            #It tells the program whether the MEMBERS_TAG contains one member or all
                             single_or_all = json_entry.get("containment").lower()
-                            #It tells the program whether the MEMBER_TAG contains one member or all
-                            #EXCEPTIONS. Some members may have a content that differs from the rest.
-                            #They can be defined as exceptions in the following way {member_to_replace : replacement}
+                            #MIXED_ROLES. YES or NO.
+                            #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
+                            mixed = json_entry.get("mixed_roles").lower()
+                            #INVERTED_MEMBER_NAME. YES or NO
+                            #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            #Note that the parser considers that there is always a comma between the first and last name
+                            inverted_name = json_entry.get("inverted_member_name").lower()
+                            #MEMBER_NAME_SEPARATOR. COMMA, NEW_LINE, LEFT PAR, EMPTY_STRING or user defined separators
+                            #It tells the program how for each member, its name is separated from the remaining information
+                            #ex.: Bill Gates, Microsoft  --> COMMA
+                            #     Bill Gates (Microsoft) --> LEFT_PAR
+                            #     Bill Gates - Microsoft --> -
                             exceptions = json_entry.get("exceptions")
-                            extract_topic_info_from_html(cnx, url,
+
+                            extract_program_committee_info_from_html(url,
                                                            start_text, tag_start_text, tag_filter, stop_text, tag_stop_text,
                                                            member_tag, member_starts_with, member_ends_with, single_or_all,
-                                                           exceptions)
+                                                           exceptions, inverted_name, mixed)
                         #TEXT_IN_HTML. It is used when all the information are contained in only one HTML tag.
                         elif parser == "text_in_html":
                             #URL. The url of the program committee or organizers
@@ -407,14 +444,18 @@ def main():
                             #It defines how members are separated between each other.
                             #Possible separators are COMMA, NEW_LINE, LEFT PAR, DASH, EMPTY_STRING
                             #or user defined separators
-                            member_separator = convert_keyword(json_entry.get("member_separator")).lower()
-                            #EXCEPTIONS. Some members may have a content that differs from the rest.
-                            #They can be defined as exceptions in the following way:
-                            #{member_to_replace-1 : replacement-1, member_to_replace-2 : replacement-2, ...}
+                            member_separator = get_separator(json_entry.get("member_separator")).lower()
+                            #MIXED_ROLES. YES or NO.
+                            #It tells the program whether MEMBERS_TAG are only of one type (MEMBER or CHAIR) or are mixed
+                            mixed = json_entry.get("mixed_roles").lower()
+                            #INVERTED_MEMBER_NAME. YES or NO
+                            #It tells the program whether the names are inverted (ex.: Gates, Bill) or not (Bill Gates)
+                            #Note that the parser considers that there is always a comma between the first and last name
+                            inverted_name = json_entry.get("inverted_member_name").lower()
                             exceptions = json_entry.get("exceptions")
-                            extract_topic_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
-                                                                 member_separator, member_starts_with, member_ends_with,
-                                                                 exceptions)
+                            extract_program_committee_info_from_text_in_html(url, target_tag, start_text, stop_text,
+                                                                             member_separator, member_starts_with, member_ends_with,
+                                                                             mixed, inverted_name, exceptions)
                         #TEXT. It is used when the previous parsers can't do the job.
                         #It expects a text with a list of members
                         #Note that, the the text could contain unrecognized characters
@@ -424,14 +465,13 @@ def main():
                             #TEXT. It contains a list of members
                             text = json_entry.get("text")
                             #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
-                            entry_separator = convert_keyword(json_entry.get("entry_separator")).lower()
-                            extract_topic_info_from_text(cnx, text, entry_separator)
+                            entry_separator = get_separator(json_entry.get("entry_separator")).lower()
+                            extract_program_committee_info_from_text(text, entry_separator)
                 except Exception as e:
-                    logging.warning("error on json line " + str(line_counter) + "!" + str(e.message))
+                    logging.warning("extraction - error on json line " + str(line_counter) + "!" + str(e.message))
         line_counter += 1
     json_file.close()
     driver.close()
-    cnx.close()
 
 
 if __name__ == "__main__":

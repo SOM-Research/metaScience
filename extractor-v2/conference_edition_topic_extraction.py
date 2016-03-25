@@ -1,17 +1,11 @@
 __author__ = 'atlanmod'
 
 import logging
-import mysql.connector
-from mysql.connector import errorcode
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 import json
 import re
 import codecs
 import time
-from unidecode import unidecode
-import cross_module_variables as shared
-import database_connection_config as dbconnection
 
 #This script gathers (via Selenium) the TOPICS
 #for the editions from 2003 of the venue defined in the topic_info.json
@@ -19,10 +13,10 @@ import database_connection_config as dbconnection
 #MODELS, ASE, ICSE, FSE, ASE, FASE, WCRE, CSMR, ICMT, APSEC, ICSM, CAISE, ER, ECMFA
 #The configuration of the json file is explained clearly in the main()
 
-
 LOG_FILENAME = 'logger_topic_info.log'
 
-JSON_FILE = "./topic_info_aut.json"
+INPUT = "../data/topics_identified_man.txt"
+OUTPUT = "../data/topics_extracted.txt"
 JSON_ENTRY_ATTRIBUTES_FOR_HTML = 15
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 6
 JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 12
@@ -33,23 +27,11 @@ YEAR = ''
 TYPE = ''
 
 
-def insert_topics_in_db(cnx, topics):
-    cursor = cnx.cursor()
-    for topic in topics:
-        if u"\uFFFD" in topic:
-            topic = topic.replace(u"\uFFFD", '?')
-            logging.warning(topic + " detected unrecognized character(s)!"
-                            + " venue/year: " + VENUE + "/" + YEAR)
-        #TODO, member_decoded = re.sub('\s+', ' ', unidecode(member).decode('utf-8').strip().strip(','))
-        topic_decoded = unidecode(topic).decode('utf-8').strip().strip(',').lower()
-
-        query = "INSERT IGNORE INTO aux_topics " \
-                "SET name = %s, venue = %s, type=%s, year = %s"
-        arguments = [topic_decoded, VENUE, TYPE, int(YEAR)]
-        cursor.execute(query, arguments)
-        cnx.commit()
-
-    cursor.close()
+def save_topics(topics):
+    f = codecs.open(OUTPUT, "a+", "utf-8")
+    output = {"topics": topics, "venue": VENUE, "year": YEAR, "type": TYPE}
+    f.write(json.dumps(output) + '\n')
+    f.close()
 
 
 def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word, tag_stop_word):
@@ -58,23 +40,23 @@ def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word
         #collect elements after the stop word, relying or not on the start word tag selected.
         if tag_start_word != 'NULL':
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]/following::*")
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]/following::*")
         else:
-            after_start_word = driver.find_elements_by_xpath("//*/descendant-or-self::*[contains(.,'" + start_word + "')][1]/following::*")
+            after_start_word = driver.find_elements_by_xpath("//*/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]/following::*")
     else:
         if tag_start_word != 'NULL' and not tag_filter.lower().startswith('all_columns'):
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::*[contains(@id,'" + tag_filter + "') or contains(@class,'" + tag_filter + "')]"
                 "/descendant-or-self::*")
         elif tag_start_word != 'NULL' and tag_filter.lower().startswith('all_columns'):
             column = tag_filter.split('-')[1]
             after_start_word = driver.find_elements_by_xpath(
-                "//" + tag_start_word + "/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//" + tag_start_word + "/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::tr/td[" + column + "]/descendant-or-self::*")
         else:
             after_start_word = driver.find_elements_by_xpath(
-                "//*/descendant-or-self::*[contains(.,'" + start_word + "')][1]"
+                "//*/descendant-or-self::*[contains(normalize-space(.),'" + start_word + "')][1]"
                 "/following::*[contains(@id,'" + tag_filter + "') or contains(@class,'" + tag_filter + "')]"
                 "/descendant-or-self::*")
 
@@ -84,10 +66,10 @@ def get_selection_web_elements(start_word, tag_start_word, tag_filter, stop_word
     if stop_word != "NULL":
         if tag_stop_word != 'NULL':
             before_stop_word = driver.find_elements_by_xpath("//" + tag_stop_word + ""
-                    "/descendant-or-self::*[contains(.,'" + stop_word + "')][1]/preceding::*")
+                    "/descendant-or-self::*[contains(normalize-space(.),'" + stop_word + "')][1]/preceding::*")
         else:
             before_stop_word = driver.find_elements_by_xpath("//*"
-                   "/descendant-or-self::*[contains(.,'" + stop_word + "')][1]/preceding::*")
+                   "/descendant-or-self::*[contains(normalize-space(.),'" + stop_word + "')][1]/preceding::*")
     else:
         before_stop_word = after_start_word
 
@@ -212,7 +194,7 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
     members = []
 
 
-    element = driver.find_element_by_xpath("//" + target_tag + "[contains(.,'" + start_text + "')]")
+    element = driver.find_element_by_xpath("//" + target_tag + "[contains(normalize-space(.),'" + start_text + "')]")
     content = element.text
 
     content = digest_text(content, start_text, stop_text)
@@ -237,7 +219,7 @@ def extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
     return members
 
 
-def extract_topic_info_from_html(cnx, url,
+def extract_topic_info_from_html(url,
                                  start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
                                  member_tag, member_starts_with, member_ends_with, single_or_all,
                                  exceptions):
@@ -245,11 +227,11 @@ def extract_topic_info_from_html(cnx, url,
                                         member_tag, member_starts_with, member_ends_with, single_or_all,
                                         exceptions)
     if len(members) == 0:
-        logging.warning("members not found! venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
-    insert_topics_in_db(cnx, members)
+        logging.warning("extraction - topics not found! venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
+    save_topics(members)
 
 
-def extract_topic_info_from_text(cnx, text, entry_separator):
+def extract_topic_info_from_text(text, entry_separator):
     members = []
     if entry_separator == '':
         entries = [text]
@@ -258,16 +240,16 @@ def extract_topic_info_from_text(cnx, text, entry_separator):
 
     for e in entries:
         add_name_to_list(members, e)
-    insert_topics_in_db(cnx, members)
+    save_topics(members)
 
 
-def extract_topic_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
+def extract_topic_info_from_text_in_html(url, target_tag, start_text, stop_text,
                                          member_separator, member_starts_with, member_ends_with,
                                          exceptions):
     members = extract_members_from_text_in_html(url, target_tag, start_text, stop_text,
                                                 member_separator, member_starts_with, member_ends_with,
                                                 exceptions)
-    insert_topics_in_db(cnx, members)
+    save_topics(members)
 
 
 def convert_keyword(keyword):
@@ -291,7 +273,7 @@ def check_value(attribute, text, allowed):
     check = text.lower() in allowed and text.lower().strip() != ''
 
     if check is False:
-        logging.warning("wrong attribute for " + attribute + " .Value: " + text + " is not allowed."
+        logging.warning("extraction - wrong attribute for " + attribute + " .Value: " + text + " is not allowed."
                         + " venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
 
     return check
@@ -303,7 +285,7 @@ def check_type(text, attribute):
         matchObj = re.match("\d\d\d\d", text)
         if matchObj is None:
             check = False
-            logging.warning("wrong attribute for " + attribute + " . Value: " + text + " is not a four-digit year."
+            logging.warning("extraction - wrong attribute for " + attribute + " . Value: " + text + " is not a four-digit year."
                             + " venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
     else:
         check = False
@@ -326,7 +308,7 @@ def check_input(json_entry, parser):
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML and
                       check_type(json_entry.get('year'), 'year'))
     else:
-        logging.warning("parser " + parser + " unknown!"
+        logging.warning("extraction - parser " + parser + " unknown!"
                         +" venue/year/type: " + VENUE + "/" + YEAR + "/" + TYPE)
     return passed
 
@@ -335,12 +317,11 @@ def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
-    cnx = mysql.connector.connect(**dbconnection.CONFIG)
     line_counter = 1
     #Each JSON data per line
-    json_file = codecs.open(JSON_FILE, 'r', 'utf-8')
+    json_file = codecs.open(INPUT, 'r', 'utf-8')
     json_lines = json_file.read()
-    for line in json_lines.split('\r\n'):
+    for line in json_lines.split('\n'):
         if line.strip() != '':
             if not line.startswith("#"):
                 json_entry = json.loads(line)
@@ -381,7 +362,7 @@ def main():
                             #EXCEPTIONS. Some members may have a content that differs from the rest.
                             #They can be defined as exceptions in the following way {member_to_replace : replacement}
                             exceptions = json_entry.get("exceptions")
-                            extract_topic_info_from_html(cnx, url,
+                            extract_topic_info_from_html(url,
                                                            start_text, tag_start_text, tag_filter, stop_text, tag_stop_text,
                                                            member_tag, member_starts_with, member_ends_with, single_or_all,
                                                            exceptions)
@@ -412,7 +393,7 @@ def main():
                             #They can be defined as exceptions in the following way:
                             #{member_to_replace-1 : replacement-1, member_to_replace-2 : replacement-2, ...}
                             exceptions = json_entry.get("exceptions")
-                            extract_topic_info_from_text_in_html(cnx, url, target_tag, start_text, stop_text,
+                            extract_topic_info_from_text_in_html(url, target_tag, start_text, stop_text,
                                                                  member_separator, member_starts_with, member_ends_with,
                                                                  exceptions)
                         #TEXT. It is used when the previous parsers can't do the job.
@@ -425,13 +406,12 @@ def main():
                             text = json_entry.get("text")
                             #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
                             entry_separator = convert_keyword(json_entry.get("entry_separator")).lower()
-                            extract_topic_info_from_text(cnx, text, entry_separator)
+                            extract_topic_info_from_text(text, entry_separator)
                 except Exception as e:
-                    logging.warning("error on json line " + str(line_counter) + "!" + str(e.message))
+                    logging.warning("extraction - error on json line " + str(line_counter) + "!" + str(e.message))
         line_counter += 1
     json_file.close()
     driver.close()
-    cnx.close()
 
 
 if __name__ == "__main__":
