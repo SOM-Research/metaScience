@@ -50,9 +50,13 @@ public class AuthorNameServlet extends AbstractMetaScienceServlet {
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT author"
-							+ " FROM dblp_main_aliases_new"
-							+ " WHERE author_id='" + authorId + "'";
+			String query =	"SELECT name as author " +
+						 	"FROM researcher r " +
+							"WHERE id ='" + authorId + "' " +
+							"UNION " +
+							"SELECT alias as author " +
+							"FROM researcher_alias ra " +
+							"WHERE researcher_id ='" + authorId + "'"; 
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);

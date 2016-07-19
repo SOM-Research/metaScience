@@ -54,9 +54,9 @@ public class VenueNameServlet extends AbstractMetaScienceServlet {
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT DISTINCT title"
-							+ " FROM aux_dblp_proceedings"
-							+ " WHERE source IS NOT NULL AND source = '" + venueId + "'";
+			String query = "SELECT name as title"
+							+ " FROM conference"
+							+ " WHERE acronym = '" + venueId + "'";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);

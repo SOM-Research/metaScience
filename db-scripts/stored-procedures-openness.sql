@@ -37,7 +37,7 @@ from (
 			sum(if (author_edition_x = author_previous_y_editions, 1, 0)) as old_authors,
 			sum(if (author_previous_y_editions is null, 1, 0)) as new_authors,
 			edition,
-			5 as time_interval,
+			span as time_interval,
 			conference_edition_id,
 			conference_id
 			from (

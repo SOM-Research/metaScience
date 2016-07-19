@@ -1,5 +1,5 @@
-//var metaScienceServlet = 'http://localhost:8080/metaScience';
-var metaScienceServlet = 'http://som-research.uoc.edu/tools/metaScience';
+var metaScienceServlet = 'http://localhost:8080/metaScience';
+//var metaScienceServlet = 'http://som-research.uoc.edu/tools/metaScience';
 
 function onLoadingGraph(svgIdContainer, loaderId, svgHeight, svgWidth) {
 	svgIdContainer

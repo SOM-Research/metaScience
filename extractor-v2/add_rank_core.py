@@ -47,6 +47,12 @@ def find_match(cnx, acronym, title, rank):
     cursor.close()
 
 
+def select_db(cnx):
+    cursor = cnx.cursor()
+    cursor.execute("USE " + db_config.DB_NAME)
+    cursor.close()
+
+
 def establish_connection():
     return mysql.connector.connect(**db_config.CONFIG)
 
@@ -56,6 +62,7 @@ def main():
     reader = csv.reader(input)
 
     cnx = establish_connection()
+    select_db(cnx)
 
     for row in reader:
         title = process_title(row[1])

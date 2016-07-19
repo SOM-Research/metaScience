@@ -57,11 +57,16 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 		JsonObject papersPerAuthor = new JsonObject();
 		try {
 			// AUTHORS
-			// Getting avergae authors 
-			String query1 = "SELECT ROUND(AVG(num_unique_authors), 2) as avg " +
-					"FROM _num_authors_per_conf_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			// Getting average authors 
+			String query1 = 
+					"SELECT ROUND(AVG(unique_authors), 2) as avg" +
+					" FROM (" +
+					" SELECT ce.id AS conference_edition_id, ce.year, COUNT(DISTINCT a.researcher_id) AS unique_authors" +
+					" FROM" + 
+						" conference_edition ce JOIN paper p ON ce.id = p.published_in" + 
+						" JOIN authorship a ON a.paper_id = p.id JOIN conference c ON c.id = ce.conference_id" +
+						" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+						" GROUP BY conference_edition_id) AS unique_author_per_edition";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query1);
@@ -72,10 +77,11 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting authors per year
-			String query2 = "SELECT ROUND(AVG(num_unique_authors), 2) as counter, year " +
-					"FROM _num_authors_per_conf_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
+			String query2 = "SELECT COUNT(DISTINCT a.researcher_id) AS counter, year" +
+							" FROM	conference_edition ce JOIN paper p ON ce.id = p.published_in" +
+							" JOIN authorship a ON a.paper_id = p.id JOIN conference c ON c.id = ce.conference_id" +
+							" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+							" GROUP BY ce.year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query2);
@@ -97,10 +103,13 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// PAPERS
 			// Getting average papers
-			String query3 = "SELECT ROUND(AVG(num_papers), 2) as avg " +
-					"FROM _num_of_papers_per_conference_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query3 = "SELECT ROUND(AVG(num_papers), 2) AS avg " +
+							" FROM ( " + 
+					        	" SELECT ce.conference_id, COUNT(*) as num_papers " + 
+					        	" FROM conference_edition ce JOIN paper p ON p.published_in = ce.id " +
+					        	" JOIN conference c ON c.id = ce.conference_id " +
+					        	" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+					        	" GROUP BY ce.id) AS number_of_papers_per_year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query3);
@@ -111,11 +120,11 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query4 = "SELECT ROUND(AVG(num_papers), 2) as counter, year " +
-					"FROM _num_of_papers_per_conference_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
-
+			String query4 = " SELECT COUNT(*) as counter, ce.year " + 
+		        	" FROM conference_edition ce JOIN paper p ON p.published_in = ce.id " +
+		        	" JOIN conference c ON c.id = ce.conference_id " +
+		        	" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+		        	" GROUP BY ce.year";
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query4);
 
@@ -136,10 +145,17 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// AUTHORS PER PAPER
 			// Getting average value
-			String query5 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as avg " +
-					"FROM _avg_number_authors_per_paper_per_conf_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query5 = "SELECT ROUND(AVG(avg),2) AS avg" +
+							" FROM (" +
+								"SELECT ROUND(AVG(authors),2) AS avg" +
+								" FROM (" +
+									" SELECT ce.id as conference_edition_id, ce.year, p.id as paper_id, COUNT(a.researcher_id) AS authors" +
+									" FROM conference_edition ce JOIN paper p ON ce.id = p.published_in" + 
+									" JOIN authorship a ON a.paper_id = p.id" +
+									" JOIN conference c ON c.id = ce.conference_id" +
+									" WHERE c.acronym = '" + source + "' AND p.type = 1" +
+									" GROUP BY ce.id, p.id) AS authors_per_paper_per_edition " +
+								"GROUP BY conference_edition_id) AS avg_authors_per_paper_per_edition";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query5);
@@ -150,9 +166,16 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query6 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as counter, year " +
-					"FROM _avg_number_authors_per_paper_per_conf_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
+			String query6 = 
+					"SELECT ROUND(AVG(authors),2) AS counter, year" +
+					" FROM (" +
+						" SELECT ce.id as conference_edition_id, ce.year, p.id as paper_id, COUNT(a.researcher_id) AS authors" +
+						" FROM conference_edition ce JOIN paper p ON ce.id = p.published_in" + 
+						" JOIN authorship a ON a.paper_id = p.id" +
+						" JOIN conference c ON c.id = ce.conference_id" +
+						" WHERE c.acronym = '" + source + "' AND p.type = 1" +
+						" GROUP BY ce.id, p.id) AS authors_per_paper_per_edition " +
+					"GROUP BY conference_edition_id";
                     //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
 
 			stmt = con.createStatement();
@@ -175,10 +198,18 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// PAPERS PER AUTHOR
 			// Getting average value
-			String query7 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as avg " +
-					"FROM _avg_number_papers_per_author_per_conf_per_year " +
-                    "WHERE source = '" + source + "';";
-					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query7 = "SELECT ROUND(AVG(avg), 2) as avg " +
+							"FROM ( " +
+								"SELECT ROUND(AVG(papers), 2) as avg " +
+								" FROM ( " +
+									"SELECT ce.id as conference_edition_id, ce.year, a.researcher_id, COUNT(p.id) AS papers " +
+									"FROM " +
+										" conference_edition ce JOIN paper p ON ce.id = p.published_in " + 
+										" JOIN authorship a ON a.paper_id = p.id " +
+										" JOIN conference c ON c.id = ce.conference_id " +
+										" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+									"GROUP BY ce.year, a.researcher_id) AS papers_per_author_per_edition " +
+								"GROUP BY conference_edition_id) AS avg_papers_per_author_per_edition";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query7);
@@ -189,10 +220,17 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query8 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as counter, year " +
-					"FROM _avg_number_papers_per_author_per_conf_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
+			String query8 = 
+					"SELECT ROUND(AVG(papers), 2) as counter, year " +
+					" FROM ( " +
+						"SELECT ce.id as conference_edition_id, ce.year, a.researcher_id, COUNT(p.id) AS papers " +
+						"FROM " +
+							" conference_edition ce JOIN paper p ON ce.id = p.published_in " + 
+							" JOIN authorship a ON a.paper_id = p.id " +
+							" JOIN conference c ON c.id = ce.conference_id " +
+							" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+						"GROUP BY ce.year, a.researcher_id) AS papers_per_author_per_edition " +
+					"GROUP BY conference_edition_id";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query8);

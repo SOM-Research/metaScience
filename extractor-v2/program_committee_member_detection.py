@@ -69,10 +69,9 @@ def add_instructions_html_parser(url, type, venue, year, role, prev, next, membe
 
 
 def write_to_file(instruction):
-    a = 5
-    # f = codecs.open(OUTPUT, "a+", "utf-8")
-    # f.write(instruction + '\n')
-    # f.close()
+    f = codecs.open(OUTPUT, "a+", "utf-8")
+    f.write(instruction + '\n')
+    f.close()
 
 
 def take_words(text, n, pos):

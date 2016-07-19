@@ -54,7 +54,7 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
         JsonObject survivedData = new JsonObject();
         try {
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call " + dblpSchema + ".get_perished_survived_authors('" + venueId + "', " + span + ")}";
+            String query1 = "{call " + schema + ".get_perished_survived_authors('" + venueId + "', " + span + ")}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
 

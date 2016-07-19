@@ -18,7 +18,7 @@ def establish_connection():
 def get_conference_name(url):
     driver.get("http://" + url)
     time.sleep(WAITING_TIME)
-    headline = re.sub("\(.*\)", "", driver.find_element_by_id("headline").find_element_by_tag_name("h1").text)
+    headline = re.sub("\(.*\)", "", driver.find_elements_by_tag_name("header")[0].find_element_by_tag_name("h1").text)
 
     return headline
 

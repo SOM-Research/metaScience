@@ -36,7 +36,7 @@ driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\
 def add_instructions_text_in_html_parser(url, type, venue, year, start_text, end_text, member_separator):
     instruction = '{"parser": "text_in_html","url": \"' + url + '\","target_tag":"body","start_text": \"'+ start_text + \
                   '\","stop_text": \"' + end_text + '\",\"member_separator": \"' + member_separator + '\","member_remove_before": "NULL"' + \
-                  ',"member_remove_after": "NULL","exceptions": {},"containment":"SINGLE"' + \
+                  ',"member_remove_after": "NULL","exceptions": {}' + \
                   ',"type": \"' + type + '\","venue": \"' + venue + '\","year": \"' + year + '\"}'
 
     write_to_file(instruction)

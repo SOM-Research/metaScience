@@ -51,7 +51,7 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
         JsonObject openness = new JsonObject();
         try {
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call " + dblpSchema + ".get_openness_conf('" + venueId + "')}";
+            String query1 = "{call " + schema + ".get_openness_conf('" + venueId + "')}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
 

@@ -30,7 +30,7 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 	String allowOrigin;
 	
 	/** DBLP schema name */
-	String dblpSchema;
+	String schema;
 
 	/** Version deployed */
 	String metascienceVersion;
@@ -41,14 +41,14 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 
 		try {
 			Properties properties = new Properties();
-			properties.load(getServletContext().getResourceAsStream("/WEB-INF/config.properties"));
+			properties.load(getServletContext().getResourceAsStream("/WEB-INF/config.properties.valcos.dev"));
 			allowOrigin = properties.getProperty("allowOrigin");
 			if(allowOrigin == null)
 				throw new ServletException("No value for allowOrigin in config file");
 			
-			dblpSchema = properties.getProperty("dblpSchema");
+			schema = properties.getProperty("schema");
 			metascienceVersion = properties.getProperty("version");
-			if(dblpSchema == null)
+			if(schema == null)
 				throw new ServletException("No value for dblpSchema in config file");
 		} catch (IOException e) {
 			throw new ServletException("No configuration found");

@@ -87,10 +87,14 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author"
-							+ " FROM dblp_main_aliases_new"
-							+ " WHERE author IS NOT NULL AND"
-							+ " (author LIKE '%" + searchString + "%')";
+			String query = "SELECT id as author_id, name as author " +
+						 	"FROM researcher r " +
+							"WHERE name LIKE '%" + searchString + "%' " +
+							"UNION " +
+							"SELECT researcher_id as author_id, alias as author " +
+							"FROM researcher_alias ra " +
+							"WHERE alias LIKE '%" + searchString + "%'";
+
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch( SQLException e) {
@@ -114,10 +118,13 @@ public class AuthorServlet extends AbstractMetaScienceServlet {
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author"
-							+ " FROM dblp_main_aliases_new"
-							+ " WHERE author IS NOT NULL AND"
-							+ " (author LIKE '" + searchString + "')";
+			String query = "SELECT id as author_id, name as author " +
+						 	"FROM researcher r " +
+							"WHERE name LIKE '" + searchString + "' " +
+							"UNION " +
+							"SELECT researcher_id as author_id, alias as author " +
+							"FROM researcher_alias ra " +
+							"WHERE alias LIKE '" + searchString + "'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch( SQLException e) {

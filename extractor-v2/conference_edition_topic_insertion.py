@@ -7,7 +7,7 @@ from mysql.connector import errorcode
 import db_config
 import re
 
-INPUT = "../data/topics_extracted.txt"
+INPUT = "../data/er_topics.txt"
 
 
 def get_conference_id(cnx, venue, year):
@@ -34,7 +34,7 @@ def insert_topics(cnx, topics):
 
     for topic in topics:
         query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.topic VALUES(NULL, %s)"
-        arguments = [topic.strip()]
+        arguments = [digest_topic(topic)]
         cursor.execute(query, arguments)
         cnx.commit()
 
@@ -71,7 +71,7 @@ def insert_topic_conference_edition(cnx, conference_edition_id, topic_id):
 def digest_topic(topic):
     no_parenthesis = re.sub("\(.*\)", "", topic)
     no_alpha = re.sub(r"^\W+|\W+$", "", no_parenthesis)
-    return no_alpha
+    return no_alpha.lower()
 
 
 def insert_in_db(cnx, topics, venue, year):

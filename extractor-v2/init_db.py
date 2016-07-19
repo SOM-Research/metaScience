@@ -34,7 +34,8 @@ def create_table_researcher(cnx):
 
     create_table_researcher = "CREATE TABLE " + db_config.DB_NAME + ".researcher( " \
                               "id bigint(20) PRIMARY KEY, " \
-                              "name varchar(255) NOT NULL " \
+                              "name varchar(255) NOT NULL," \
+                              "UNIQUE INDEX n (name) " \
                               ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_researcher)
@@ -110,6 +111,25 @@ def create_track_paper(cnx):
     cursor.close()
 
 
+def create_table_paper_type(cnx):
+    cursor = cnx.cursor()
+
+    create_table_paper_type = "CREATE TABLE " + db_config.DB_NAME + ".paper_type( " \
+                        "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                        "name varchar(255) NOT NULL," \
+                        "UNIQUE INDEX n (name) " \
+                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_paper_type)
+
+    insert_types =  "INSERT INTO " + db_config.DB_NAME + ".paper_type " \
+                    "VALUES(NULL, 'conference'), (NULL, 'journal');"
+
+    cursor.execute(insert_types)
+    cnx.commit()
+    cursor.close()
+
+
 def create_table_paper(cnx):
     cursor = cnx.cursor()
 
@@ -122,9 +142,11 @@ def create_table_paper(cnx):
                          "url varchar(255), " \
                          "published_in bigint(20), " \
                          "category_id bigint(20), " \
-                         "UNIQUE INDEX tp (title, published_in), " \
-                         "INDEX conf (published_in), " \
-                         "INDEX category (category_id) " \
+                         "type bigint(20), " \
+                         "UNIQUE INDEX tp (title, published_in, type), " \
+                         "INDEX venue (published_in, type), " \
+                         "INDEX category (category_id)," \
+                         "INDEX t (type) " \
                          ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_paper)
@@ -256,6 +278,44 @@ def create_table_conference_edition(cnx):
                                       ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_conference_edition)
+
+    cursor.close()
+
+
+def create_table_journal(cnx):
+    cursor = cnx.cursor()
+    create_table_journal = "CREATE TABLE " + db_config.DB_NAME + ".journal( " \
+                              "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                              "name varchar(255), " \
+                              "acronym varchar(255), " \
+                              "url varchar(255), " \
+                              "domain_id bigint(20), " \
+                              "impact_factor float(5,3), " \
+                              "UNIQUE INDEX a (acronym), " \
+                              "INDEX im (impact_factor), " \
+                              "INDEX domain (domain_id)" \
+                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_journal)
+
+    cursor.close()
+
+
+def create_table_journal_issue(cnx):
+    cursor = cnx.cursor()
+    create_table_journal_issue = "CREATE TABLE " + db_config.DB_NAME + ".journal_issue( " \
+                                      "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                                      "year int(4), " \
+                                      "volume int(4), " \
+                                      "number int(2), " \
+                                      "url varchar(255), " \
+                                      "journal_id bigint(20) NOT NULL, " \
+                                      "UNIQUE INDEX nc (year, journal_id), " \
+                                      "INDEX y (year), " \
+                                      "INDEX j (journal_id) " \
+                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_journal_issue)
 
     cursor.close()
 
@@ -470,6 +530,7 @@ def create_tables(cnx):
     create_table_researcher_alias(cnx)
     create_table_category(cnx)
     create_table_track(cnx)
+    create_table_paper_type(cnx)
     create_table_paper(cnx)
     create_table_authorship(cnx)
     create_table_country(cnx)
@@ -486,6 +547,9 @@ def create_tables(cnx):
     create_topic_paper(cnx)
     create_track_paper(cnx)
     create_steering_committee(cnx)
+
+    create_table_journal(cnx)
+    create_table_journal_issue(cnx)
 
     create_function_from_roman(cnx)
     create_function_calculate_num_of_pages(cnx)
