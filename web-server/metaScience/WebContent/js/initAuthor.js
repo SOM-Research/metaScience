@@ -114,16 +114,16 @@ function updateActivity(authorId) {
 	   	  	$("#totalPub").text(data.pub.total);
 	   	  	$("#totalPubArticleLoading").css("visibility","hidden");
 	   	  	$("#totalPubArticle").text(data.pub.totalArticles);
-	   	  	$("#totalPubProceedingLoading").css("visibility","hidden");
-	   	  	$("#totalPubProceeding").text(data.pub.totalProceedings);
-	   	  	$("#totalPubBookLoading").css("visibility","hidden");
-	   	  	$("#totalPubBook").text(data.pub.totalBooks);
-	   	  	$("#totalPubIncollectionLoading").css("visibility","hidden");
-	   	  	$("#totalPubIncollection").text(data.pub.totalIncollections);
+//	   	  	$("#totalPubProceedingLoading").css("visibility","hidden");
+//	   	  	$("#totalPubProceeding").text(data.pub.totalProceedings);
+//	   	  	$("#totalPubBookLoading").css("visibility","hidden");
+//	   	  	$("#totalPubBook").text(data.pub.totalBooks);
+//	   	  	$("#totalPubIncollectionLoading").css("visibility","hidden");
+//	   	  	$("#totalPubIncollection").text(data.pub.totalIncollections);
 	   	  	$("#totalPubInproceedingLoading").css("visibility","hidden");
 	   	  	$("#totalPubInproceeding").text(data.pub.totalInproceedings);
-	   	  	$('#totalOthersLoading').css("visibility","hidden");
-			$('#totalOthers').text(data.pub.totalOthers); // Issue #15
+//	   	  	$('#totalOthersLoading').css("visibility","hidden");
+//			$('#totalOthers').text(data.pub.totalOthers); // Issue #15
 	   	  	$("#avgPublicationsLoading").css("visibility","hidden");
 	   	  	$("#avgPublications").text(data.pub.avgPublications);
 	   	  	
@@ -134,11 +134,11 @@ function updateActivity(authorId) {
 		error : function(xhr, status, error) {
 	   	  	$("#totalPub").text("Not available");
 	   	  	$("#totalPubArticle").text("Not available");
-	   	  	$("#totalPubProceeding").text("Not available");
-	   	  	$("#totalPubBook").text("Not available");
-	   	  	$("#totalPubIncollection").text("Not available");
+//	   	  	$("#totalPubProceeding").text("Not available");
+//	   	  	$("#totalPubBook").text("Not available");
+//	   	  	$("#totalPubIncollection").text("Not available");
 	   	  	$("#totalPubInproceeding").text("Not available");
-			$("#totalOthers").text("Not available");
+//			$("#totalOthers").text("Not available");
 	   	  	$("#avgPublications").text("Not available");
 	   	  	
 	   	  	hideRow("activityChartRow");
@@ -150,13 +150,14 @@ function generateActivityDiagram(activityData) {
 	var pages = ['Pages'];
 	for(var i = 1; i < activityData.years.length + 1; i++) {
 		var artP = activityData.articles.pages[i];
-		var bookP = activityData.books.pages[i];
-		var incollectionP = activityData.incollections.pages[i];
+//		var bookP = activityData.books.pages[i];
+//		var incollectionP = activityData.incollections.pages[i];
 		var inproceedingsP = activityData.inproceedings.pages[i];
-		var othersP = activityData.others.pages[i];
-		var proceedingsP = activityData.proceedings.pages[i];
+//		var othersP = activityData.others.pages[i];
+//		var proceedingsP = activityData.proceedings.pages[i];
 		
-		var sumP = artP + bookP + incollectionP + inproceedingsP + othersP + proceedingsP;
+//		var sumP = artP + bookP + incollectionP + inproceedingsP + othersP + proceedingsP;
+		var sumP = artP + inproceedingsP;
 		pages.push(sumP);
 	}
 	
@@ -167,35 +168,36 @@ function generateActivityDiagram(activityData) {
 	    data: {
 	      columns: [
 	        activityData.articles.publications,
-	        activityData.books.publications,
+//	        activityData.books.publications,
 	        activityData.inproceedings.publications,
-			activityData.incollections.publications,
-	        activityData.proceedings.publications,
-	        activityData.others.publications,
+//			activityData.incollections.publications,
+//	        activityData.proceedings.publications,
+//	        activityData.others.publications,
 	        pages
 	      ],
 	      type: 'bar',
 	      types: {
 	    	  "Journal papers": 'bar',
-	    	  "Books": 'bar',
+//	    	  "Books": 'bar',
 	    	  "Conference papers": 'bar',
-	    	  "Part of book or collection": 'bar',
-	    	  "Editor": 'bar',
-	    	  "Others": 'bar',
+//	    	  "Part of book or collection": 'bar',
+//	    	  "Editor": 'bar',
+//	    	  "Others": 'bar',
 	    	  "Pages": 'line'
 	    	  
 	      },
 	      axes: {
 	    	  "Journal papers": 'y',
-	    	  "Books": 'y',
+//	    	  "Books": 'y',
 	    	  "Conference papers": 'y',
-	    	  "Part of book or collection": 'y',
-	    	  "Editor": 'y',
-	    	  "Others": 'y',
+//	    	  "Part of book or collection": 'y',
+//	    	  "Editor": 'y',
+//	    	  "Others": 'y',
 	    	  "Pages": 'y2'
 	      },
 	      groups: [
-	          ["Journal papers", "Books","Conference papers", "Part of book or collection", "Editor", "Others"]
+	               ["Journal papers", "Conference papers"]
+//	          ["Journal papers", "Books","Conference papers", "Part of book or collection", "Editor", "Others"]
 	      ]
       },
       axis: {

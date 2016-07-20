@@ -64,55 +64,42 @@ public class JournalAuthorCollaborationServlet extends AbstractMetaScienceServle
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT connections.*, source_authors.publications AS source_author_publications, target_authors.publications AS target_author_publications"
-					+ " FROM ("
-					+ "		SELECT source_author_name, source_author_id, target_author_name, target_author_id, relation_strength"
-					+ "		FROM ("
-					+ "			SELECT source_authors.author AS source_author_name, source_authors.author_id AS source_author_id,"
-					+ "						target_authors.author AS target_author_name, target_authors.author_id AS target_author_id,"
-					+ "						COUNT(*) AS relation_strength, source_authors.author_id * target_authors.author_id AS connection_id"
-					+ "			FROM ("
-					+ "				SELECT pub.id AS pub, author, author_id"
-					+ "				FROM dblp_pub_new pub"
-					+ "				JOIN dblp_authorid_ref_new airn"
-					+ "				ON pub.id = airn.id"
-					+ "				WHERE source = '" + journalId + "'"
-					+ "				AND pub.type = 'article'"
-					+ "			) AS source_authors"
-					+ "			JOIN ("
-					+ "				SELECT pub.id AS pub, author, author_id"
-					+ "				FROM dblp_pub_new pub"
-					+ "				JOIN dblp_authorid_ref_new airn"
-					+ "				ON pub.id = airn.id"
-					+ "				WHERE source = '" + journalId + "'"
-					+ "				AND pub.type = 'article'"
-					+ "			) AS target_authors"
-					+ "			ON source_authors.pub = target_authors.pub "
-					+ "			AND source_authors.author_id <> target_authors.author_id"
-					+ "			GROUP BY source_authors.author_id, target_authors.author_id"
-					+ "		) AS x"
-					+ "		GROUP BY connection_id"
-					+ "	) AS connections"
-					+ "	JOIN ("
-					+ "		SELECT airn.author_id, airn.author, count(pub.id) AS publications"
-					+ "		FROM dblp_pub_new pub "
-					+ "		JOIN dblp_authorid_ref_new airn"
-					+ "		ON pub.id = airn.id"
-					+ "		WHERE source = '" + journalId + "'"
-					+ "		AND pub.type = 'article'"
-					+ "		GROUP BY airn.author_id"
-					+ "	) AS source_authors"
-					+ "	ON connections.source_author_id = source_authors.author_id"
-					+ "	JOIN ("
-					+ "		SELECT airn.author_id, airn.author, count(pub.id) AS publications"
-					+ "		FROM dblp_pub_new pub "
-					+ "		JOIN dblp_authorid_ref_new airn"
-					+ "		ON pub.id = airn.id"
-					+ "		WHERE source = '" + journalId + "'"
-					+ "		AND pub.type = 'article'"
-					+ "		GROUP BY airn.author_id"
-					+ "	) AS target_authors"
-					+ "	ON connections.target_author_id = target_authors.author_id;";
+			String query = 
+					"SELECT connections.*, source.publications AS source_author_publications, target.publications AS target_author_publications " +
+					"FROM ( " +
+						"SELECT source_author_name, source_author_id, target_author_name, target_author_id, relation_strength " +
+						"FROM ( " +
+							"SELECT " +
+								"source_author_name, source_author_id, " +
+								"target_author_name, target_author_id, " +
+								"CONCAT(GREATEST(source_author_id, target_author_id), '-', LEAST(source_author_id, target_author_id)) AS connection_id, " +
+								"COUNT(*) AS relation_strength " +
+							"FROM ( " +
+								"SELECT r1.name as source_author_name, source.researcher_id as source_author_id, target.researcher_id as target_author_id, r2.name as target_author_name " + 
+								"FROM authorship source JOIN paper p ON p.id = source.paper_id JOIN journal_issue ji ON ji.id = p.published_in " +
+								"JOIN authorship target ON source.paper_id = target.paper_id AND source.researcher_id <> target.researcher_id " +
+								"JOIN researcher r1 ON source.researcher_id = r1.id JOIN researcher r2 ON target.researcher_id = r2.id " +
+								"JOIN journal j ON j.id = ji.journal_id " +
+								"WHERE acronym = '" + journalId + "' AND p.type = 2) AS connections " +
+							"GROUP BY source_author_id, target_author_id) AS result " +
+						"GROUP BY connection_id " +
+						"ORDER BY relation_strength DESC) AS connections " +
+					"JOIN ( " +
+						"SELECT a.researcher_id, COUNT(*) AS publications " +
+						"FROM journal j JOIN journal_issue ji ON j.id = ji.journal_id " + 
+						"JOIN paper p ON ji.id = p.published_in " +
+						"JOIN authorship a ON a.paper_id = p.id " +
+						"WHERE acronym = '" + journalId + "' AND p.type = 2 " +
+						"GROUP BY a.researcher_id) AS source " +
+					"ON source.researcher_id =  connections.source_author_id " +
+					"JOIN ( " +
+						"SELECT a.researcher_id, COUNT(*) AS publications " +
+						"FROM journal j JOIN journal_issue ji ON j.id = ji.journal_id " +
+						"JOIN paper p ON ji.id = p.published_in " +
+						"JOIN authorship a ON a.paper_id = p.id " +
+						"WHERE acronym = '" + journalId + "' AND p.type = 2 " +
+						"GROUP BY a.researcher_id) AS target " +
+					"ON target.researcher_id =  connections.target_author_id";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);

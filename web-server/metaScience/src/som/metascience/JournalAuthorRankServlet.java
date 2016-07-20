@@ -48,15 +48,16 @@ public class JournalAuthorRankServlet extends AbstractMetaScienceServlet {
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT airn.author_id, airn.author, COUNT(pub.id) AS publications"
-					+ " FROM dblp_pub_new pub"
-					+ " JOIN dblp_authorid_ref_new airn"
-					+ " ON pub.id = airn.id"
-					+ " WHERE source = '" + journalId + "'"
-					+ " AND pub.type = 'article'"
-					+ " GROUP BY airn.author_id"
-					+ " ORDER BY publications desc"
-					+ " LIMIT 5;";
+			String query = "SELECT r.id as author_id, r.name as author, COUNT(p.id) AS publications " +
+						   "FROM journal j JOIN journal_issue ji " +
+						   "ON j.id = ji.journal_id " +
+						   "JOIN paper p on p.published_in = ji.id " +
+						   "JOIN authorship a ON a.paper_id = p.id " +
+						   "JOIN researcher r ON r.id = a.researcher_id " +
+						   "WHERE acronym = '" + journalId + "' AND p.type = 2 " +
+						   "GROUP BY r.id " +
+						   "ORDER BY publications DESC " +
+						   "LIMIT 5";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);
@@ -86,15 +87,16 @@ public class JournalAuthorRankServlet extends AbstractMetaScienceServlet {
 		ResultSet rs = null;
 		
 		try {
-			String query = "SELECT airn.author_id, airn.author, COUNT(DISTINCT year) AS presence"
-					+ " FROM dblp_pub_new pub"
-					+ " JOIN dblp_authorid_ref_new airn"
-					+ " ON pub.id = airn.id"
-					+ " WHERE source = '" + journalId + "'"
-					+ " AND pub.type = 'article'"
-					+ " GROUP BY airn.author_id"
-					+ " ORDER BY presence DESC"
-					+ " LIMIT 5;";
+			String query = "SELECT r.id as author_id, r.name as author, COUNT(DISTINCT ji.year) AS presence " +
+						   "FROM journal j JOIN journal_issue ji " +
+						   "ON j.id = ji.journal_id " +
+						   "JOIN paper p on p.published_in = ji.id " +
+						   "JOIN authorship a ON a.paper_id = p.id " +
+						   "JOIN researcher r ON r.id = a.researcher_id " +
+						   "WHERE acronym = '" + journalId + "' AND p.type = 2 " +
+						   "GROUP BY r.id " +
+						   "ORDER BY presence DESC " +
+						   "LIMIT 5";
 	
 	        stmt = con.createStatement();
 	        rs = stmt.executeQuery(query);

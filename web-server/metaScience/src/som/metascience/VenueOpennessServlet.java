@@ -50,17 +50,27 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
         // preparing the result
         JsonObject openness = new JsonObject();
         try {
+        	//retrieve conference id
+            String query0 = "SELECT id FROM conference WHERE acronym = '" + venueId + "'";
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(query0);
+            
+            rs.next();
+            int conference_id = rs.getInt("id");
+        	
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call " + schema + ".get_openness_conf('" + venueId + "')}";
+            String query1 = "{call " + schema + ".get_openness_information_for_conference_by_id(" + conference_id + ", 5)}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
+            
+            
 
             // RESULTS for PAPERS
             JsonObject opennessPapers = new JsonObject();
 
             // Getting the average
-            String query2 = "SELECT ROUND(AVG(o.from_outsiders/o.number_of_papers)*100,2) as avg " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query2 = "SELECT ROUND(AVG(o.papers_from_outsiders/o.total_papers)*100,2) as avg " +
+                    		"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query2);
 
@@ -71,8 +81,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query3 = "SELECT ROUND((o.from_outsiders/o.number_of_papers), 4) as ratio, o.year as year " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query3 = "SELECT ROUND((o.papers_from_outsiders/o.total_papers), 4) as ratio, o.year_edition as year " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query3);
 
@@ -97,8 +107,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             JsonObject opennessAuthors = new JsonObject();
 
             // Getting the average select
-            String query4 = "SELECT ROUND(AVG(o.perc_new_authors),2) as avg " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query4 = "SELECT ROUND(AVG(o.new_authors/o.total_authors),2) as avg " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query4);
 
@@ -109,8 +119,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query5 = "SELECT ROUND(o.perc_new_authors/100, 2) as ratio, o.year as year " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query5 = "SELECT ROUND(o.new_authors/o.total_authors, 2) as ratio, o.year_edition as year " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query5);
 
@@ -135,8 +145,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             JsonObject opennessPapersCommunity = new JsonObject();
 
             // Getting the average
-            String query6 = "SELECT ROUND(AVG(o.from_community/o.number_of_papers)*100,2) as avg " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query6 = "SELECT ROUND(AVG(o.papers_from_community/o.total_papers)*100,2) as avg " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query6);
 
@@ -147,8 +157,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query7 = "SELECT ROUND((o.from_community/o.number_of_papers), 4) as ratio, o.year as year " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query7 = "SELECT ROUND((o.papers_from_community/o.total_papers), 4) as ratio, o.year_edition as year " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query7);
 
@@ -173,8 +183,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             JsonObject opennessPapersBoth = new JsonObject();
 
             // Getting the average
-            String query8 = "SELECT ROUND(AVG(1-((o.from_outsiders + o.from_community)/o.number_of_papers))*100,2) as avg " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query8 = "SELECT ROUND(AVG(1-((o.papers_from_outsiders + o.papers_from_community)/o.total_papers))*100,2) as avg " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query8);
 
@@ -185,8 +195,8 @@ public class VenueOpennessServlet extends AbstractMetaScienceServlet {
             }
 
             // Getting the data yearly
-            String query9 = "SELECT ROUND(1-((o.from_outsiders + o.from_community)/o.number_of_papers), 2) as ratio, o.year as year " +
-                    "FROM _openness_conf o WHERE conf='" + venueId + "';";
+            String query9 = "SELECT ROUND(1-((o.papers_from_outsiders + o.papers_from_community)/o.total_papers)*100,2) as ratio, o.year_edition as year " +
+            				"FROM aux_conference_openness o WHERE conference_id=" + conference_id + ";";
             stmt = con.createStatement();
             rs = stmt.executeQuery(query9);
 

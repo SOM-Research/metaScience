@@ -53,8 +53,16 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
         JsonObject perishingData = new JsonObject();
         JsonObject survivedData = new JsonObject();
         try {
+        	//retrieve conference id
+            String query0 = "SELECT id FROM conference WHERE acronym = '" + venueId + "'";
+            stmt = con.createStatement();
+            rs = stmt.executeQuery(query0);
+            
+            rs.next();
+            int conference_id = rs.getInt("id");
+        	
             // We first call the procedure that will fill the table if the data is still not there
-            String query1 = "{call " + schema + ".get_perished_survived_authors('" + venueId + "', " + span + ")}";
+            String query1 = "{call " + schema + ".get_turnover_information_for_conference(" + conference_id + ", " + span + ")}";
             CallableStatement cs = con.prepareCall(query1);
             cs.execute();
 
@@ -62,10 +70,10 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
             // We get the number of perished authors per year AND
             // We get the number of survived authors per year
             String query2 = "SELECT p.perished AS perished, s.survived AS survived, p.period AS period " +
-                    "FROM " +
-                        " (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p, " +
-                        " (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "' AND conf= '" + venueId + "' AND status = 'survived' GROUP BY period) as s " +
-                    "WHERE p.period = s.period;";
+		                    "FROM " +
+		                        " (SELECT COUNT(researcher_id) AS perished, period FROM aux_conference_turnover WHERE time_interval= '" + span + "' AND conference_id= " + conference_id + " AND status = 'perished' GROUP BY period) as p, " +
+		                        " (SELECT count(researcher_id) AS survived, period FROM aux_conference_turnover WHERE time_interval= '" + span + "' AND conference_id= " + conference_id + " AND status = 'survived' GROUP BY period) as s " +
+		                    "WHERE p.period = s.period;";
 
             stmt = con.createStatement();
             rs = stmt.executeQuery(query2);
@@ -98,10 +106,10 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
             }
             // 1.2 Average perished/survived
             String query3 = "SELECT ROUND(AVG((perished/(perished+survived))*100), 2) as avg" +
-                    " FROM" +
-                    "   (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span='" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p," +
-                    "   (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "'  AND conf='" + venueId + "'  AND status = 'survived' GROUP BY period) as s" +
-                    " WHERE p.period = s.period;";
+		                    " FROM" +
+		                    "   (SELECT COUNT(researcher_id) AS perished, period FROM aux_conference_turnover WHERE time_interval='" + span + "' AND conference_id= '" + conference_id + "' AND status = 'perished' GROUP BY period) as p," +
+		                    "   (SELECT COUNT(researcher_id) AS survived, period FROM aux_conference_turnover WHERE time_interval= '" + span + "'  AND conference_id='" + conference_id + "'  AND status = 'survived' GROUP BY period) as s" +
+		                    " WHERE p.period = s.period;";
 
             stmt = con.createStatement();
             rs = stmt.executeQuery(query3);
@@ -112,10 +120,10 @@ public class VenueTurnoverServlet extends AbstractMetaScienceServlet {
 
             // 1.3 Average perished/survived
             String query4 = "SELECT ROUND(AVG((survived/(perished+survived))*100), 2) as avg" +
-                    " FROM" +
-                    "   (SELECT count(author) AS perished, period FROM _perished_survived_authors_per_conf WHERE span='" + span + "' AND conf= '" + venueId + "' AND status = 'perished' GROUP BY period) as p," +
-                    "   (SELECT count(author) AS survived, period FROM _perished_survived_authors_per_conf WHERE span= '" + span + "'  AND conf='" + venueId + "'  AND status = 'survived' GROUP BY period) as s" +
-                    " WHERE p.period = s.period;";
+		            		 " FROM" +
+		                     "   (SELECT COUNT(researcher_id) AS perished, period FROM aux_conference_turnover WHERE time_interval='" + span + "' AND conference_id= '" + conference_id + "' AND status = 'perished' GROUP BY period) as p," +
+		                     "   (SELECT COUNT(researcher_id) AS survived, period FROM aux_conference_turnover WHERE time_interval= '" + span + "'  AND conference_id='" + conference_id + "'  AND status = 'survived' GROUP BY period) as s" +
+		                     " WHERE p.period = s.period;";
 
             stmt = con.createStatement();
             rs = stmt.executeQuery(query4);

@@ -121,10 +121,10 @@ public class VenueActivityServlet extends AbstractMetaScienceServlet {
 
 			// Getting papers per year
 			String query4 = " SELECT COUNT(*) as counter, ce.year " + 
-		        	" FROM conference_edition ce JOIN paper p ON p.published_in = ce.id " +
-		        	" JOIN conference c ON c.id = ce.conference_id " +
-		        	" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
-		        	" GROUP BY ce.year";
+				        	" FROM conference_edition ce JOIN paper p ON p.published_in = ce.id " +
+				        	" JOIN conference c ON c.id = ce.conference_id " +
+				        	" WHERE c.acronym = '" + source + "' AND p.type = 1 " +
+				        	" GROUP BY ce.year";
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query4);
 
