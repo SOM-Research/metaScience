@@ -141,15 +141,28 @@ def create_table_paper(cnx):
                          "title varchar(255) NOT NULL, " \
                          "url varchar(255), " \
                          "published_in bigint(20), " \
-                         "category_id bigint(20), " \
                          "type bigint(20), " \
                          "UNIQUE INDEX tp (title, published_in, type), " \
                          "INDEX venue (published_in, type), " \
-                         "INDEX category (category_id)," \
                          "INDEX t (type) " \
                          ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_paper)
+    cursor.close()
+
+
+def create_table_category_paper(cnx):
+    cursor = cnx.cursor()
+
+    create_table_category_paper = "CREATE TABLE " + db_config.DB_NAME + ".category_paper( " \
+                              "category_id bigint(20) NOT NULL, " \
+                              "paper_id bigint(20) NOT NULL, " \
+                              "PRIMARY KEY pk (category_id, paper_id), " \
+                              "INDEX p (category_id), " \
+                              "INDEX r (paper_id) " \
+                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_category_paper)
     cursor.close()
 
 
@@ -250,11 +263,11 @@ def create_table_conference(cnx):
                               "name varchar(255), " \
                               "acronym varchar(255), " \
                               "url varchar(255), " \
-                              "domain_id bigint(20), " \
+                              "is_satellite bigint(20), " \
+                              "is_merged bigint(20), " \
                               "rank_id bigint(20), " \
                               "UNIQUE INDEX a (acronym), " \
-                              "INDEX rank (rank_id), " \
-                              "INDEX domain (domain_id)" \
+                              "INDEX rank (rank_id) " \
                               ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_conference)
@@ -282,6 +295,36 @@ def create_table_conference_edition(cnx):
     cursor.close()
 
 
+def create_table_conference_domain(cnx):
+    cursor = cnx.cursor()
+    create_table_conference_domain = "CREATE TABLE " + db_config.DB_NAME + ".conference_domain( " \
+                                      "domain_id bigint(20), " \
+                                      "conference_id bigint(20), " \
+                                      "PRIMARY KEY pk (domain_id, conference_id), " \
+                                      "INDEX p (domain_id), " \
+                                      "INDEX r (conference_id) " \
+                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_conference_domain)
+
+    cursor.close()
+
+
+def create_table_journal_domain(cnx):
+    cursor = cnx.cursor()
+    create_table_journal_domain = "CREATE TABLE " + db_config.DB_NAME + ".journal_domain( " \
+                                      "domain_id bigint(20), " \
+                                      "journal_id bigint(20), " \
+                                      "PRIMARY KEY pk (domain_id, journal_id), " \
+                                      "INDEX p (domain_id), " \
+                                      "INDEX r (journal_id) " \
+                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+
+    cursor.execute(create_table_journal_domain)
+
+    cursor.close()
+
+
 def create_table_journal(cnx):
     cursor = cnx.cursor()
     create_table_journal = "CREATE TABLE " + db_config.DB_NAME + ".journal( " \
@@ -289,11 +332,9 @@ def create_table_journal(cnx):
                               "name varchar(255), " \
                               "acronym varchar(255), " \
                               "url varchar(255), " \
-                              "domain_id bigint(20), " \
                               "impact_factor float(5,3), " \
                               "UNIQUE INDEX a (acronym), " \
-                              "INDEX im (impact_factor), " \
-                              "INDEX domain (domain_id)" \
+                              "INDEX im (impact_factor) " \
                               ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_journal)
@@ -364,7 +405,7 @@ def create_table_topic(cnx):
     cursor.close()
 
 
-def create_topic_conference_edition(cnx):
+def create_conference_edition_topic(cnx):
     cursor = cnx.cursor()
     create_topic_conference_edition = "CREATE TABLE " + db_config.DB_NAME + ".topic_conference_edition( " \
                                       "topic_id bigint(20) NOT NULL, " \
@@ -879,20 +920,15 @@ def create_stored_procedures_for_openness(cnx):
 
 def create_table_paper_stats(cnx):
     cursor = cnx.cursor()
-    create_table_paper_stats =  "CREATE TABLE " + db_config.DB_NAME + ".aux_paper_stats " \
-                                "SELECT p.id as paper_id, year, MAX(position) AS co_authors, 1/(MAX(position) + 1) AS participation, pages, p.type " \
-                                "FROM " + db_config.DB_NAME + ".conference_edition ce JOIN " + db_config.DB_NAME + ".paper p ON p.published_in = ce.id " \
-                                "JOIN " + db_config.DB_NAME + ".authorship a ON a.paper_id = p.id WHERE p.type = 1 " \
-                                "GROUP BY p.id " \
-                                "UNION " \
-                                "SELECT p.id, year, MAX(position) AS co_authors, 1/(MAX(position) + 1) AS participation, pages, p.type " \
-                                "FROM " + db_config.DB_NAME + ".journal_issue ji JOIN " + db_config.DB_NAME + ".paper p ON p.published_in = ji.id " \
-                                "JOIN " + db_config.DB_NAME + ".authorship a ON a.paper_id = p.id WHERE p.type = 2 " \
-                                "GROUP BY p.id"
+    create_table_paper_stats =  "CREATE TABLE " + db_config.DB_NAME + ".aux_paper_stats ( " \
+                                "paper_id bigint(20) PRIMARY KEY, " \
+                                "year int(4), " \
+                                "co_authors int(2), " \
+                                "participation decimal(5,4), " \
+                                "pages int(11), " \
+                                "type bigint(20) " \
+                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_paper_stats)
-    cursor.execute("ALTER TABLE " + db_config.DB_NAME + ".aux_paper_stats ADD PRIMARY KEY(paper_id)")
-
-
     cursor.close()
 
 
@@ -904,6 +940,7 @@ def create_tables(cnx):
     create_table_track(cnx)
     create_table_paper_type(cnx)
     create_table_paper(cnx)
+    create_table_category_paper(cnx)
     create_table_authorship(cnx)
     create_table_country(cnx)
     create_table_institution(cnx)
@@ -912,31 +949,39 @@ def create_tables(cnx):
     create_table_domain(cnx)
     create_table_conference(cnx)
     create_table_conference_edition(cnx)
+    create_table_conference_domain(cnx)
     create_table_program_committee(cnx)
     create_paper_is_cited(cnx)
     create_table_topic(cnx)
-    create_topic_conference_edition(cnx)
+    create_conference_edition_topic(cnx)
     create_topic_paper(cnx)
     create_track_paper(cnx)
     create_steering_committee(cnx)
 
     create_table_journal(cnx)
     create_table_journal_issue(cnx)
+    create_table_journal_domain(cnx)
 
     create_table_paper_stats(cnx)
 
+
+def create_functions(cnx):
     create_function_from_roman(cnx)
     create_function_calculate_num_of_pages(cnx)
 
+
+def create_stored_procedures(cnx):
     create_stored_procedures_for_openness(cnx)
     create_stored_procedures_for_turnover(cnx)
 
 
 def main():
     cnx = establish_connection()
-    #create_schema(cnx, replace=True)
-    #create_tables(cnx)
-    create_table_paper_stats(cnx)
+    create_schema(cnx, replace=True)
+    create_tables(cnx)
+    create_functions(cnx)
+    create_stored_procedures(cnx)
+
     cnx.close()
 
 if __name__ == "__main__":

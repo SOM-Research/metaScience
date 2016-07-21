@@ -40,22 +40,9 @@ def add_new_researcher_aliases(cnx):
 def add_new_conferences(cnx):
     cursor = cnx.cursor()
     query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference " \
-            "SELECT NULL, NULL, source_id, CONCAT('dblp.uni-trier.de/db/conf/', source_id), NULL, NULL " \
+            "SELECT NULL, NULL, source_id, CONCAT('dblp.uni-trier.de/db/conf/', source_id), NULL, NULL, NULL " \
             "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
             "WHERE dblp_key LIKE 'conf%' AND url IS NOT NULL " \
-            "GROUP BY SUBSTRING_INDEX(dblp_key, '/', 2)"
-    cursor.execute(query)
-    cnx.commit()
-    cursor.close()
-
-
-#not consider internal reports (source_id <> 'corr')
-def add_new_journals(cnx):
-    cursor = cnx.cursor()
-    query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.journal " \
-            "SELECT NULL, source, source_id, CONCAT('dblp.uni-trier.de/db/journals/', source_id), NULL, NULL " \
-            "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
-            "WHERE dblp_key LIKE 'journals/%' AND url IS NOT NULL AND source_id <> 'corr' " \
             "GROUP BY SUBSTRING_INDEX(dblp_key, '/', 2)"
     cursor.execute(query)
     cnx.commit()
@@ -65,10 +52,11 @@ def add_new_journals(cnx):
 def add_new_conference_editions(cnx):
     cursor = cnx.cursor()
     query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference_edition " \
-            "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(dblp_selection.url, '#', 1) as url, meta.id, NULL " \
-            "FROM (SELECT crossref, year, source_id, url, CONCAT(upper(source_id), ' ', year) as title " \
+            "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(SUBSTRING_INDEX(dblp_selection.url, '.html#', 1), '-', 1) as url, meta.id, NULL " \
+            "FROM (SELECT year, source_id, url, CONCAT(upper(source_id), ' ', year) as title " \
                   "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
-                  "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+$' GROUP BY crossref) " \
+                  "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
+                  "GROUP BY source_id, year) " \
             "AS dblp_selection " \
             "JOIN `" + db_config.DB_NAME + "`.conference meta " \
             "ON dblp_selection.source_id = meta.acronym"
@@ -77,14 +65,27 @@ def add_new_conference_editions(cnx):
     cursor.close()
 
 
+#not consider internal reports (source_id <> 'corr')
+def add_new_journals(cnx):
+    cursor = cnx.cursor()
+    query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.journal " \
+            "SELECT NULL, source, source_id, CONCAT('dblp.uni-trier.de/db/journals/', source_id), NULL " \
+            "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
+            "WHERE dblp_key LIKE 'journals/%' AND url IS NOT NULL AND source_id <> 'corr' " \
+            "GROUP BY SUBSTRING_INDEX(dblp_key, '/', 2)"
+    cursor.execute(query)
+    cnx.commit()
+    cursor.close()
+
+
 def add_new_journal_issues(cnx):
     cursor = cnx.cursor()
     query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.journal_issue " \
-            "SELECT NULL, dblp_selection.year, volume, number, SUBSTRING_INDEX(dblp_selection.url, '#', 1) as url, meta.id " \
+            "SELECT NULL, dblp_selection.year, volume, number, dblp_selection.url, meta.id " \
             "FROM (SELECT source_id, year, volume, number, SUBSTRING_INDEX(url, '#', 1) as url " \
                 "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
                 "WHERE dblp_key LIKE 'journals/%' AND url IS NOT NULL AND source_id <> 'corr' " \
-                "GROUP BY SUBSTRING_INDEX(url, '#', 1)) " \
+                "GROUP BY volume, number, year, SUBSTRING_INDEX(url, '#', 1)) " \
             "AS dblp_selection " \
             "JOIN `" + db_config.DB_NAME + "`.journal meta " \
             "ON dblp_selection.source_id = meta.acronym"
@@ -109,9 +110,9 @@ def add_new_conference_papers(cnx):
         url = row[3]
         try:
             query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.paper " \
-                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), title, url, " + str(edition_id) + ", NULL, 1 " \
+                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), title, url, " + str(edition_id) + ", 1 " \
                     "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
-                    "WHERE SUBSTRING_INDEX(url, '#', 1) = '" + url + "' AND type = 'inproceedings' " \
+                    "WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(url, '.html#', 1), '-', 1) = '" + url + "' AND type = 'inproceedings' " \
                     "AND source_id = '" + acronym + "' AND year = " + str(year) + ";"
             cursor_paper.execute(query)
             cnx.commit()
@@ -138,7 +139,7 @@ def add_new_journal_papers(cnx):
         url = row[2]
         try:
             query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.paper " \
-                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), title, url, " + str(issue_id) + ", NULL, 2 " \
+                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), title, url, " + str(issue_id) + ", 2 " \
                     "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
                     "WHERE SUBSTRING_INDEX(url, '#', 1) = '" + url + "' AND type = 'article' " \
                     "AND source_id = '" + acronym + "'"
@@ -176,18 +177,46 @@ def add_new_authorships(cnx):
     cursor_paper.close()
 
 
+def add_new_paper_stats(cnx):
+    cursor = cnx.cursor()
+    query = "INSERT IGNORE INTO " + db_config.DB_NAME + ".aux_paper_stats " \
+            "SELECT p.id as paper_id, year, MAX(position) AS co_authors, 1/(MAX(position) + 1) AS participation, pages, p.type " \
+            "FROM " + db_config.DB_NAME + ".conference_edition ce JOIN ( " \
+                                                                    "SELECT p.* " \
+                                                                    "FROM " + db_config.DB_NAME + ".aux_paper_stats aux RIGHT JOIN " + db_config.DB_NAME + ".paper p " \
+                                                                    "ON p.id = aux.paper_id " \
+                                                                    "WHERE aux.paper_id IS NULL AND p.type = 1) as p " \
+                                                                "ON p.published_in = ce.id " \
+            "JOIN " + db_config.DB_NAME + ".authorship a ON a.paper_id = p.id WHERE p.type = 1 " \
+            "GROUP BY p.id " \
+            "UNION " \
+            "SELECT p.id, year, MAX(position) AS co_authors, 1/(MAX(position) + 1) AS participation, pages, p.type " \
+            "FROM " + db_config.DB_NAME + ".journal_issue ji JOIN ( " \
+                                                                "SELECT p.* " \
+                                                                "FROM " + db_config.DB_NAME + ".aux_paper_stats aux RIGHT JOIN " + db_config.DB_NAME + ".paper p " \
+                                                                "ON p.id = aux.paper_id " \
+                                                                "WHERE aux.paper_id IS NULL AND p.type = 2) as p " \
+                                                            "ON p.published_in = ji.id " \
+            "JOIN " + db_config.DB_NAME + ".authorship a ON a.paper_id = p.id WHERE p.type = 2 " \
+            "GROUP BY p.id"
+    cursor.execute(query)
+    cnx.commit()
+    cursor.close()
+
+
 def main():
     cnx = establish_connection()
     select_db(cnx)
-    # # add_new_researchers(cnx)
-    # # add_new_researcher_aliases(cnx)
-    # # add_new_conferences(cnx)
-    # # add_new_conference_editions(cnx)
-    # # add_new_journals(cnx)
-    # add_new_journal_issues(cnx)
+    add_new_researchers(cnx)
+    add_new_researcher_aliases(cnx)
+    add_new_conferences(cnx)
+    add_new_conference_editions(cnx)
+    add_new_journals(cnx)
+    add_new_journal_issues(cnx)
     add_new_conference_papers(cnx)
     add_new_journal_papers(cnx)
     add_new_authorships(cnx)
+    add_new_paper_stats(cnx)
     cnx.close()
 
 if __name__ == "__main__":

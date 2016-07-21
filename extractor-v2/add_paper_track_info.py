@@ -152,7 +152,7 @@ def assign_track2papers(cnx):
                 "FROM paper p LEFT JOIN track_paper t on p.id = t.paper_id " \
                 "GROUP BY SUBSTRING_INDEX(p.url, '#', 1) " \
                 "ORDER BY id ASC) AS x " \
-            "WHERE papers_with_track = 0 AND id > 3226574"
+            "WHERE papers_with_track = 0"
 
     cursor.execute(query)
 

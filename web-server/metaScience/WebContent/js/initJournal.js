@@ -26,7 +26,7 @@ window.onload = function() {
 	// Getting the full name of the journal
 	if(params.id) {
 		journalId = decodeURI(params.id);	
-		$("#journalName").text(journalId);
+		updateJournalName(journalId);
 		updateGraphs(journalId);
 	} else {
 		journalNotFound();
@@ -54,6 +54,18 @@ window.onload = function() {
       
       
 }
+
+
+function updateJournalName(journalId) {
+	$.ajax({
+		url : metaScienceServlet + "/journalName?id=" + journalId,
+		success : function(data) {
+          journalName = data.name;
+		  $("#journalName").text(journalName);
+		}
+	});
+}
+
 
 function journalNotFound() {
   $("#journalName").text('Journal not found');
