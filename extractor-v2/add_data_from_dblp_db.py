@@ -39,29 +39,110 @@ def add_new_researcher_aliases(cnx):
 
 def add_new_conferences(cnx):
     cursor = cnx.cursor()
-    query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference " \
-            "SELECT NULL, NULL, source_id, CONCAT('dblp.uni-trier.de/db/conf/', source_id), NULL, NULL, NULL " \
-            "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
-            "WHERE dblp_key LIKE 'conf%' AND url IS NOT NULL " \
-            "GROUP BY SUBSTRING_INDEX(dblp_key, '/', 2)"
-    cursor.execute(query)
+    conference_query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference " \
+                       "SELECT NULL, NULL, source_id, CONCAT('dblp.uni-trier.de/db/conf/', source_id), NULL, NULL, NULL " \
+                       "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
+                       "WHERE dblp_key LIKE 'conf%' AND url IS NOT NULL AND title NOT LIKE '%workshop%' AND type = 'proceedings'" \
+                       "GROUP BY SUBSTRING_INDEX(dblp_key, '/', 2) "
+
+    evolved_conference_query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference " \
+                               "SELECT NULL, NULL, lower(source) AS evolution, CONCAT('dblp.uni-trier.de/db/conf/', source_id), NULL, NULL, NULL " \
+                               "FROM " \
+                               "(SELECT source, source_id, MIN(year) AS min_year " \
+                               "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
+                               "WHERE source != source_id AND source NOT LIKE '%@%' AND source NOT LIKE '% %' AND type = 'proceedings' AND title NOT LIKE '%workshop%' " \
+                               "GROUP BY source, source_id) AS x " \
+                               "JOIN " \
+                               "(SELECT LOWER(source) AS acronym, MAX(year) AS max_year " \
+                               "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
+                               "WHERE source = source_id AND type = 'proceedings' AND title NOT LIKE '%workshop%' " \
+                               "GROUP BY acronym) AS main_conferences " \
+                               "ON x.source_id = main_conferences.acronym AND x.min_year > main_conferences.max_year " \
+                               "GROUP BY acronym, evolution"
+    cursor.execute(conference_query)
+    cnx.commit()
+    cursor.execute(evolved_conference_query)
     cnx.commit()
     cursor.close()
 
 
 def add_new_conference_editions(cnx):
     cursor = cnx.cursor()
-    query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference_edition " \
-            "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(SUBSTRING_INDEX(dblp_selection.url, '.html#', 1), '-', 1) as url, meta.id, NULL " \
-            "FROM (SELECT year, source_id, url, CONCAT(upper(source_id), ' ', year) as title " \
-                  "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
-                  "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
-                  "GROUP BY source_id, year) " \
-            "AS dblp_selection " \
-            "JOIN `" + db_config.DB_NAME + "`.conference meta " \
-            "ON dblp_selection.source_id = meta.acronym"
-    cursor.execute(query)
+    conference_edition_query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference_edition " \
+                               "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(SUBSTRING_INDEX(dblp_selection.url, '.html#', 1), '-', 1) as url, meta.id, NULL " \
+                               "FROM (SELECT year, source_id, url, CONCAT(upper(source_id), ' ', year) as title " \
+                                     "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
+                                     "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
+                                     "GROUP BY source_id, year) " \
+                               "AS dblp_selection " \
+                               "JOIN `" + db_config.DB_NAME + "`.conference meta " \
+                               "ON dblp_selection.source_id = meta.acronym"
+    evolved_conference_edition_query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.conference_edition " \
+                                       "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(SUBSTRING_INDEX(dblp_selection.url, '.html#', 1), '-', 1) as url, meta.id, NULL " \
+                                       "FROM (SELECT year, source, url, CONCAT(upper(source), ' ', year) as title " \
+                                             "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
+                                             "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
+                                             "GROUP BY source, year) " \
+                                       "AS dblp_selection " \
+                                       "JOIN `" + db_config.DB_NAME + "`.conference meta " \
+                                       "ON dblp_selection.source = meta.acronym"
+    cursor.execute(conference_edition_query)
     cnx.commit()
+    cursor.execute(evolved_conference_edition_query)
+    cnx.commit()
+    cursor.close()
+
+
+def get_conference_id(cnx, acronym):
+    found = None
+    cursor = cnx.cursor()
+    query = "SELECT id FROM `" + db_config.DB_NAME + "`.conference c WHERE c.acronym = %s"
+    arguments = [acronym]
+    cursor.execute(query, arguments)
+    row = cursor.fetchone()
+
+    if row:
+        found = row[0]
+
+    cursor.close()
+
+    return found
+
+
+def add_conference_evolution_information(cnx):
+    cursor = cnx.cursor()
+    query = "SELECT main_conferences.acronym, LOWER(x.source) AS evolution, min_year AS evolution_year " \
+            "FROM ( " \
+            "SELECT source, source_id, MIN(year) AS min_year " \
+            "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
+            "WHERE source != source_id AND source NOT LIKE '%@%' AND source NOT LIKE '% %' AND type = 'proceedings' AND title NOT LIKE '%workshop%' " \
+            "GROUP BY source, source_id) as x " \
+            "JOIN ( " \
+            "SELECT LOWER(source) AS acronym, MAX(year) AS max_year " \
+            "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
+            "WHERE source = source_id AND type = 'proceedings' AND title NOT LIKE '%workshop%' " \
+            "GROUP BY acronym) AS main_conferences " \
+            "ON x.source_id = main_conferences.acronym AND x.min_year > main_conferences.max_year " \
+            "GROUP BY acronym, evolution;"
+    cursor.execute(query)
+
+    row = cursor.fetchone()
+    cursor_update = cnx.cursor()
+    while row:
+
+        old_acronym = row[0]
+        new_acronym = row[1]
+        old_conference_id = get_conference_id(cnx, old_acronym)
+        new_conference_id = get_conference_id(cnx, new_acronym)
+
+        query_update = "UPDATE `" + db_config.DB_NAME + "`.conference c SET c.is_merged = %s WHERE c.id = %s"
+        arguments = [new_conference_id, old_conference_id]
+        cursor_update.execute(query_update, arguments)
+        cnx.commit()
+
+        row = cursor.fetchone()
+
+    cursor_update.close()
     cursor.close()
 
 
@@ -98,8 +179,8 @@ def add_new_conference_papers(cnx):
     cursor_edition = cnx.cursor()
     cursor_paper = cnx.cursor()
     query_edition_info = "SELECT acronym, ce.id as conference_edition_id, ce.year, ce.url " \
-            "FROM `" + db_config.DB_NAME + "`.conference_edition ce JOIN `" + db_config.DB_NAME + "`.conference c " \
-            "ON ce.conference_id = c.id;"
+                         "FROM `" + db_config.DB_NAME + "`.conference_edition ce JOIN `" + db_config.DB_NAME + "`.conference c " \
+                         "ON ce.conference_id = c.id;"
     cursor_edition.execute(query_edition_info)
 
     row = cursor_edition.fetchone()
@@ -110,7 +191,7 @@ def add_new_conference_papers(cnx):
         url = row[3]
         try:
             query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.paper " \
-                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), title, url, " + str(edition_id) + ", 1 " \
+                    "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), TRIM(TRAILING '.' FROM title), url, " + str(edition_id) + ", 1 " \
                     "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
                     "WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(url, '.html#', 1), '-', 1) = '" + url + "' AND type = 'inproceedings' " \
                     "AND source_id = '" + acronym + "' AND year = " + str(year) + ";"
@@ -211,6 +292,7 @@ def main():
     add_new_researcher_aliases(cnx)
     add_new_conferences(cnx)
     add_new_conference_editions(cnx)
+    add_conference_evolution_information(cnx)
     add_new_journals(cnx)
     add_new_journal_issues(cnx)
     add_new_conference_papers(cnx)

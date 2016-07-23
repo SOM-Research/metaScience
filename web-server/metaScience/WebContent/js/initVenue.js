@@ -59,7 +59,7 @@ window.onload = function() {
 			success : function(data) {
               venueName = data.name;
 			  $("#venueName").text(venueName);// Searching for satellite events
-
+/*
               var subvenues =
               {
                 datatype: "json",
@@ -105,9 +105,9 @@ window.onload = function() {
                   });
 
               dataAdapter.dataBind();
-              updateGraphs(venueId, venueId);
+ */           updateGraphs(venueId, venueId);
               subvenueId = venueId;
-
+/*
               $("#satelliteCombobox").on('bindingComplete', function (event) {
                 $(".jqx-combobox-input, .jqx-combobox-content").css({ "background-image": "none" });
               });
@@ -127,7 +127,7 @@ window.onload = function() {
                   }
                 }
               });
-
+*/
               $("#turnover1").on('click', function(event) {
                 updateTurnover(venueId, subvenueId, "1");
               });

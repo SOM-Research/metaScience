@@ -125,7 +125,7 @@ def populate_db(cnx, url):
 def find_track(paper_web_element):
     precedents = [we for we in paper_web_element.find_elements_by_xpath("./preceding::*[starts-with(name(),'h')]") if we.text != '']
     precedents.reverse()
-    found = None
+    found = 'no_track'
     for p in precedents:
         if p.tag_name in ['h2', 'h3']:
             found = digest_text(p.text)
@@ -144,28 +144,29 @@ def establish_connection():
     return mysql.connector.connect(**db_config.CONFIG)
 
 
+#1200000 - 1500000
 def assign_track2papers(cnx):
+    start = 3000000
+    end = 3226583
+    print str(start) + " - " + str(end)
     cursor = cnx.cursor()
     query = "SELECT conference_url, id " \
             "FROM ( " \
-                "SELECT p.id, SUBSTRING_INDEX(p.url, '#', 1) as conference_url, count(p.id) as total_papers, count(track_id) as papers_with_track " \
-                "FROM paper p LEFT JOIN track_paper t on p.id = t.paper_id " \
+                "SELECT p.id, SUBSTRING_INDEX(p.url, '#', 1) as conference_url, count(p.id) as total_papers, sum(if(track_id is null, 0, 1)) as papers_with_track " \
+                "FROM paper p LEFT JOIN track_paper t on p.id = t.paper_id WHERE p.type = 1 " \
                 "GROUP BY SUBSTRING_INDEX(p.url, '#', 1) " \
                 "ORDER BY id ASC) AS x " \
-            "WHERE papers_with_track = 0"
+            "WHERE papers_with_track = 0 AND id >= %s AND id < %s"
 
-    cursor.execute(query)
+    arguments = [start, end]
+    cursor.execute(query, arguments)
 
     row = cursor.fetchone()
-    first_id = row[1]
     while row:
         conf_url = row[0]
         populate_db(cnx, conf_url)
         row = cursor.fetchone()
-        last_id = row[1]
     cursor.close()
-
-    print 'interval: ' + str(first_id) + ' - ' + str(last_id)
 
 
 def main():

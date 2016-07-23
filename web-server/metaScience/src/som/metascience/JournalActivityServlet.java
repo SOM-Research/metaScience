@@ -180,7 +180,7 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 						" JOIN journal j ON j.id = ji.journal_id" +
 						" WHERE j.acronym = '" + source + "' AND p.type = 2" +
 						" GROUP BY ji.id, p.id) AS authors_per_paper_per_issue " +
-					"GROUP BY journal_issue_id";
+					"GROUP BY year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query6);
@@ -233,7 +233,7 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 								" JOIN journal j ON j.id = ji.journal_id " +
 								" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
 							"GROUP BY ji.year, a.researcher_id) AS papers_per_author_per_issue " +
-						"GROUP BY journal_issue_id";
+						"GROUP BY year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query8);

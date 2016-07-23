@@ -351,7 +351,7 @@ def create_table_journal_issue(cnx):
                                       "number int(2), " \
                                       "url varchar(255), " \
                                       "journal_id bigint(20) NOT NULL, " \
-                                      "UNIQUE INDEX nc (year, journal_id), " \
+                                      "UNIQUE INDEX nc (year, volume, number, journal_id), " \
                                       "INDEX y (year), " \
                                       "INDEX j (journal_id) " \
                                       ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
@@ -380,8 +380,8 @@ def create_table_program_committee(cnx):
 def create_paper_is_cited(cnx):
     cursor = cnx.cursor()
     create_table_paper_is_cited = "CREATE TABLE " + db_config.DB_NAME + ".paper_is_cited( " \
-                                  "paper_cites bigint(20) NOT NULL, " \
-                                  "paper_is_cited bigint(20) NOT NULL, " \
+                                  "paper_cites bigint(20), " \
+                                  "paper_is_cited bigint(20), " \
                                   "PRIMARY KEY (paper_cites, paper_is_cited), " \
                                   "INDEX pc (paper_cites), " \
                                   "INDEX pi (paper_is_cited)" \
