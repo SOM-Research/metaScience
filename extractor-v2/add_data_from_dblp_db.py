@@ -72,7 +72,7 @@ def add_new_conference_editions(cnx):
                                "SELECT NULL, dblp_selection.year, title, SUBSTRING_INDEX(SUBSTRING_INDEX(dblp_selection.url, '.html#', 1), '-', 1) as url, meta.id, NULL " \
                                "FROM (SELECT year, source_id, url, CONCAT(upper(source_id), ' ', year) as title " \
                                      "FROM `" + DBLP_DATABASE + "`.dblp_pub_new dblp " \
-                                     "WHERE SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
+                                     "WHERE dblp_key LIKE 'conf/%' AND SUBSTRING_INDEX(crossref, '/', -1) REGEXP '^[0-9]+(-[0-9])*$' " \
                                      "GROUP BY source_id, year) " \
                                "AS dblp_selection " \
                                "JOIN `" + db_config.DB_NAME + "`.conference meta " \
@@ -193,7 +193,7 @@ def add_new_conference_papers(cnx):
             query = "INSERT IGNORE INTO `" + db_config.DB_NAME + "`.paper " \
                     "SELECT id, doi, NULL, `" + db_config.DB_NAME + "`.calculate_num_of_pages(pages), TRIM(TRAILING '.' FROM title), url, " + str(edition_id) + ", 1 " \
                     "FROM `" + DBLP_DATABASE + "`.dblp_pub_new " \
-                    "WHERE SUBSTRING_INDEX(SUBSTRING_INDEX(url, '.html#', 1), '-', 1) = '" + url + "' AND type = 'inproceedings' " \
+                    "WHERE dblp_key LIKE 'conf/%' AND SUBSTRING_INDEX(SUBSTRING_INDEX(url, '.html#', 1), '-', 1) = '" + url + "' AND type = 'inproceedings' " \
                     "AND source_id = '" + acronym + "' AND year = " + str(year) + ";"
             cursor_paper.execute(query)
             cnx.commit()

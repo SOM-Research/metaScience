@@ -145,9 +145,14 @@ def establish_connection():
 
 
 #1200000 - 1500000
+#1500000 - 1800000
+#1800000 - 2300000
+#2300000 - 2500000
+#2500000 - 3000000
+#3000000 - 3226583
 def assign_track2papers(cnx):
-    start = 3000000
-    end = 3226583
+    start = 2500000
+    end = 3000000
     print str(start) + " - " + str(end)
     cursor = cnx.cursor()
     query = "SELECT conference_url, id " \
