@@ -39,7 +39,7 @@ Of course if you would like MetaScience to show something you have in mind, do n
 * [Jordi Cabot](http://github.com/jcabot/ "Jordi Cabot")
 * [Robin Boncorps](http://github.com/rboncorps/ "Robin Boncorps")
 
-Javier and Jordi are currently members of [SOM](http://som-research.uoc.edu), a research team of IN3-UOC. Robin and Valerio are members of [Atlanmod](http://www.emn.fr/z-info/atlanmod), a research team of Inria.
+Javier, Valerio and Jordi are currently members of [SOM](http://som-research.uoc.edu), a research team of IN3-UOC. Robin is a former member of [Atlanmod](http://www.emn.fr/z-info/atlanmod), a research team of Inria.
 
 How can I follow the latest news about the project?
 ---------------------------------------------------
