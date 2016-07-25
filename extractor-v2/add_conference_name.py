@@ -22,12 +22,20 @@ def get_conference_name(url):
 
     return headline
 
-
+#1 - 1000
+#1000 - 2000
+#2000 - 3000
+#3000 - 4000
+#4000 - 4201
 def update_conference_title(cnx):
+    start = 4000
+    end = 4201
+    print str(start) + " - " + str(end)
     cursor = cnx.cursor()
     cursor_update = cnx.cursor()
-    query = "SELECT id, url FROM  `" + db_config.DB_NAME + "`.conference WHERE name IS NULL;"
-    cursor.execute(query)
+    query = "SELECT id, url FROM  `" + db_config.DB_NAME + "`.conference WHERE name IS NULL AND id >= %s AND id < %s;"
+    arguments = [start, end]
+    cursor.execute(query, arguments)
 
     row = cursor.fetchone()
     while row:

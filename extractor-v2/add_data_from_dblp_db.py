@@ -4,8 +4,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import db_config
 
-DBLP_DATABASE = "dblp-2016-02-13"
-
+DBLP_DATABASE = "dblp-2016-06-04"
 
 def select_db(cnx):
     cursor = cnx.cursor()
