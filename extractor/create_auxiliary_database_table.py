@@ -19,7 +19,7 @@ LOG_FILENAME = 'logger_update_database.log'
 
 def create_auxiliary_tables(cnx):
     cursor = cnx.cursor()
-    create_table_aux_program_committee = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_program_committee" \
+    create_table_aux_program_committee = "CREATE TABLE aux_program_committee" \
                                          "(" \
                                          "name varchar(256), " \
                                          "conference varchar(256), " \
@@ -28,10 +28,20 @@ def create_auxiliary_tables(cnx):
                                          "dblp_author_id numeric(15), " \
                                          "primary key (name, conference, year), " \
                                          "index dblp_author_id (dblp_author_id)" \
-                                         ");"
+                                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_aux_program_committee)
 
-    create_table_aux_scholar_authors = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_scholar_authors" \
+    create_table_aux_topics = "CREATE TABLE aux_topics" \
+                                         "(" \
+                                         "name varchar(256), " \
+                                         "venue varchar(256), " \
+                                         "type varchar(256), " \
+                                         "year numeric(5), " \
+                                         "primary key (name, venue, year) " \
+                                         ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+    cursor.execute(create_table_aux_topics)
+
+    create_table_aux_scholar_authors = "CREATE TABLE aux_scholar_authors" \
                                        "(" \
                                        "name varchar(256), " \
                                        "citations numeric(15), " \
@@ -47,10 +57,10 @@ def create_auxiliary_tables(cnx):
                                        "tracked_at date, " \
                                        "primary key (name, dblp_author_id, tracked_at), " \
                                        "index dblp_paper_id (dblp_paper_id)" \
-                                       ");"
+                                       ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_aux_scholar_authors)
 
-    create_table_aux_proceedings = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_dblp_proceedings" \
+    create_table_aux_proceedings = "CREATE TABLE aux_dblp_proceedings" \
                                    "(" \
                                    "id int(11) primary key auto_increment, " \
                                    "dblp_id int(8), " \
@@ -65,10 +75,10 @@ def create_auxiliary_tables(cnx):
                                    "rank varchar(10), " \
                                    "index dblp_id (dblp_id), " \
                                    "index dblp_key (dblp_key)" \
-                                   ");"
+                                   ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_aux_proceedings)
 
-    create_table_aux_inproceedings_tracks = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_dblp_inproceedings_tracks" \
+    create_table_aux_inproceedings_tracks = "CREATE TABLE aux_dblp_inproceedings_tracks" \
                                             "(" \
                                             "id int(11) primary key auto_increment, " \
                                             "dblp_id int(8), " \
@@ -84,17 +94,17 @@ def create_auxiliary_tables(cnx):
                                             "index dblp_id (dblp_id), " \
                                             "index url (url), " \
                                             "index dblp_key (dblp_key)" \
-                                            ");"
+                                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_aux_inproceedings_tracks)
 
-    create_table_aux_dblp_inproceedings_abstract = "CREATE TABLE " + dbconnection.DATABASE_NAME + ".aux_dblp_inproceedings_abstract" \
+    create_table_aux_dblp_inproceedings_abstract = "CREATE TABLE aux_dblp_inproceedings_abstract" \
                                                    "(" \
                                                    "id int(11) primary key auto_increment, " \
                                                    "dblp_id int(8), " \
                                                    "dblp_key varchar(150), " \
                                                    "abstract text, " \
                                                    "index dblp_id (dblp_id)" \
-                                                   ");"
+                                                   ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_aux_dblp_inproceedings_abstract)
 
     cnx.commit()
@@ -105,15 +115,27 @@ def update_conference_database():
     os.system("update_auxiliary_database_tables.py")
 
 
+def prepare_db(cnx):
+    cursor = cnx.cursor()
+    cursor.execute("set global innodb_file_format = BARRACUDA")
+    cursor.execute("set global innodb_file_format_max = BARRACUDA")
+    cursor.execute("set global innodb_large_prefix = ON")
+    cursor.execute("set global character_set_server = utf8")
+    cnx.commit()
+    cursor.close()
+
+
 def main():
     logging.basicConfig(filename=LOG_FILENAME, level=logging.WARNING)
     with open(LOG_FILENAME, "w") as log_file:
         log_file.write('\n')
     cnx = mysql.connector.connect(**dbconnection.CONFIG)
+    #prepare db
+    prepare_db(cnx)
     #create aux tables
     create_auxiliary_tables(cnx)
     #update database
-    update_conference_database()
+    #update_conference_database()
 
 if __name__ == "__main__":
     main()

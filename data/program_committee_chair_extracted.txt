@@ -1,0 +1,237 @@
+{"role": "chair", "venue": "ER", "members": ["Il-Yeol Song", "Isabelle Comyn-wattiau", "Katsumi Tanaka"], "year": "2016"}
+{"role": "chair", "venue": "ER", "members": ["Oscar Pastor", "Mong Li Lee", "Stephen W. Liddle"], "year": "2015"}
+{"role": "chair", "venue": "ER", "members": ["Matthias Jarke", "Eric Yu", "Gill Dobbie"], "year": "2014"}
+{"role": "chair", "venue": "ER", "members": ["Veda Storey", "Wilfred Ng", "Juan Trujillo"], "year": "2013"}
+{"role": "chair", "venue": "ER", "members": ["Sudha Ram", "David Cheung", "Paolo Atzeni"], "year": "2012"}
+{"role": "chair", "venue": "ER", "members": ["Lois Delcambre", "Tok Wang Ling", "Manfred Jeusfeld"], "year": "2011"}
+{"role": "chair", "venue": "ER", "members": ["Peretz Shoval", "Jeff Parsons", "Motoshi Saeki"], "year": "2010"}
+{"role": "chair", "venue": "ER", "members": ["Alberto Laender", "Silvana Castano", "Umeshwar Dayal"], "year": "2009"}
+{"role": "chair", "venue": "ER", "members": ["Stefano Spaccapietra", "Eric Yu", "Qing Li"], "year": "2008"}
+{"role": "chair", "venue": "ER", "members": ["Veda C. Storey", "Klaus-Dieter Schewe", "Christine Parent"], "year": "2007"}
+{"role": "chair", "venue": "ER", "members": ["Antoni Olive", "Dave Embley"], "year": "2006"}
+{"role": "chair", "venue": "ER", "members": ["Lois Delcambre", "John Mylopoulos", "Oscar Pastor L\u00f3pez"], "year": "2005"}
+{"role": "chair", "venue": "ER", "members": ["Hongjun Lu", "Wesley Chu", "Paolo Atzeni"], "year": "2004"}
+{"role": "chair", "venue": "ER", "members": ["Il-Yeol Song", "Tok Wang Ling", "Stephen W. Liddle"], "year": "2003"}
+{"role": "chair", "venue": "UML", "members": ["Perdita Stevens"], "year": "2003"}
+{"role": "chair", "venue": "UML", "members": ["Thomas Baar", "Alfred Strohmeier"], "year": "2004"}
+{"role": "chair", "venue": "MODELS", "members": ["Lionel Briand"], "year": "2005"}
+{"role": "chair", "venue": "MODELS", "members": ["Oscar Nierstrasz"], "year": "2006"}
+{"role": "chair", "venue": "MODELS", "members": ["Gregor Engels"], "year": "2007"}
+{"role": "chair", "venue": "MODELS", "members": ["Krzysztof Czarnecki"], "year": "2008"}
+{"role": "chair", "venue": "MODELS", "members": ["Andy Sch\u00fcrr", "Bran Selic"], "year": "2009"}
+{"role": "chair", "venue": "MODELS", "members": ["Nicolas F Rouquette", "Dorina Petriu"], "year": "2010"}
+{"role": "chair", "venue": "MODELS", "members": ["Jon Whittle", "Tony Clark"], "year": "2011"}
+{"role": "chair", "venue": "MODELS", "members": ["Robert France"], "year": "2012"}
+{"role": "m_board", "venue": "MODELS", "members": ["Perdita Stevens", "Bernhard Rumpe", "Betty Cheng", "Bran Selic", "Manfred Broy", "Tony Clark", "Lionel Briand", "Martin Gogolla", "Geri Georg", "Jean-Marc Jezequel"], "year": "2012"}
+{"role": "chair", "venue": "MODELS", "members": ["Ana Moreira", "Bernhard Sch\u00e4tz"], "year": "2013"}
+{"role": "c_board", "venue": "MODELS", "members": [], "year": "2013"}
+{"role": "m_board", "venue": "MODELS", "members": ["Juergen Dingel", "Bernhard Sch\u00e4tz", "Robert France", "Krzysztof Czarnecki", "Bernhard Rumpe", "Richard Paige", "Dorina Petriu", "Jon Whittle", "Ana Moreira", "Lionel Briand", "Martin Gogolla", "Gregor Engels", "Jean Michel Bruel", "Jean-Marc Jezequel"], "year": "2013"}
+{"role": "chair", "venue": "MODELS", "members": ["Juergen Dingel", "Wolfram Schulte"], "year": "2014"}
+{"role": "m_board", "venue": "MODELS", "members": ["Juergen Dingel", "Perdita Stevens", "Oystein Haugen", "Jean-Marc Jezequel", "Andy Schuerr", "Richard Paige", "Ana Moreira", "Gerti Kappel", "Heinrich Hussmann", "Martin Gogolla", "Wolfram Schulte", "Jean Michel Bruel", "Gregor Engels"], "year": "2014"}
+{"role": "chair", "venue": "ASE", "members": ["Marsha Chechik", "Paul Gr\u00fcnbacher"], "year": "2014"}
+{"role": "chair", "venue": "ASE", "members": ["Tim Menzies", "Motoshi Saeki"], "year": "2012"}
+{"role": "chair", "venue": "ASE", "members": ["John Hosking", "Corina Pasareanu"], "year": "2011"}
+{"role": "chair", "venue": "ASE", "members": ["Elisabetta Di Nitto", "Jamie Andrews"], "year": "2010"}
+{"role": "chair", "venue": "ASE", "members": ["Mats Heimdahl", "Gabriele Taentzer"], "year": "2009"}
+{"role": "chair", "venue": "ASE", "members": ["Willem Visser", "Andrew Ireland"], "year": "2008"}
+{"role": "chair", "venue": "ASE", "members": ["Bernd Fischer", "Alexander Egyed"], "year": "2007"}
+{"role": "chair", "venue": "ASE", "members": ["Steve Easterbrook", "Sebastian Uchitel"], "year": "2006"}
+{"role": "chair", "venue": "ASE", "members": ["Andrea Zisman", "Tom Ellman"], "year": "2005"}
+{"role": "chair", "venue": "ASE", "members": ["Kurt Stirewalt", "Virginie Wiels"], "year": "2004"}
+{"role": "chair", "venue": "ASE", "members": ["John Grundy", "John Penix"], "year": "2003"}
+{"role": "chair", "venue": "ICSE", "members": ["Lionel Briand", "Andr\u00e9 van der Hoek"], "year": "2014"}
+{"role": "m_board", "venue": "ICSE", "members": ["Vittorio Cortellessa", "Gerardo Canfora", "Mark Harman", "Peri Tarr", "Jean-Marc Jezequel", "Wilhelm Schafer", "Alexander Pretschner", "Luciano Baresi", "Willem Visser", "Betty H.C. Cheng", "Patrick Heymans", "Arie van Deursen", "Laurie Williams", "Gail Murphy", "Margaret Burnett", "Michele Lanza", "Paolo Tonella", "Per Runeson", "Cristina Videira Lopes", "Sebastian Elbaum", "Christine Julien", "Joanne M. Atlee", "Massimiliano Di Penta", "Kumiyo Nakakoji"], "year": "2014"}
+{"role": "chair", "venue": "ICSE", "members": ["Betty H.C. Cheng", "Klaus Pohl"], "year": "2013"}
+{"role": "chair", "venue": "ICSE", "members": ["Mauro Pezz\u00e8", "Gail Murphy"], "year": "2012"}
+{"role": "chair", "venue": "ICSE", "members": ["Nenad Medvidovi\u0107", "Harald Gall"], "year": "2011"}
+{"role": "chair", "venue": "ICSE", "members": ["Sebastian Uchitel", "Prem Devanbu"], "year": "2010"}
+{"role": "chair", "venue": "ICSE", "members": ["Joanne M. Atlee", "Paola Inverardi"], "year": "2009"}
+{"role": "chair", "venue": "ICSE", "members": [], "year": "2008"}
+{"role": "chair", "venue": "ICSE", "members": ["Gregg Rothermel", "Wolfgang Emmerich"], "year": "2007"}
+{"role": "chair", "venue": "ICSE", "members": ["Mary Lou Soffa", "Dieter Rombach"], "year": "2006"}
+{"role": "chair", "venue": "ICSE", "members": ["William Griswold", "Bashar Nuseibeh"], "year": "2005"}
+{"role": "chair", "venue": "ICSE", "members": ["David S Rosenblum", "Jacky Estublier"], "year": "2004"}
+{"role": "chair", "venue": "ICSE", "members": ["Laurie Dillon", "Walter Tichy"], "year": "2003"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Margaret-Anne Storey", "Alessandro Orso"], "year": "2014"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Mira Mezini", "Luciano Baresi"], "year": "2013"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Martin Robillard", "Tevfik Bultan"], "year": "2012"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Andreas Zeller"], "year": "2011"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Andr\u00e9 van der Hoek"], "year": "2010"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Valerie Issarny"], "year": "2009"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Gail Murphy"], "year": "2008"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Antonia Bertolino"], "year": "2007"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Premkumar Devanbu"], "year": "2006"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Harald C. Gall"], "year": "2005"}
+{"role": "chair", "venue": "SIGSOFT FSE", "members": ["Matthew B. Dwyer"], "year": "2004"}
+{"role": "chair", "venue": "ESEC/SIGSOFT FSE", "members": ["Paola Inverardi"], "year": "2003"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Todd Millstein"], "year": "2014"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Cristina V. Lopes"], "year": "2013"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Matthew B. Dwyer"], "year": "2012"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Kathleen Fisher"], "year": "2011"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Martin Rinard"], "year": "2010"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Gary Leavens"], "year": "2009"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Gregor Kiczales"], "year": "2008"}
+{"role": "chair", "venue": "OOPSLA", "members": ["David F. Bacon"], "year": "2007"}
+{"role": "chair", "venue": "OOPSLA", "members": ["William R. Cook"], "year": "2006"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Richard P. Gabriel"], "year": "2005"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Doug Schmidt"], "year": "2004"}
+{"role": "chair", "venue": "OOPSLA", "members": ["Guy L. Steele Jr."], "year": "2003"}
+{"role": "chair", "venue": "ECOOP", "members": ["Richard Jones"], "year": "2014"}
+{"role": "chair", "venue": "ECOOP", "members": ["Giuseppe Castagna"], "year": "2013"}
+{"role": "chair", "venue": "ECOOP", "members": ["James Noble"], "year": "2012"}
+{"role": "chair", "venue": "ECOOP", "members": ["Mira Mezini"], "year": "2011"}
+{"role": "chair", "venue": "ECOOP", "members": ["Theo D'Hondt"], "year": "2010"}
+{"role": "chair", "venue": "ECOOP", "members": ["Sophia Drossopoulou"], "year": "2009"}
+{"role": "chair", "venue": "ECOOP", "members": ["Jan Vitek"], "year": "2008"}
+{"role": "chair", "venue": "ECOOP", "members": ["Erik Ernst"], "year": "2007"}
+{"role": "chair", "venue": "ECOOP", "members": ["Dave Thomas"], "year": "2006"}
+{"role": "chair", "venue": "ECOOP", "members": ["Andrew Black"], "year": "2005"}
+{"role": "chair", "venue": "ECOOP", "members": ["Martin Odersky"], "year": "2004"}
+{"role": "chair", "venue": "ECOOP", "members": ["Luca Cardelli"], "year": "2003"}
+{"role": "chair", "venue": "FASE", "members": ["Stefania Gnesi", "Arend Rensink"], "year": "2014"}
+{"role": "chair", "venue": "FASE", "members": ["Vittorio Cortellessa", "Daniel Varr\u00f3"], "year": "2013"}
+{"role": "chair", "venue": "FASE", "members": ["Andrea Zisman", "Juan de Lara"], "year": "2012"}
+{"role": "chair", "venue": "FASE", "members": ["Fernando Orejas", "Dimitra Giannakopoulou"], "year": "2011"}
+{"role": "chair", "venue": "FASE", "members": ["Gabriele Taentzer", "David Rosenblum"], "year": "2010"}
+{"role": "chair", "venue": "FASE", "members": ["Martin Wirsing", "Marsha Chechik"], "year": "2009"}
+{"role": "chair", "venue": "FASE", "members": ["Jos\u00e9 FIADEIRO", "Paola INVERARDI"], "year": "2008"}
+{"role": "chair", "venue": "FASE", "members": ["Matt Dwyer", "Ant\u00f3nia Lopes"], "year": "2007"}
+{"role": "chair", "venue": "FASE", "members": ["Luciano Baresi ", "Reiko Heckel "], "year": "2006"}
+{"role": "chair", "venue": "FASE", "members": ["Maura Cerioli"], "year": "2005"}
+{"role": "chair", "venue": "FASE", "members": ["Tiziana Margaria", "Michel Wermelinger"], "year": "2004"}
+{"role": "chair", "venue": "FASE", "members": ["Mauro Pezz\u00e8 "], "year": "2003"}
+{"role": "chair", "venue": "ISSTA", "members": ["Darko Marinov"], "year": "2014"}
+{"role": "chair", "venue": "ISSTA", "members": ["Mark Harman"], "year": "2013"}
+{"role": "chair", "venue": "ISSTA", "members": ["Zhendong Su"], "year": "2012"}
+{"role": "chair", "venue": "ISSTA", "members": ["Frank Tip"], "year": "2011"}
+{"role": "chair", "venue": "ISSTA", "members": ["Alessandro Orso"], "year": "2010"}
+{"role": "chair", "venue": "ISSTA", "members": ["Laura Dillon"], "year": "2009"}
+{"role": "chair", "venue": "ISSTA", "members": ["Andreas Zeller"], "year": "2008"}
+{"role": "chair", "venue": "ISSTA", "members": ["Sebastian Elbaum"], "year": "2007"}
+{"role": "chair", "venue": "ISSTA", "members": ["Mauro Pezz\u00e8"], "year": "2006"}
+{"role": "chair", "venue": "ISSTA", "members": ["Gregg Rothermel"], "year": "2004"}
+{"role": "chair", "venue": "CSMR-WCRE", "members": ["Filippo Ricca", "Dave Binkley"], "year": "2014"}
+{"role": "chair", "venue": "WCRE", "members": ["Romain Robbes", "Rocco Oliveto"], "year": "2013"}
+{"role": "chair", "venue": "WCRE", "members": ["Rocco Oliveto", "Denys Poshyvanyk"], "year": "2012"}
+{"role": "chair", "venue": "WCRE", "members": ["Denys Poshyvanyk", "Martin Pinzger"], "year": "2011"}
+{"role": "chair", "venue": "WCRE", "members": ["Giuliano Antoniol", "Martin Pinzger"], "year": "2010"}
+{"role": "chair", "venue": "WCRE", "members": ["Andy Zaidman", "Giuliano Antoniol"], "year": "2009"}
+{"role": "chair", "venue": "WCRE", "members": ["Ahmed E. Hassan"], "year": "2008"}
+{"role": "chair", "venue": "WCRE", "members": ["Massimiliano Di Penta", "Jonathan I. Maletic"], "year": "2007"}
+{"role": "chair", "venue": "WCRE", "members": ["Massimiliano Di Penta", "Susan Elliott Sim"], "year": "2006"}
+{"role": "chair", "venue": "WCRE", "members": ["Andrea De Lucia", "Susan Elliott Sim"], "year": "2005"}
+{"role": "chair", "venue": "WCRE", "members": ["Andrea De Lucia", "Eleni Stroulia"], "year": "2004"}
+{"role": "chair", "venue": "WCRE", "members": ["Arie van Deursen", "Eleni Stroulia"], "year": "2003"}
+{"role": "chair", "venue": "CSMR", "members": ["Anthony Cleve", "Filippo Ricca"], "year": "2013"}
+{"role": "chair", "venue": "CSMR", "members": ["Anthony Cleve", "Tom Mens"], "year": "2012"}
+{"role": "chair", "venue": "CSMR", "members": ["Yiannis Kanellopoulos", "Tom Mens"], "year": "2011"}
+{"role": "chair", "venue": "CSMR", "members": ["Rudolf Ferenc", "Juan Carlos Due\u00f1as"], "year": "2010"}
+{"role": "chair", "venue": "CSMR", "members": ["Rudolf Ferenc", "Juan Carlos Due\u00f1as"], "year": "2009"}
+{"role": "chair", "venue": "CSMR", "members": ["Andreas Winter", "Christos Tjortjis"], "year": "2008"}
+{"role": "chair", "venue": "CSMR", "members": ["Chris Verhoef", "Giuseppe Antonio Di Lucca"], "year": "2007"}
+{"role": "chair", "venue": "CSMR", "members": ["Nicolas Gold", "Giuseppe Antonio Di Lucca"], "year": "2006"}
+{"role": "chair", "venue": "CSMR", "members": ["Tarja Syst\u00e4", "Nicolas Gold"], "year": "2005"}
+{"role": "chair", "venue": "CSMR", "members": ["Gerardo Canfora", "Claudio Riva"], "year": "2004"}
+{"role": "chair", "venue": "CSMR", "members": ["Tibor Gyimothy", "Mark van den Brand"], "year": "2003"}
+{"role": "chair", "venue": "ICMT", "members": ["Davide Di Ruscio", "D\u00e1niel Varr\u00f3"], "year": "2014"}
+{"role": "chair", "venue": "ICMT", "members": ["Keith Duddy", "Gerti Kappel"], "year": "2013"}
+{"role": "chair", "venue": "ICMT", "members": ["Zhenjiang Hu", "Juan de Lara"], "year": "2012"}
+{"role": "chair", "venue": "ICMT", "members": ["Eelco Visser", "Jordi Cabot"], "year": "2011"}
+{"role": "chair", "venue": "ICMT", "members": ["Laurence Tratt"], "year": "2010"}
+{"role": "chair", "venue": "ICMT", "members": ["Richard Paige"], "year": "2009"}
+{"role": "chair", "venue": "ICMT", "members": ["Antonio Vallecillo", "Alfonso Pierantonio"], "year": "2008"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Ali Hurson", "Cristina Seceleanu", "Kenichi Yoshida"], "year": "2014"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Hiroyuki Ohsaki", "Sahra Sedigh Sarvestani", "Axel K\u00fcpper"], "year": "2013"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Xiaoying Bai", "Mohammad Zulkernine", "Atilla Elci"], "year": "2012"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Wolfgang Minker", "Sheikh Iqbal Ahamed", "Zhi Jin"], "year": "2011"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Sungdeok Cha", "Eric Wong", "Rajesh Subramanyan"], "year": "2010"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Lin Liu", "Elisa Bertino", "Vladimir Getov"], "year": "2009"}
+{"role": "chair", "venue": "COMPSAC", "members": ["T.Ming Jiang", "Xiaoqing Liu", "Hannu Tenhunen"], "year": "2008"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Bruce McMillin", "Fevzi Belli", "Hong Mei"], "year": "2007"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Aditya Mathur", "Johnny Wong"], "year": "2006"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Roland Ibbett", "Ing-Ray Chen", "Hong Mei"], "year": "2005"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Eric Wong", "Karama Kanoun"], "year": "2004"}
+{"role": "chair", "venue": "COMPSAC", "members": ["Doo-Hwan Bae", "Jeffrey Voas"], "year": "2003"}
+{"role": "chair", "venue": "APSEC", "members": ["Yann-Ga\u00ebl Gu\u00e9h\u00e9neuc", "Gihwon Kwon"], "year": "2014"}
+{"role": "chair", "venue": "APSEC", "members": ["Gregg Rothermel", "Pornsiri Muenchaisri"], "year": "2013"}
+{"role": "chair", "venue": "APSEC", "members": ["Pornsiri Muenchaisri", "Karl Leung"], "year": "2012"}
+{"role": "chair", "venue": "APSEC", "members": ["Tran Dan Thu", "Karl Leung"], "year": "2011"}
+{"role": "chair", "venue": "APSEC", "members": ["Tran Dan Thu", "Jun Han"], "year": "2010"}
+{"role": "chair", "venue": "APSEC", "members": ["Khairuddin Hashim", "Jun Han"], "year": "2009"}
+{"role": "chair", "venue": "APSEC", "members": ["Shamsul Sahibuddin", "Wenhui Zhang"], "year": "2008"}
+{"role": "chair", "venue": "APSEC", "members": ["Katsuhisa Maruyama"], "year": "2007"}
+{"role": "chair", "venue": "APSEC", "members": ["Pankaj Jalote"], "year": "2006"}
+{"role": "chair", "venue": "APSEC", "members": [], "year": "2005"}
+{"role": "chair", "venue": "APSEC", "members": ["William C. Chu", "Doo-Hwan Bae"], "year": "2004"}
+{"role": "chair", "venue": "APSEC", "members": ["Pornsiri Muenchaisr", "Doo-Hwan Bae"], "year": "2003"}
+{"role": "chair", "venue": "VISSOFT", "members": ["Andy Zaidman", "Bonita Sharif"], "year": "2014"}
+{"role": "chair", "venue": "VISSOFT", "members": ["Andrian Marcus", "Andreas Kerren"], "year": "2013"}
+{"role": "chair", "venue": "VISSOFT", "members": ["Houari Sahraoui", "Claus Lewerentz"], "year": "2011"}
+{"role": "chair", "venue": "SOFTVIS", "members": ["Carsten G\u00f6rg", "Steven Reiss"], "year": "2010"}
+{"role": "chair", "venue": "VISSOFT", "members": ["Margaret-Anne Storey", "Michele Lanza"], "year": "2009"}
+{"role": "chair", "venue": "SOFTVIS", "members": ["Alexandru Telea", "Christopher Hundhausen"], "year": "2008"}
+{"role": "chair", "venue": "VISSOFT", "members": [], "year": "2007"}
+{"role": "chair", "venue": "SOFTVIS", "members": ["Stephan Diehl", "Margaret Burnett"], "year": "2006"}
+{"role": "chair", "venue": "SOFTVIS", "members": ["Wim De Pauw", "Tom Naps"], "year": "2005"}
+{"role": "chair", "venue": "SOFTVIS", "members": ["John T. Stasko"], "year": "2003"}
+{"role": "chair", "venue": "SCAM", "members": ["Abram Hindle", "Rocco Oliveto"], "year": "2014"}
+{"role": "chair", "venue": "SCAM", "members": ["Bram Adams", "Juergen Rilling"], "year": "2013"}
+{"role": "chair", "venue": "SCAM", "members": ["Mariano Ceccato", "Zheng Li"], "year": "2012"}
+{"role": "chair", "venue": "SCAM", "members": ["Dawn J. Lawrie", "\u00c1rp\u00e1d BESZ\u00c9DES"], "year": "2011"}
+{"role": "chair", "venue": "SCAM", "members": ["Cristina Marinescu", "Jurgen Vinju"], "year": "2010"}
+{"role": "chair", "venue": "SCAM", "members": ["Andrew Walenstein", "Sibylle Schupp"], "year": "2009"}
+{"role": "chair", "venue": "SCAM", "members": ["Jim Cordy", "Lu Zhang"], "year": "2008"}
+{"role": "chair", "venue": "SCAM", "members": ["Michael Godfrey", "Bogdan Korel"], "year": "2007"}
+{"role": "chair", "venue": "SCAM", "members": ["Massimiliano Di Penta", "Leon Moonen"], "year": "2006"}
+{"role": "chair", "venue": "SCAM", "members": ["Giulio Antoniol", "Jens Krinke"], "year": "2005"}
+{"role": "chair", "venue": "SCAM", "members": ["Michael Van De Vanter", "Rainer Koschke"], "year": "2004"}
+{"role": "chair", "venue": "SCAM", "members": ["Dave Binkley", "Paolo Tonella"], "year": "2003"}
+{"role": "chair", "venue": "TOOLS", "members": ["Carlo A. Furia", "Sebastian Nanz"], "year": "2012"}
+{"role": "chair", "venue": "TOOLS", "members": ["Judith Bishop", "Antonio Vallecillo"], "year": "2011"}
+{"role": "chair", "venue": "TOOLS", "members": ["Jan Vitek"], "year": "2010"}
+{"role": "chair", "venue": "TOOLS", "members": ["Manuel Oriol"], "year": "2009"}
+{"role": "chair", "venue": "TOOLS", "members": ["Richard Paige"], "year": "2008"}
+{"role": "chair", "venue": "TOOLS", "members": ["Jean Bezivin"], "year": "2007"}
+{"role": "chair", "venue": "CAISE", "members": ["John Mylopoulos", "Matthias Jarke", "Christoph Quix"], "year": "2014"}
+{"role": "chair", "venue": "CAISE", "members": ["Moira Norrie", "Camille Salinesi"], "year": "2013"}
+{"role": "chair", "venue": "CAISE", "members": ["Xavier Franch", "Jolita Ralyt\u00e9"], "year": "2012"}
+{"role": "chair", "venue": "CAISE", "members": [], "year": "2011"}
+{"role": "chair", "venue": "CAISE", "members": ["Barbara Pernici"], "year": "2010"}
+{"role": "chair", "venue": "CAISE", "members": ["Jaap Gordijn"], "year": "2009"}
+{"role": "chair", "venue": "CAISE", "members": ["Zohra Bellahsene"], "year": "2008"}
+{"role": "chair", "venue": "CAISE", "members": ["Guttorm Sindre", "Andreas Opdahl"], "year": "2007"}
+{"role": "chair", "venue": "CAISE", "members": ["Klaus Pohl"], "year": "2006"}
+{"role": "chair", "venue": "CAISE", "members": ["Oscar Pastor"], "year": "2005"}
+{"role": "chair", "venue": "CAISE", "members": ["Janis Stirna", "Anne Persson"], "year": "2004"}
+{"role": "chair", "venue": "CAISE", "members": ["Anna Formica", "Michele Missikoff"], "year": "2003"}
+{"role": "chair", "venue": "ICSM", "members": ["Lori Pollock", "Leon Moonen"], "year": "2014"}
+{"role": "chair", "venue": "ICSM", "members": ["Yann-Ga\u00ebl Gu\u00e9h\u00e9neuc", "Tom Mens"], "year": "2013"}
+{"role": "chair", "venue": "ICSM", "members": ["Massimiliano Di Penta", "Jonathan I. Maletic"], "year": "2012"}
+{"role": "chair", "venue": "ICSM", "members": ["Paolo Tonella", "James R. Cordy"], "year": "2011"}
+{"role": "chair", "venue": "ICSM", "members": ["Michele Lanza", "Andrian Marcus"], "year": "2010"}
+{"role": "chair", "venue": "ICSM", "members": ["Tao Xie", "Kostas Kontogiannis"], "year": "2009"}
+{"role": "chair", "venue": "ICSM", "members": ["Hong Mei", "Kenny Wong"], "year": "2008"}
+{"role": "chair", "venue": "ICSM", "members": ["Gerardo Canfora", "Ladan Tahvildari"], "year": "2007"}
+{"role": "chair", "venue": "ICSM", "members": ["David Binkley", "Rainer Koschke"], "year": "2006"}
+{"role": "chair", "venue": "ICSM", "members": ["Vaclav Rajlich", "Tibor Gyim\u00f3thy"], "year": "2005"}
+{"role": "chair", "venue": "ICSM", "members": ["Mark Harman", "Bogdan Korel"], "year": "2004"}
+{"role": "chair", "venue": "ICSM", "members": ["Chris Verhoef", "Shari Lawrence Pfleeger"], "year": "2003"}
+{"role": "chair", "venue": "ECMFA", "members": ["Jordi Cabot", "Julia Rubin"], "year": "2014"}
+{"role": "chair", "venue": "ECMFA", "members": ["Pieter Van Gorp", "Tom Ritter"], "year": "2013"}
+{"role": "chair", "venue": "ECMFA", "members": ["Juha-Pekka Tolvanen", "Antonio Vallecillo"], "year": "2012"}
+{"role": "chair", "venue": "ECMFA", "members": ["Robert France", "Jochen K\u00fcster"], "year": "2011"}
+{"role": "chair", "venue": "ECMFA", "members": ["Bran Selic", "Thomas K\u00fchne"], "year": "2010"}
+{"role": "chair", "venue": "ECMFA", "members": ["Richard Paige"], "year": "2009"}
+{"role": "chair", "venue": "ECMFA", "members": ["Alan Hartmann"], "year": "2008"}
+{"role": "chair", "venue": "ECMFA", "members": ["David Akehurst"], "year": "2007"}
+{"role": "chair", "venue": "MSR", "members": ["Richard C. Holt", "Ahmed E. Hassan", "Audris Mockus"], "year": "2004"}
+{"role": "chair", "venue": "MSR", "members": ["Richard C. Holt", "Stephan Diehl", "Ahmed E. Hassan"], "year": "2005"}
+{"role": "chair", "venue": "MSR", "members": ["Stephan Diehl", "Ahmed E. Hassan", "Harald Gall", "Martin Pinzger"], "year": "2006"}
+{"role": "chair", "venue": "MSR", "members": ["Michele Lanza", "Harald Gall"], "year": "2007"}
+{"role": "chair", "venue": "MSR", "members": ["Michael W. Godfrey", "Michele Lanza"], "year": "2008"}
+{"role": "chair", "venue": "MSR", "members": ["Michael W. Godfrey", "Jim Whitehead"], "year": "2009"}
+{"role": "chair", "venue": "MSR", "members": ["Thomas Zimmermann", "Jim Whitehead"], "year": "2010"}
+{"role": "chair", "venue": "MSR", "members": ["Tao Xie", "Thomas Zimmermann"], "year": "2011"}
+{"role": "chair", "venue": "MSR", "members": ["Tao Xie", "Massimiliano Di Penta"], "year": "2012"}
+{"role": "chair", "venue": "MSR", "members": ["Sung Kim", "Massimiliano Di Penta"], "year": "2013"}
+{"role": "chair", "venue": "MSR", "members": ["Sung Kim", "Martin Pinzger"], "year": "2014"}

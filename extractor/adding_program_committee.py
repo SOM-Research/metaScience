@@ -27,13 +27,13 @@ GOOGLE = 'http://www.google.com'
 
 
 JSON_FILE = "./program_committee_info.json"
-JSON_ENTRY_ATTRIBUTES_FOR_HTML = 16
-JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 7
-JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 13
+JSON_ENTRY_ATTRIBUTES_FOR_HTML = 15
+JSON_ENTRY_ATTRIBUTES_FOR_TEXT = 6
+JSON_ENTRY_ATTRIBUTES_FOR_TEXT_IN_HTML = 12
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 google_driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 
-CONFERENCE = ''
+VENUE = ''
 YEAR = ''
 ROLE = ''
 
@@ -67,7 +67,7 @@ def recover_id_by_querying_google(cnx, member):
             arguments = [dblp_name]
             data = calculate_query(cnx, query_dblp_author, arguments)
             logging.warning("the member: " + member + " has been corrected to: " + dblp_name + "!"
-                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                            + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
             break
     return data
 
@@ -76,7 +76,7 @@ def get_dblp_id(data, member):
     id = None
     if len(data) == 0:
         logging.warning("member not found in dblp: " + member
-                        + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                        + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     elif len(data) == 1:
         id = data[0][0]
     else:
@@ -85,7 +85,7 @@ def get_dblp_id(data, member):
         for d in data:
             auths.append(int(d[0]))
         logging.warning("multiple entries for member: " + member + "! ids:" + str(auths)
-                        + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                        + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
 
     return id
 
@@ -259,7 +259,7 @@ def insert_members_in_db(cnx, members):
         if u"\uFFFD" in member:
             member = member.replace(u"\uFFFD", '?')
             logging.warning(member + " detected unrecognized character(s)!"
-                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                            + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
         #TODO, member_decoded = re.sub('\s+', ' ', unidecode(member).decode('utf-8').strip().strip(','))
         member_decoded = unidecode(member).decode('utf-8').strip().strip(',')
 
@@ -272,17 +272,17 @@ def insert_members_in_db(cnx, members):
             member_id = find_dblp_id(cnx, member_to_find)
             query = "INSERT IGNORE INTO aux_program_committee " \
                     "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
-            arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, member_id]
+            arguments = [member_decoded, VENUE, int(YEAR), ROLE, member_id]
             cursor.execute(query, arguments)
             cnx.commit()
         else:
             query = "INSERT IGNORE INTO aux_program_committee " \
                     "SET name = %s, conference = %s, year = %s, role = %s, dblp_author_id = %s"
-            arguments = [member_decoded, CONFERENCE, int(YEAR), ROLE, -1]
+            arguments = [member_decoded, VENUE, int(YEAR), ROLE, -1]
             cursor.execute(query, arguments)
             cnx.commit()
             logging.warning("member not found in dblp: " + member_decoded
-                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                            + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     cursor.close()
 
 
@@ -452,7 +452,7 @@ def extract_program_committee_info_from_html(cnx, url,
     members = extract_members_from_html(url, start_word, tag_start_word, tag_filter, stop_word, tag_stop_word,
                               members_tag, single_or_all, member_name_separator, inverted_name, mixed)
     if len(members) == 0:
-        logging.warning("members not found! conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+        logging.warning("members not found! conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     # #debug
     # print str(len(members))
     # for m in members:
@@ -523,7 +523,7 @@ def check_value(attribute, text, allowed):
 
     if check is False:
         logging.warning("wrong attribute for " + attribute + " .Value: " + text + " is not allowed."
-                        + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                        + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
 
     return check
 
@@ -535,7 +535,7 @@ def check_type(text, attribute):
         if matchObj is None:
             check = False
             logging.warning("wrong attribute for " + attribute + " . Value: " + text + " is not a four-digit year."
-                            + " conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                            + " conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     else:
         check = False
 
@@ -549,7 +549,6 @@ def check_input(json_entry, parser):
         if parser == "html":
             passed = (len(json_entry) == JSON_ENTRY_ATTRIBUTES_FOR_HTML and
                       check_type(json_entry.get('year'), 'year') and
-                      check_value('action', json_entry.get("action"), ['proc', 'skip']) and
                       check_value('containment', json_entry.get("containment"), ['single', 'all']) and
                       check_value('inverted_member_name', json_entry.get("inverted_member_name"), ['yes', 'no']) and
                       check_value('extract_role', json_entry.get("extract_role"), ['member', 'm_board', 'c_board', 'chair']) and
@@ -566,7 +565,7 @@ def check_input(json_entry, parser):
                       check_value('extract_role', json_entry.get("extract_role"), ['member', 'm_board', 'c_board', 'chair']))
     else:
         logging.warning("parser " + parser + " unknown!"
-                        +" conf/year/role: " + CONFERENCE + "/" + YEAR + "/" + ROLE)
+                        +" conf/year/role: " + VENUE + "/" + YEAR + "/" + ROLE)
     return passed
 
 
@@ -582,18 +581,15 @@ def main():
     json_lines = json_file.read()
     for line in json_lines.split('\r\n'):
         if line.strip() != '':
-            json_entry = json.loads(line)
-            try:
-                global ROLE, CONFERENCE, YEAR
-                parser = json_entry.get("parser").lower()
-                ROLE = json_entry.get("extract_role").lower() #The role to extract: MEMBER or CHAIR
-                CONFERENCE = json_entry.get("conference") #The acronym of the conference to analyse
-                YEAR = json_entry.get("year") #The year of the conference to analyse
-                if check_input(json_entry, parser):
-                    action = json_entry.get("action").lower()
-                    #action can be "PROC" or "SKIP". The former tells the program to process a JSON line,
-                    #while the latter is used to skip that line
-                    if action == "proc":
+            if not line.startswith("#"):
+                json_entry = json.loads(line)
+                try:
+                    global ROLE, VENUE, YEAR
+                    parser = json_entry.get("parser").lower()
+                    ROLE = json_entry.get("extract_role").lower() #The role to extract: MEMBER or CHAIR
+                    CONFERENCE = json_entry.get("conference") #The acronym of the conference to analyse
+                    YEAR = json_entry.get("year") #The year of the conference to analyse
+                    if check_input(json_entry, parser):
                         #HTML parser. It is used to collect text in one or more HTML tags
                         if parser == 'html':
                             #URL. The url of the program committee or organizers
@@ -674,8 +670,8 @@ def main():
                             #ENTRY_SEPARATOR. It defines how the members (entries) are separated in the text
                             entry_separator = get_separator(json_entry.get("entry_separator")).lower()
                             extract_program_committee_info_from_text(cnx, text, entry_separator)
-            except Exception as e:
-                logging.warning("error on json line " + str(line_counter) + "!" + str(e.message))
+                except Exception as e:
+                    logging.warning("error on json line " + str(line_counter) + "!" + str(e.message))
         line_counter += 1
     json_file.close()
     driver.close()

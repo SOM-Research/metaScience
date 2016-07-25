@@ -74,9 +74,9 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author"
-							+ " FROM dblp_main_aliases_new"
-							+ " WHERE author_id = " + authorId;
+			String query = "SELECT id as author_id, name as author " +
+						   "FROM researcher r " +
+						   "WHERE id =" + authorId;
 			rs = stmt.executeQuery(query);
 			answer = prepareAuthorInformationJson(rs);
 		} catch( SQLException e) {
@@ -100,19 +100,21 @@ public class AuthorCoAuthorConnectionServlet extends AbstractMetaScienceServlet 
 		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT connected_author_papers.author_id, connected_author_papers.author, COUNT(*) AS relation_strength"
-							+ " FROM ("
-							+ 	" SELECT id "
-							+ 	" FROM dblp_authorid_ref_new airn"
-							+ 	" WHERE airn.author_id = " + authorId
-							+	") AS target_author_papers"
-							+ " JOIN ("
-							+ 	" SELECT id, author_id, author"
-							+	" FROM dblp_authorid_ref_new airn"
-							+	" WHERE airn.author_id <> " + authorId
-							+	") AS connected_author_papers"
-							+ " ON target_author_papers.id = connected_author_papers.id"
-							+ " GROUP BY connected_author_papers.author_id;";
+			String query =  "SELECT relation_info.researcher_id as author_id, r.name as author, relation_info.relation_strength " +
+							"FROM " +
+							"( " +
+								"SELECT connected_author_papers.researcher_id, COUNT(*) AS relation_strength " +
+								"FROM ( " +
+								"SELECT a.paper_id " +
+								"FROM authorship a " +
+								"WHERE a.researcher_id = " + authorId + ") AS target_author_papers " +
+								"JOIN ( " +
+								"SELECT a.paper_id, a.researcher_id " +
+								"FROM authorship a " +
+								"WHERE a.researcher_id <> " + authorId + ") AS connected_author_papers " +
+								"ON target_author_papers.paper_id = connected_author_papers.paper_id " +
+								"GROUP BY connected_author_papers.researcher_id) as relation_info " +
+							"JOIN researcher r ON r.id = relation_info.researcher_id;";
 
 			rs = stmt.executeQuery(query);
 			if (rs != null)

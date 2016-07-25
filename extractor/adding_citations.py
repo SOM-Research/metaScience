@@ -3,18 +3,18 @@ __author__ = 'atlanmod'
 import logging
 import mysql.connector
 from mysql.connector import errorcode
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 import re
 import time
 import nltk.metrics
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import database_connection_config as dbconnection
 import datetime
-from selenium.common.exceptions import TimeoutException
 import sys
 
 #Launch this script in debug mode and put a break point on the instruction "print "redirected to captcha"
@@ -36,6 +36,7 @@ SCHOLAR = 'http://scholar.google.com'
     #'http://anonymouse.org/cgi-bin/anon-www.cgi/http://scholar.google.com'
 
 LOG_FILENAME = 'logger_paper_citations.log'
+COLLECT_PAPER_CITATIONS = True
 
 #Build the chrome_options object specifying the locally running Privoxy as the proxy server
 chrome_options = webdriver.ChromeOptions()
@@ -267,7 +268,10 @@ def add_scholar_citations(cnx, title, key, paper_id):
                     if leveh_distance > 1:
                         logging.warning("match: " + title_hit + " ******* " + title + "  ******* " + str(leveh_distance))
                     add_paper_citation(hit, cnx, paper_id)
-                    add_authors_citations(hit, cnx, title, paper_id)
+
+                    if COLLECT_PAPER_CITATIONS:
+                        add_authors_citations(hit, cnx, title, paper_id)
+
                     flag = 1
                     break
                 elif 7 <= leveh_distance <= 12:

@@ -6,3 +6,4 @@ web-server/metaScience/WebContent/META-INF/context*.xml
 extractor/database_connection_config.*
 extractor/*.pyc
 extractor/*.log
+/extractor-v2/AKA.config

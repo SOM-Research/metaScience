@@ -11,7 +11,7 @@ LOG_FILENAME = 'logger_handle_conference_link.log'
 
 def create_conference_link_table(cnx):
     cursor = cnx.cursor()
-    create_conference_link_table = "CREATE TABLE IF NOT EXISTS " + dbconnection.DATABASE_NAME + "._conference_link" \
+    create_conference_link_table = "CREATE TABLE IF NOT EXISTS _conference_link" \
                                          "(" \
                                          "source_id varchar(150), " \
                                          "link varchar(150), " \
@@ -26,7 +26,7 @@ def create_conference_link_table(cnx):
 
 def update_conference_link_table(cnx):
     cursor = cnx.cursor()
-    insert = "INSERT IGNORE INTO " + dbconnection.DATABASE_NAME + "._conference_link " \
+    insert = "INSERT IGNORE INTO _conference_link " \
              "(source_id, link)" \
              "VALUES " \
              "('uml', 'now_models')," \

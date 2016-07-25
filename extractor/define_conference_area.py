@@ -11,7 +11,7 @@ LOG_FILENAME = 'logger_define_conference_area.log'
 
 def create_conference_area_table(cnx):
     cursor = cnx.cursor()
-    create_conference_area_table = "CREATE TABLE IF NOT EXISTS " + dbconnection.DATABASE_NAME + "._conference_area" \
+    create_conference_area_table = "CREATE TABLE IF NOT EXISTS _conference_area" \
                                          "(" \
                                          "source_id varchar(150), " \
                                          "area varchar(150), " \
@@ -26,7 +26,7 @@ def create_conference_area_table(cnx):
 
 def update_conference_area_table(cnx):
     cursor = cnx.cursor()
-    insert = "INSERT IGNORE INTO " + dbconnection.DATABASE_NAME + "._conference_area " \
+    insert = "INSERT IGNORE INTO _conference_area " \
              "(source_id, area)" \
              "VALUES " \
              "('uml', 'modeling')," \

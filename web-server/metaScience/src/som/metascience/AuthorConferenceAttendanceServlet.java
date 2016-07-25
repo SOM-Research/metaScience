@@ -73,9 +73,9 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author"
-							+ " FROM dblp_main_aliases_new"
-							+ " WHERE author_id = " + authorId;
+			String query = "SELECT id as author_id, name as author " +
+						   "FROM researcher r " +
+						   "WHERE id =" + authorId;
 			rs = stmt.executeQuery(query);
 			answer = prepareAuthorInformationJson(rs);
 		} catch( SQLException e) {
@@ -99,14 +99,17 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 		JsonArray answer = new JsonArray();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT airn.author_id, airn.author, source, COUNT(DISTINCT year) AS attendance, COUNT(*) AS publications, type" 
-							+ " FROM dblp_pub_new pub"
-							+ " JOIN dblp_authorid_ref_new airn"
-							+ " ON pub.id = airn.id"
-							+ " WHERE source IS NOT NULL "
-							+ " AND airn.author_id = " + authorId
-							+ " AND type IN ('inproceedings','article')"
-							+ " GROUP BY airn.author_id, source;";
+			String query =  "SELECT acronym as source, COUNT(DISTINCT year) AS attendance, COUNT(*) AS publications, pt.name AS type " +
+							"FROM ( " +
+							"SELECT c.acronym, ce.year, p.id, p.type " +
+							"FROM authorship a JOIN paper p ON a.paper_id = p.id JOIN conference_edition ce ON ce.id = p.published_in JOIN conference c ON c.id = ce.conference_id " +
+							"WHERE a.researcher_id = 739496 AND p.type = 1 " +
+							"UNION " +
+							"SELECT j.acronym, ji.year, p.id, p.type " +
+							"FROM authorship a JOIN paper p ON a.paper_id = p.id JOIN journal_issue ji ON ji.id = p.published_in JOIN journal j ON j.id = ji.journal_id " +
+							"WHERE a.researcher_id = 739496 AND p.type = 2) AS publications " +
+							"JOIN paper_type pt ON pt.id = type " +
+							"GROUP BY acronym";	
 			rs = stmt.executeQuery(query);
 			answer = prepareAuthorConferenceJSon(rs);
 		} catch( SQLException e) {

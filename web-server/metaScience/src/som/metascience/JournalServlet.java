@@ -64,12 +64,9 @@ public class JournalServlet extends AbstractMetaScienceServlet{
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT source, source_id"
-							+ " FROM dblp_pub_new"
-							+ " WHERE source IS NOT NULL AND"
-							+ " type = 'article' AND "
-							+ " (source LIKE '%" + searchString + "%' OR source_id LIKE '%" + searchString + "%' ) "
-							+ " GROUP BY source;";
+			String query =  "SELECT name, acronym " +
+					 		"FROM journal " +
+					 		"WHERE acronym LIKE '%" + searchString + "%' OR name LIKE '%" + searchString + "%'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
@@ -93,12 +90,9 @@ public class JournalServlet extends AbstractMetaScienceServlet{
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT source, source_id"
-					+ " FROM dblp_pub_new"
-					+ " WHERE source IS NOT NULL AND"
-					+ " type = 'article' AND "
-					+ " (source LIKE '" + searchString + "' OR source_id LIKE '" + searchString + "' )"
-					+ " GROUP BY source;";
+			String query =  "SELECT name, acronym " +
+					 		"FROM journal " +
+					 		"WHERE acronym LIKE '" + searchString + "' OR name LIKE '" + searchString + "'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch( SQLException e) {
@@ -132,11 +126,11 @@ public class JournalServlet extends AbstractMetaScienceServlet{
 			while(rs.next()) {
 				resultCount++;
 				JsonObject jsonObject = new JsonObject();
-				String journal = rs.getString("source");
-				String journalId = rs.getString("source_id");
+				String journal = rs.getString("name");
+				String journalId = rs.getString("acronym");
 				if(journalId == null) journalId = "";
 				jsonObject.addProperty("journalName", journalId.toUpperCase() + " - " + journal);
-				jsonObject.addProperty("journalId", journal);
+				jsonObject.addProperty("journalId", journalId);
 				journals.add(jsonObject);
 			}
 		} catch (SQLException e) {

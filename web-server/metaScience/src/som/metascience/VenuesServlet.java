@@ -109,12 +109,9 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT DISTINCT source, title"
-							+ " FROM aux_dblp_proceedings"
-							+ " WHERE source IS NOT NULL AND "
-							+ " type = 'conference' AND " // changed in v0.2.0, before it was conference
-							+ " (source LIKE '%" + searchString + "%' OR title LIKE '%" + searchString + "%' ) "
-							+ " GROUP BY title";
+			String query = "SELECT acronym, name"
+							+ " FROM conference"
+							+ " WHERE acronym LIKE '%" + searchString + "%' OR name LIKE '%" + searchString + "%'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
@@ -138,12 +135,9 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 		JsonObject answer = new JsonObject();
 		try {
 			stmt = con.createStatement();
-			String query = "SELECT DISTINCT source, title"
-							+ " FROM aux_dblp_proceedings"
-							+ " WHERE source IS NOT NULL AND "
-							+ " type = 'conference' AND " // changed in v0.2.0, before it was conference
-							+ " (source LIKE '" + searchString + "' OR title LIKE '" + searchString + "' ) "
-							+ " GROUP BY title";
+			String query = "SELECT acronym, name"
+							+ " FROM conference"
+							+ " WHERE acronym LIKE '" + searchString + "' OR name LIKE '" + searchString + "'";
 			rs = stmt.executeQuery(query);
 			answer = prepareAnswer(rs);
 		} catch (SQLException e) {
@@ -177,8 +171,8 @@ public class VenuesServlet extends AbstractMetaScienceServlet{
 			while(rs.next()) {
 				resultCount++;
 				JsonObject jsonObject = new JsonObject();
-				String venue = rs.getString("source");
-				String title = rs.getString("title");
+				String venue = rs.getString("acronym");
+				String title = rs.getString("name");
 				jsonObject.addProperty("name", venue.toUpperCase() + " - " + title);
 				jsonObject.addProperty("id", venue);
 				venues.add(jsonObject);

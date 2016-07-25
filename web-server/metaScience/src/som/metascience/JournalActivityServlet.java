@@ -62,10 +62,15 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 		try {
 			// AUTHORS
 			// Getting average authors 
-			String query1 = "SELECT ROUND(AVG(num_unique_authors), 2) as avg " +
-					"FROM _num_authors_per_journal_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query1 = 
+					"SELECT ROUND(AVG(unique_authors), 2) as avg" +
+					" FROM (" +
+					" SELECT ji.id AS journal_issue_id, ji.year, COUNT(DISTINCT a.researcher_id) AS unique_authors" +
+					" FROM" + 
+						" journal_issue ji JOIN paper p ON ji.id = p.published_in" + 
+						" JOIN authorship a ON a.paper_id = p.id JOIN journal j ON j.id = ji.journal_id " +
+						" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+						" GROUP BY journal_issue_id) AS unique_author_per_issue";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query1);
@@ -76,10 +81,11 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting authors per year
-			String query2 = "SELECT ROUND(AVG(num_unique_authors), 2) as counter, year " +
-					"FROM _num_authors_per_journal_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
+			String query2 = "SELECT COUNT(DISTINCT a.researcher_id) AS counter, year" +
+							" FROM	journal_issue ji JOIN paper p ON ji.id = p.published_in" +
+							" JOIN authorship a ON a.paper_id = p.id JOIN journal j ON j.id = ji.journal_id" +
+							" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+							" GROUP BY ji.year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query2);
@@ -101,10 +107,13 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 
 			// PAPERS
 			// Getting average papers
-			String query3 = "SELECT ROUND(AVG(num_papers), 2) as avg " +
-					"FROM _num_of_papers_per_journal_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query3 = "SELECT ROUND(AVG(num_papers), 2) AS avg " +
+							" FROM ( " + 
+				        	" SELECT ji.journal_id, COUNT(*) as num_papers " + 
+				        	" FROM journal_issue ji JOIN paper p ON p.published_in = ji.id " +
+				        	" JOIN journal j ON j.id = ji.journal_id " +
+				        	" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+				        	" GROUP BY ji.id) AS number_of_papers_per_year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query3);
@@ -115,11 +124,12 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query4 = "SELECT ROUND(AVG(num_papers), 2) as counter, year " +
-					"FROM _num_of_papers_per_journal_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
-
+			String query4 = " SELECT COUNT(*) as counter, ji.year " + 
+				        	" FROM journal_issue ji JOIN paper p ON p.published_in = ji.id " +
+				        	" JOIN journal j ON j.id = ji.journal_id " +
+				        	" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+				        	" GROUP BY ji.year";
+			
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query4);
 
@@ -140,10 +150,17 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 
 			// AUTHORS PER PAPER
 			// Getting average value
-			String query5 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as avg " +
-					"FROM _avg_number_authors_per_paper_per_journal_per_year " +
-                    "WHERE source = '" + source + "';";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query5 = "SELECT ROUND(AVG(avg),2) AS avg" +
+							" FROM (" +
+							"SELECT ROUND(AVG(authors),2) AS avg" +
+							" FROM (" +
+								" SELECT ji.id as journal_issue_id, ji.year, p.id as paper_id, COUNT(a.researcher_id) AS authors" +
+								" FROM journal_issue ji JOIN paper p ON ji.id = p.published_in" + 
+								" JOIN authorship a ON a.paper_id = p.id" +
+								" JOIN journal j ON j.id = ji.journal_id" +
+								" WHERE j.acronym = '" + source + "' AND p.type = 2" +
+								" GROUP BY ji.id, p.id) AS authors_per_paper_per_issue " +
+							"GROUP BY journal_issue_id) AS avg_authors_per_paper_per_issue";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query5);
@@ -154,10 +171,16 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query6 = "SELECT ROUND(AVG(avg_author_per_paper), 2) as counter, year " +
-					"FROM _avg_number_authors_per_paper_per_journal_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-                    //"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
+			String query6 = 
+					"SELECT ROUND(AVG(authors),2) AS counter, year" +
+					" FROM (" +
+						" SELECT ji.id as journal_issue_id, ji.year, p.id as paper_id, COUNT(a.researcher_id) AS authors" +
+						" FROM journal_issue ji JOIN paper p ON ji.id = p.published_in" + 
+						" JOIN authorship a ON a.paper_id = p.id" +
+						" JOIN journal j ON j.id = ji.journal_id" +
+						" WHERE j.acronym = '" + source + "' AND p.type = 2" +
+						" GROUP BY ji.id, p.id) AS authors_per_paper_per_issue " +
+					"GROUP BY year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query6);
@@ -179,10 +202,18 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 
 			// PAPERS PER AUTHOR
 			// Getting average value
-			String query7 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as avg " +
-					"FROM _avg_number_papers_per_author_per_journal_per_year " +
-                    "WHERE source = '" + source + "';";
-					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "';";
+			String query7 = "SELECT ROUND(AVG(avg), 2) as avg " +
+							"FROM ( " +
+							"SELECT ROUND(AVG(papers), 2) as avg " +
+							" FROM ( " +
+								"SELECT ji.id as journal_issue_id, ji.year, a.researcher_id, COUNT(p.id) AS papers " +
+								"FROM " +
+									" journal_issue ji JOIN paper p ON ji.id = p.published_in " + 
+									" JOIN authorship a ON a.paper_id = p.id " +
+									" JOIN journal j ON j.id = ji.journal_id " +
+									" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+								"GROUP BY ji.year, a.researcher_id) AS papers_per_author_per_issue " +
+							"GROUP BY journal_issue_id) AS avg_papers_per_author_per_issue";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query7);
@@ -193,10 +224,16 @@ public class JournalActivityServlet extends AbstractMetaScienceServlet {
 			}
 
 			// Getting papers per year
-			String query8 = "SELECT ROUND(AVG(avg_num_paper_per_author), 2) as counter, year " +
-					"FROM _avg_number_papers_per_author_per_journal_per_year " +
-                    "WHERE source = '" + source + "' GROUP BY year;";
-					//"WHERE source_id = '" + sourceId + "' AND source = '" + source + "' GROUP BY year;";
+			String query8 = "SELECT ROUND(AVG(papers), 2) as counter, year " +
+							" FROM ( " +
+							"SELECT ji.id as journal_issue_id, ji.year, a.researcher_id, COUNT(p.id) AS papers " +
+							"FROM " +
+								" journal_issue ji JOIN paper p ON ji.id = p.published_in " + 
+								" JOIN authorship a ON a.paper_id = p.id " +
+								" JOIN journal j ON j.id = ji.journal_id " +
+								" WHERE j.acronym = '" + source + "' AND p.type = 2 " +
+							"GROUP BY ji.year, a.researcher_id) AS papers_per_author_per_issue " +
+						"GROUP BY year";
 
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(query8);

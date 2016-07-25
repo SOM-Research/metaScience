@@ -47,17 +47,18 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 
 			/* 1. Getting yearly info */
 			stmt = con.createStatement();
-			String query = "SELECT author_id, author, year, round(AVG(co_authors),2) AS avg_coauthors, " +
-					" SUM(co_authors) AS sum_coauthors, round(SUM(participation),2) AS participation" +
-					" FROM (" +
-					"    SELECT pub.id, pub.year, title, airn.author_id, airn.author, MAX(author_num) AS co_authors, " +
-					"           1/(MAX(author_num) + 1) AS participation" +
-					"    FROM dblp_pub_new pub " +
-					"         JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
-					"         JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
-					"    WHERE airn.author_id = '" + authorId + "'" +
-					"    GROUP BY pub.id) as pub_info" +
-					" GROUP BY pub_info.year;";
+			String query =  "SELECT " +
+							"year,  " +
+							"ROUND(AVG(co_authors), 2) AS avg_coauthors, " +
+							"SUM(co_authors) AS sum_coauthors, " +
+							"ROUND(SUM(participation),2) AS participation " +
+							"FROM ( " +
+							"	SELECT a.paper_id " +
+							"	FROM authorship a " +
+							"	WHERE a.researcher_id = '" + authorId + "') AS researcher_papers " +
+							"JOIN aux_paper_stats ps " +
+							"ON ps.paper_id = researcher_papers.paper_id " +
+							"GROUP BY year;";	 
 
 			rs = stmt.executeQuery(query);
 
@@ -83,14 +84,13 @@ public class AuthorEvolutionCollaborationServlet extends AbstractMetaScienceServ
 
 			/* Getting average */
 			stmt = con.createStatement();
-			String query2 = "SELECT ROUND(AVG(co_authors),2) AS total_avg_coauthors" +
-					" FROM (" +
-					"    SELECT pub.id, pub.year, title, airn.author_id, airn.author, MAX(author_num) AS co_authors" +
-					"    FROM dblp_pub_new pub " +
-					"         JOIN dblp_authorid_ref_new airn ON pub.id = airn.id" +
-					"         JOIN dblp_author_ref_new arn ON pub.id = arn.id" +
-					"    WHERE airn.author_id = '" + authorId+ "'" +
-					"    GROUP BY pub.id) AS pub_info;";
+			String query2 = "SELECT ROUND(AVG(co_authors),2) AS total_avg_coauthors " +
+							"FROM ( " +
+							"	SELECT a.paper_id " +
+							"	FROM authorship a " +
+							"	WHERE a.researcher_id = '" + authorId + "') AS researcher_papers " +
+							"JOIN aux_paper_stats ps " +
+							"ON ps.paper_id = researcher_papers.paper_id ";
 
 			rs = stmt.executeQuery(query2);
 
