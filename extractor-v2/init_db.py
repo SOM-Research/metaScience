@@ -115,10 +115,10 @@ def create_table_paper_type(cnx):
     cursor = cnx.cursor()
 
     create_table_paper_type = "CREATE TABLE " + db_config.DB_NAME + ".paper_type( " \
-                        "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
-                        "name varchar(255) NOT NULL," \
-                        "UNIQUE INDEX n (name) " \
-                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                              "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                              "name varchar(255) NOT NULL," \
+                              "UNIQUE INDEX n (name) " \
+                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_paper_type)
 
@@ -155,12 +155,12 @@ def create_table_category_paper(cnx):
     cursor = cnx.cursor()
 
     create_table_category_paper = "CREATE TABLE " + db_config.DB_NAME + ".category_paper( " \
-                              "category_id bigint(20) NOT NULL, " \
-                              "paper_id bigint(20) NOT NULL, " \
-                              "PRIMARY KEY pk (category_id, paper_id), " \
-                              "INDEX p (category_id), " \
-                              "INDEX r (paper_id) " \
-                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                  "category_id bigint(20) NOT NULL, " \
+                                  "paper_id bigint(20) NOT NULL, " \
+                                  "PRIMARY KEY pk (category_id, paper_id), " \
+                                  "INDEX p (category_id), " \
+                                  "INDEX r (paper_id) " \
+                                  ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_category_paper)
     cursor.close()
@@ -199,12 +199,12 @@ def create_table_institution(cnx):
     cursor = cnx.cursor()
 
     create_table_institution = "CREATE TABLE " + db_config.DB_NAME + ".institution( " \
-                            "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
-                            "name varchar(255) NOT NULL," \
-                            "country_id bigint(20) NOT NULL, " \
-                            "UNIQUE INDEX n (name), " \
-                            "INDEX country (country_id) " \
-                            ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                               "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                               "name varchar(255) NOT NULL," \
+                               "country_id bigint(20) NOT NULL, " \
+                               "UNIQUE INDEX n (name), " \
+                               "INDEX country (country_id) " \
+                               ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_institution)
     cursor.close()
@@ -236,8 +236,8 @@ def create_table_rank(cnx):
 
     cursor.execute(create_table_rank)
 
-    insert_ranks =  "INSERT INTO " + db_config.DB_NAME + ".rank " \
-                    "VALUES(NULL, 'A*'), (NULL, 'A'), (NULL, 'B'), (NULL, 'C');"
+    insert_ranks = "INSERT INTO " + db_config.DB_NAME + ".rank " \
+                   "VALUES(NULL, 'A*'), (NULL, 'A'), (NULL, 'B'), (NULL, 'C');"
 
     cursor.execute(insert_ranks)
     cnx.commit()
@@ -313,12 +313,12 @@ def create_table_conference_domain(cnx):
 def create_table_journal_domain(cnx):
     cursor = cnx.cursor()
     create_table_journal_domain = "CREATE TABLE " + db_config.DB_NAME + ".journal_domain( " \
-                                      "domain_id bigint(20), " \
-                                      "journal_id bigint(20), " \
-                                      "PRIMARY KEY pk (domain_id, journal_id), " \
-                                      "INDEX p (domain_id), " \
-                                      "INDEX r (journal_id) " \
-                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                  "domain_id bigint(20), " \
+                                  "journal_id bigint(20), " \
+                                  "PRIMARY KEY pk (domain_id, journal_id), " \
+                                  "INDEX p (domain_id), " \
+                                  "INDEX r (journal_id) " \
+                                  ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_journal_domain)
 
@@ -328,14 +328,14 @@ def create_table_journal_domain(cnx):
 def create_table_journal(cnx):
     cursor = cnx.cursor()
     create_table_journal = "CREATE TABLE " + db_config.DB_NAME + ".journal( " \
-                              "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
-                              "name varchar(255), " \
-                              "acronym varchar(255), " \
-                              "url varchar(255), " \
-                              "impact_factor float(5,3), " \
-                              "UNIQUE INDEX a (acronym), " \
-                              "INDEX im (impact_factor) " \
-                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                           "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                           "name varchar(255), " \
+                           "acronym varchar(255), " \
+                           "url varchar(255), " \
+                           "impact_factor float(5,3), " \
+                           "UNIQUE INDEX a (acronym), " \
+                           "INDEX im (impact_factor) " \
+                           ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_journal)
 
@@ -345,16 +345,16 @@ def create_table_journal(cnx):
 def create_table_journal_issue(cnx):
     cursor = cnx.cursor()
     create_table_journal_issue = "CREATE TABLE " + db_config.DB_NAME + ".journal_issue( " \
-                                      "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
-                                      "year int(4), " \
-                                      "volume int(4), " \
-                                      "number int(2), " \
-                                      "url varchar(255), " \
-                                      "journal_id bigint(20) NOT NULL, " \
-                                      "UNIQUE INDEX nc (year, volume, number, journal_id), " \
-                                      "INDEX y (year), " \
-                                      "INDEX j (journal_id) " \
-                                      ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                 "id bigint(20) AUTO_INCREMENT PRIMARY KEY, " \
+                                 "year int(4), " \
+                                 "volume int(4), " \
+                                 "number int(2), " \
+                                 "url varchar(255), " \
+                                 "journal_id bigint(20) NOT NULL, " \
+                                 "UNIQUE INDEX nc (year, volume, number, journal_id), " \
+                                 "INDEX y (year), " \
+                                 "INDEX j (journal_id) " \
+                                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
 
     cursor.execute(create_table_journal_issue)
 
@@ -897,7 +897,7 @@ def create_table_aux_conference_openness(cnx):
                                         "conference_edition_id bigint(20), " \
                                         "conference_id bigint(20), " \
                                         "PRIMARY KEY pk (conference_id, year_edition, time_interval) " \
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_conference_openness)
     cursor.close()
 
@@ -914,7 +914,7 @@ def create_table_aux_conference_turnover(cnx):
                                         "INDEX c (conference_id), " \
                                         "INDEX p (period), " \
                                         "PRIMARY KEY pk (conference_id, researcher_id, period) " \
-                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                        ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_conference_turnover)
     cursor.close()
 
@@ -928,7 +928,7 @@ def create_table_aux_paper_stats(cnx):
                                 "participation decimal(5,4), " \
                                 "pages int(11), " \
                                 "type bigint(20) " \
-                              ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+                                ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
     cursor.execute(create_table_paper_stats)
     cursor.close()
 

@@ -11,6 +11,7 @@ import db_config
 driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\Google\Chrome\chromedriver.exe')
 WAITING_TIME = 3 #in secs
 
+
 def establish_connection():
     return mysql.connector.connect(**db_config.CONFIG)
 
@@ -21,6 +22,7 @@ def get_conference_name(url):
     headline = re.sub("\(.*\)", "", driver.find_elements_by_tag_name("header")[0].find_element_by_tag_name("h1").text)
 
     return headline
+
 
 #1 - 1000
 #1000 - 2000
