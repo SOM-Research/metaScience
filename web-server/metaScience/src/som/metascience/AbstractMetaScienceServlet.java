@@ -41,7 +41,7 @@ public class AbstractMetaScienceServlet extends HttpServlet {
 
 		try {
 			Properties properties = new Properties();
-			properties.load(getServletContext().getResourceAsStream("/WEB-INF/config.properties."));
+			properties.load(getServletContext().getResourceAsStream("/WEB-INF/config.properties"));
 			allowOrigin = properties.getProperty("allowOrigin");
 			if(allowOrigin == null)
 				throw new ServletException("No value for allowOrigin in config file");
