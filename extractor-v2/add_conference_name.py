@@ -28,8 +28,8 @@ def get_conference_name(url):
 #3000 - 4000
 #4000 - 4201
 def update_conference_title(cnx):
-    start = 4000
-    end = 4201
+    start = 2000
+    end = 3000
     print str(start) + " - " + str(end)
     cursor = cnx.cursor()
     cursor_update = cnx.cursor()

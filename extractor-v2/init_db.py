@@ -453,7 +453,7 @@ def create_steering_committee(cnx):
 def create_function_from_roman(cnx):
     cursor = cnx.cursor()
     from_roman = """
-    CREATE DEFINER=`root`@`localhost` FUNCTION `from_roman`(in_roman varchar(15)) RETURNS int(11)
+    CREATE FUNCTION `from_roman`(in_roman varchar(15)) RETURNS int(11)
         DETERMINISTIC
     BEGIN
 
@@ -485,7 +485,7 @@ def create_function_from_roman(cnx):
 def create_function_calculate_num_of_pages(cnx):
     cursor = cnx.cursor()
     calculate_num_of_pages = """
-    CREATE DEFINER=`root`@`localhost` FUNCTION `calculate_num_of_pages`(pages varchar(100)) RETURNS int(11)
+    CREATE FUNCTION `calculate_num_of_pages`(pages varchar(100)) RETURNS int(11)
     DETERMINISTIC
     BEGIN
         DECLARE page_number INTEGER;
@@ -573,22 +573,6 @@ def create_stored_procedures_for_turnover(cnx):
     cursor.execute("DROP PROCEDURE IF EXISTS calculate_turnover_for_conference;")
     cursor.execute("DROP PROCEDURE IF EXISTS get_turnover_information_for_conference;")
     cursor.execute("DROP PROCEDURE IF EXISTS calculate_turnover_information_for_all_conferences;")
-
-    cursor.execute("DROP TABLE IF EXISTS aux_conference_turnover;")
-
-    create_aux_conference_turnover_table = """
-    CREATE TABLE aux_conference_turnover (
-        researcher_id bigint(20),
-        researcher_name varchar(255),
-        status varchar(255),
-        time_interval numeric(2),
-        period varchar(255),
-        conference_id bigint(20),
-        INDEX c (conference_id),
-        INDEX p (period),
-        PRIMARY KEY pk (conference_id, researcher_id, period)
-    );
-    """
 
     create_calculate_turnover_between_editions_stored_procedure = """
     CREATE PROCEDURE calculate_turnover_between_editions (IN year_x numeric(4), IN year_y numeric(4), IN target_conference_id bigint(20), IN time_interval numeric(2))
@@ -711,7 +695,6 @@ def create_stored_procedures_for_turnover(cnx):
     END
     """
 
-    cursor.execute(create_aux_conference_turnover_table)
     cursor.execute(create_calculate_turnover_between_editions_stored_procedure)
     cursor.execute(create_calculate_turnover_for_conference_stored_procedure)
     cursor.execute(create_get_turnover_information_for_conference_stored_procedure)
@@ -727,26 +710,9 @@ def create_stored_procedures_for_openness(cnx):
     cursor.execute("DROP PROCEDURE IF EXISTS get_openness_information_for_conference_by_name;")
     cursor.execute("DROP PROCEDURE IF EXISTS get_openness_information_for_all_conferences;")
 
-    cursor.execute("DROP TABLE IF EXISTS aux_conference_openness;")
-    create_aux_conference_openness_table = """
-    CREATE TABLE aux_conference_openness (
-        total_papers bigint(20),
-        papers_from_outsiders bigint(20),
-        papers_from_community bigint(20),
-        total_authors bigint(20),
-        existing_authors bigint(20),
-        new_authors bigint(20),
-        year_edition numeric(4),
-        time_interval numeric(2),
-        conference_edition_id bigint(20),
-        conference_id bigint(20),
-        PRIMARY KEY pk (conference_id, year_edition, time_interval)
-    );
-    """
-
     create_get_openness_information_for_edition_stored_procedure = """
     /* calculate the number of new authors, old ones and their sum for an edition of a given conference with respect to a time interval */
-    CREATE DEFINER=`root`@`localhost` PROCEDURE `get_openness_information_for_edition`(IN target_conference_id BIGINT(20), IN target_year NUMERIC(4), IN span NUMERIC(2))
+    CREATE PROCEDURE `get_openness_information_for_edition`(IN target_conference_id BIGINT(20), IN target_year NUMERIC(4), IN span NUMERIC(2))
     BEGIN
         insert ignore into aux_conference_openness
         select
@@ -824,7 +790,7 @@ def create_stored_procedures_for_openness(cnx):
     """
 
     create_get_openness_information_for_conference_by_id_stored_procedure = """
-    CREATE DEFINER=`root`@`localhost` PROCEDURE `get_openness_information_for_conference_by_id`(IN target_conference_id BIGINT(20), IN span NUMERIC(2))
+    CREATE PROCEDURE `get_openness_information_for_conference_by_id`(IN target_conference_id BIGINT(20), IN span NUMERIC(2))
     BEGIN
         DECLARE exit_loop BOOLEAN;
         DECLARE current_year NUMERIC(10);
@@ -854,7 +820,7 @@ def create_stored_procedures_for_openness(cnx):
     """
 
     create_get_openness_information_for_conference_by_name_stored_procedure = """
-    CREATE DEFINER=`root`@`localhost` PROCEDURE `get_openness_information_for_conference_by_name`(IN target_conference_acronym VARCHAR(255), IN span NUMERIC(2))
+    CREATE PROCEDURE `get_openness_information_for_conference_by_name`(IN target_conference_acronym VARCHAR(255), IN span NUMERIC(2))
     BEGIN
         DECLARE exit_loop BOOLEAN;
         DECLARE target_conference_id BIGINT(20);
@@ -883,7 +849,7 @@ def create_stored_procedures_for_openness(cnx):
     """
 
     create_get_openness_information_for_all_conferences_stored_procedure = """
-    CREATE DEFINER=`root`@`localhost` PROCEDURE `get_openness_information_for_all_conferences`(IN span NUMERIC(2))
+    CREATE PROCEDURE `get_openness_information_for_all_conferences`(IN span NUMERIC(2))
     BEGIN
         DECLARE exit_loop BOOLEAN;
         DECLARE current_conference BIGINT(20);
@@ -910,7 +876,6 @@ def create_stored_procedures_for_openness(cnx):
     END
     """
 
-    cursor.execute(create_aux_conference_openness_table)
     cursor.execute(create_get_openness_information_for_edition_stored_procedure)
     cursor.execute(create_get_openness_information_for_conference_by_id_stored_procedure)
     cursor.execute(create_get_openness_information_for_conference_by_name_stored_procedure)
@@ -918,7 +883,43 @@ def create_stored_procedures_for_openness(cnx):
     cursor.close()
 
 
-def create_table_paper_stats(cnx):
+def create_table_aux_conference_openness(cnx):
+    cursor = cnx.cursor()
+    create_table_conference_openness = "CREATE TABLE aux_conference_openness ( " \
+                                        "total_papers bigint(20), " \
+                                        "papers_from_outsiders bigint(20), " \
+                                        "papers_from_community bigint(20), " \
+                                        "total_authors bigint(20), " \
+                                        "existing_authors bigint(20), " \
+                                        "new_authors bigint(20), " \
+                                        "year_edition numeric(4), " \
+                                        "time_interval numeric(2), " \
+                                        "conference_edition_id bigint(20), " \
+                                        "conference_id bigint(20), " \
+                                        "PRIMARY KEY pk (conference_id, year_edition, time_interval) " \
+                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+    cursor.execute(create_table_conference_openness)
+    cursor.close()
+
+
+def create_table_aux_conference_turnover(cnx):
+    cursor = cnx.cursor()
+    create_table_conference_turnover = "CREATE TABLE aux_conference_turnover ( " \
+                                        "researcher_id bigint(20), " \
+                                        "researcher_name varchar(255), " \
+                                        "status varchar(255), " \
+                                        "time_interval numeric(2), " \
+                                        "period varchar(255), " \
+                                        "conference_id bigint(20), " \
+                                        "INDEX c (conference_id), " \
+                                        "INDEX p (period), " \
+                                        "PRIMARY KEY pk (conference_id, researcher_id, period) " \
+                                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;"
+    cursor.execute(create_table_conference_turnover)
+    cursor.close()
+
+
+def create_table_aux_paper_stats(cnx):
     cursor = cnx.cursor()
     create_table_paper_stats =  "CREATE TABLE " + db_config.DB_NAME + ".aux_paper_stats ( " \
                                 "paper_id bigint(20) PRIMARY KEY, " \
@@ -962,7 +963,9 @@ def create_tables(cnx):
     create_table_journal_issue(cnx)
     create_table_journal_domain(cnx)
 
-    create_table_paper_stats(cnx)
+    create_table_aux_conference_turnover(cnx)
+    create_table_aux_conference_openness(cnx)
+    create_table_aux_paper_stats(cnx)
 
 
 def create_functions(cnx):

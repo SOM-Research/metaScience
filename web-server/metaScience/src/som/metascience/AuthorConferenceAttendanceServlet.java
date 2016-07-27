@@ -103,11 +103,11 @@ public class AuthorConferenceAttendanceServlet extends AbstractMetaScienceServle
 							"FROM ( " +
 							"SELECT c.acronym, ce.year, p.id, p.type " +
 							"FROM authorship a JOIN paper p ON a.paper_id = p.id JOIN conference_edition ce ON ce.id = p.published_in JOIN conference c ON c.id = ce.conference_id " +
-							"WHERE a.researcher_id = 739496 AND p.type = 1 " +
+							"WHERE a.researcher_id = " + authorId + " AND p.type = 1 " +
 							"UNION " +
 							"SELECT j.acronym, ji.year, p.id, p.type " +
 							"FROM authorship a JOIN paper p ON a.paper_id = p.id JOIN journal_issue ji ON ji.id = p.published_in JOIN journal j ON j.id = ji.journal_id " +
-							"WHERE a.researcher_id = 739496 AND p.type = 2) AS publications " +
+							"WHERE a.researcher_id = " + authorId + " AND p.type = 2) AS publications " +
 							"JOIN paper_type pt ON pt.id = type " +
 							"GROUP BY acronym";	
 			rs = stmt.executeQuery(query);
