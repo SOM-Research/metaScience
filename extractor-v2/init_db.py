@@ -921,7 +921,7 @@ def create_table_aux_conference_turnover(cnx):
 
 def create_table_aux_paper_stats(cnx):
     cursor = cnx.cursor()
-    create_table_paper_stats =  "CREATE TABLE " + db_config.DB_NAME + ".aux_paper_stats ( " \
+    create_table_paper_stats = "CREATE TABLE " + db_config.DB_NAME + ".aux_paper_stats ( " \
                                 "paper_id bigint(20) PRIMARY KEY, " \
                                 "year int(4), " \
                                 "co_authors int(2), " \
