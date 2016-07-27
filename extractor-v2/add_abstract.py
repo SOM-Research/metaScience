@@ -59,7 +59,6 @@ def get_paper_abstract(list):
     return abstract
 
 
-
 def collect_abstract_information(cnx):
     block = []
 
