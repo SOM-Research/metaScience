@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this, please cite it as below."
+authors:
+- family-names: "Cosentino"
+  given-names: "Valerio"
+- family-names: "Cánovas Izquierdo"
+  given-names: "Javier Luis"
+  orcid: "https://orcid.org/0000-0002-2326-1700"
+- family-names: "Cabot"
+  given-names: "Jordi"
+  orcid: "https://orcid.org/0000-0003-2418-2489"
+title: "MetaScience: An Holistic Approach for Research Modeling"
+version: 1.0.0
+doi: 10.1007/978-3-319-46397-1\_28
+url: "https://github.com/SOM-Research/collaboro"
+preferred-citation:
+  type: proceedings
+  authors:
+  - family-names: "Cosentino"
+    given-names: "Valerio"
+  - family-names: "Cánovas Izquierdo"
+    given-names: "Javier Luis"
+    orcid: "https://orcid.org/0000-0002-2326-1700"
+  - family-names: "Cabot"
+    given-names: "Jordi"
+    orcid: "https://orcid.org/0000-0003-2418-2489"
+  doi: "10.1007/978-3-319-46397-1\_28"
+  conference:
+    name: "International Conference on Conceptual Modeling"
+  start: 365 # First page number
+  end: 380 # Last page number
+  title: "MetaScience: An Holistic Approach for Research Modeling"
+  volume: 9974
+  year: 2016
